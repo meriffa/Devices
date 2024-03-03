@@ -1,0 +1,66 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Solution",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "./Sources/Devices.sln",
+                "--configuration",
+                "Debug",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Clean Solution",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "./Sources/Devices.sln",
+                "--configuration",
+                "Debug",
+                "-verbosity:quiet",
+                "--nologo"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Deploy Devices.Client.Solutions",
+            "command": "rsync",
+            "type": "process",
+            "args": [
+                "-rlptz",
+                "--no-implied-dirs",
+                "--progress",
+                "--delete",
+                "--mkpath",
+                "./Sources/Devices.Client.Solutions/bin/Debug/net8.0/",
+                "HOST_SBC:~/Devices.Client.Solutions/"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "dependsOn": [
+                "Build Solution"
+            ]
+        }
+    ]
+}

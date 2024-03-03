@@ -1,0 +1,78 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Devices.Host (Services)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/Sources/Devices.Host/bin/Debug/net8.0/Devices.Host.dll",
+            "cwd": "${workspaceFolder}/Sources/Devices.Host",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            },
+            "launchSettingsFilePath": "${workspaceFolder}/Sources/Devices.Host/Properties/launchSettings.json",
+            "launchSettingsProfile": "Devices.Host (Development)"
+        },
+        {
+            "name": "Devices.Host (Web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/Sources/Devices.Host/bin/Debug/net8.0/Devices.Host.dll",
+            "cwd": "${workspaceFolder}/Sources/Devices.Host",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "launchSettingsFilePath": "${workspaceFolder}/Sources/Devices.Host/Properties/launchSettings.json",
+            "launchSettingsProfile": "Devices.Host (Development)"
+        },
+        {
+            "name": "Devices.Client.Solutions (Local)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/Sources/Devices.Client.Solutions/bin/Debug/net8.0/Devices.Client.Solutions.dll",
+            "args": [
+                "Garden-WeatherCondition"
+            ],
+            "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "ENVIRONMENT": "Development",
+            }
+        },
+        {
+            "name": "Devices.Client.Solutions (Remote)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Deploy Devices.Client.Solutions",
+            "program": "~/.dotnet/dotnet",
+            "args": [
+                "../Devices.Client.Solutions/Devices.Client.Solutions.dll",
+                "Garden-WeatherCondition"
+            ],
+            "cwd": "~/Devices.Client.Solutions",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "HOST_SBC"
+                ],
+                "debuggerPath": "~/.vsdbg/vsdbg"
+            },
+            "env": {
+                // "ENVIRONMENT": "Development"
+                "ENVIRONMENT": "Production"
+            }
+        }
+    ]
+}

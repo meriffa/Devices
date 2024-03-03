@@ -1,0 +1,8 @@
+{
+    "workbench.editor.enablePreview": false,
+    "editor.formatOnType": true,
+    "html.format.wrapLineLength": 300,
+    "editor.minimap.enabled": false,
+    "typescript.surveys.enabled": false,
+    "dotnet.defaultSolution": "Sources/Devices.sln"
+}
