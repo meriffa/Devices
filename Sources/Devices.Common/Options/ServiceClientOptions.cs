@@ -1,19 +1,19 @@
-namespace Devices.Client.Solutions.Options;
+namespace Devices.Common.Options;
 
 /// <summary>
-/// Service options
+/// Service client options
 /// </summary>
-public class ServiceOptions
+public class ServiceClientOptions
 {
 
     #region Properties
     /// <summary>
-    /// Service options host
+    /// Service client options host
     /// </summary>
     public required string Host { get; set; }
 
     /// <summary>
-    /// Service options request timeout (in seconds)
+    /// Service client options request timeout [seconds]
     /// </summary>
     public int Timeout { get; set; } = 30;
     #endregion

@@ -1,6 +1,6 @@
 using Devices.Common.Solutions.Garden.Models;
 
-namespace Devices.Service.Solutions.Garden.Services;
+namespace Devices.Service.Solutions.Garden.Interfaces;
 
 /// <summary>
 /// Garden data service interface

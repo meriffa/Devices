@@ -1,6 +1,5 @@
-using Devices.Common.Models;
 using Devices.Common.Solutions.Garden.Models;
-using Devices.Common.Solutions.Garden.Services;
+using Devices.Service.Solutions.Garden.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,9 +38,17 @@ public class GardenController : ControllerBase
     /// <param name="weatherCondition"></param>
     /// <returns></returns>
     [HttpPost]
-    public ServiceResult SaveWeatherCondition([FromServices] IGardenService service, WeatherCondition weatherCondition)
+    public ActionResult SaveWeatherCondition([FromServices] IGardenService service, WeatherCondition weatherCondition)
     {
-        return service.SaveWeatherCondition(weatherCondition);
+        try
+        {
+            service.SaveWeatherCondition(weatherCondition);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
     }
     #endregion
 

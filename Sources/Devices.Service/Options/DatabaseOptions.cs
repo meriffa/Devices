@@ -28,7 +28,7 @@ public class DatabaseOptions
     public required string Password { get; set; }
 
     /// <summary>
-    /// Database options command timeout (in seconds)
+    /// Database options command timeout [seconds]
     /// </summary>
     public int CommandTimeout { get; set; } = 30;
     #endregion

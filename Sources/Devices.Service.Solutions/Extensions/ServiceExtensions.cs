@@ -1,4 +1,4 @@
-using Devices.Common.Solutions.Garden.Services;
+using Devices.Service.Solutions.Garden.Interfaces;
 using Devices.Service.Solutions.Garden.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

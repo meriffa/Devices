@@ -21,8 +21,7 @@ public class WeatherConditionController : Controller
     {
         DisplayService.WriteInformation($"Weather condition collection started.");
         var weatherCondition = GetWeatherCondition();
-        if (GardenService.SaveWeatherCondition(weatherCondition) is var result && !result.Success)
-            throw new($"Save weather condition operation failed ('{result.ErrorMessage}').");
+        GardenService.SaveWeatherCondition(weatherCondition);
         DisplayService.WriteInformation($"Temperature = {weatherCondition.Temperature:F2} ℃");
         DisplayService.WriteInformation($"Humidity = {weatherCondition.Humidity:F2} %");
         DisplayService.WriteInformation($"Pressure = {weatherCondition.Pressure:F2} hPa");

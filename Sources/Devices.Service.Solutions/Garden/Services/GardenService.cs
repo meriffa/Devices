@@ -1,6 +1,5 @@
-using Devices.Common.Models;
 using Devices.Common.Solutions.Garden.Models;
-using Devices.Common.Solutions.Garden.Services;
+using Devices.Service.Solutions.Garden.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Devices.Service.Solutions.Garden.Services;
@@ -40,18 +39,16 @@ public class GardenService(ILogger<GardenService> logger, IGardenServiceData dat
     /// Save weather condition
     /// </summary>
     /// <param name="weatherCondition"></param>
-    /// <returns></returns>
-    public ServiceResult SaveWeatherCondition(WeatherCondition weatherCondition)
+    public void SaveWeatherCondition(WeatherCondition weatherCondition)
     {
         try
         {
             dataService.SaveWeatherCondition(weatherCondition);
-            return ServiceResult.Ok();
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "{Error}", ex.Message);
-            return ServiceResult.Error(ex);
+            throw;
         }
     }
     #endregion

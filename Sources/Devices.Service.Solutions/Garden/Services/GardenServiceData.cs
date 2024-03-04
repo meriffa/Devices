@@ -1,6 +1,7 @@
 using Devices.Common.Solutions.Garden.Models;
 using Devices.Service.Options;
 using Devices.Service.Services;
+using Devices.Service.Solutions.Garden.Interfaces;
 using Microsoft.Extensions.Options;
 using NpgsqlTypes;
 

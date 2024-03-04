@@ -1,4 +1,4 @@
-using Devices.Client.Solutions.Garden.Services;
+using Devices.Client.Solutions.Garden.Interfaces;
 using Devices.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +13,7 @@ public abstract class Controller
     #region Private Fields
     private IServiceProvider services = null!;
     private DisplayService? displayService;
-    private GardenService? gardenService;
+    private IGardenServiceClient? gardenService;
     #endregion
 
     #region Properties
@@ -25,7 +25,7 @@ public abstract class Controller
     /// <summary>
     /// Garden service
     /// </summary>
-    protected GardenService GardenService => gardenService ??= services.GetRequiredService<GardenService>();
+    protected IGardenServiceClient GardenService => gardenService ??= services.GetRequiredService<IGardenServiceClient>();
     #endregion
 
     #region Public Methods

@@ -1,7 +1,8 @@
 using CommandLine;
 using Devices.Client.Solutions.Controllers;
+using Devices.Client.Solutions.Garden.Interfaces;
 using Devices.Client.Solutions.Garden.Services;
-using Devices.Client.Solutions.Options;
+using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,9 +71,9 @@ class Program
             })
             .ConfigureServices((context, services) =>
             {
-                services.AddOptions<ConsoleOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ConsoleOptions)));
+                services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
                 services.AddSingleton<DisplayService>();
-                services.AddSingleton<GardenService>();
+                services.AddSingleton<IGardenServiceClient, GardenServiceClient>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

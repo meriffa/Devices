@@ -1,7 +1,6 @@
-using Devices.Common.Models;
 using Devices.Common.Solutions.Garden.Models;
 
-namespace Devices.Common.Solutions.Garden.Services;
+namespace Devices.Service.Solutions.Garden.Interfaces;
 
 /// <summary>
 /// Garden service interface
@@ -20,8 +19,7 @@ public interface IGardenService
     /// Save weather condition
     /// </summary>
     /// <param name="weatherCondition"></param>
-    /// <returns></returns>
-    ServiceResult SaveWeatherCondition(WeatherCondition weatherCondition);
+    void SaveWeatherCondition(WeatherCondition weatherCondition);
     #endregion
 
 }
