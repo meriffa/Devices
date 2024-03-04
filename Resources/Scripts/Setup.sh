@@ -67,7 +67,7 @@ CreateSolution() {
 
 # Archive solution
 ArchiveSolution() {
-  SOLUTION_FOLDER=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../.." &> /dev/null && pwd)
+  SOLUTION_FOLDER=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )/../.." &> /dev/null && pwd)
   SOLUTION_NAME="$(basename $SOLUTION_FOLDER).zip"
   TARGET_FOLDER="$HOME/Transfer"
   # Cleanup solution
@@ -89,23 +89,6 @@ ArchiveSolution() {
   fi
   mv "$(dirname "$SOLUTION_FOLDER")/$SOLUTION_NAME" $TARGET_FOLDER
   echo "Solution archive '$SOLUTION_NAME' created."
-}
-
-# Package solution
-PackageSolution() {
-  SOLUTION_FOLDER=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../.." &> /dev/null && pwd)
-  pushd $SOLUTION_FOLDER > /dev/null    
-  pushd ./Sources/Devices.Host 1> /dev/null;
-  rm -rf ./Publish;
-  dotnet publish --configuration Release --output ./Publish --nologo --verbosity quiet;
-  pushd Publish 1> /dev/null;
-  zip -rq Devices.Host.zip .
-  mv "Devices.Host.zip" "$HOME/Transfer";
-  popd 1> /dev/null;
-  rm -rf ./Publish;
-  popd 1> /dev/null;
-  popd > /dev/null
-  echo "Package 'Devices.Host.zip' created."
 }
 
 # Install .NET SDK 8.0 (Package Manager)
@@ -175,7 +158,6 @@ fi
 case $OPERATION in
   CreateSolution) CreateSolution ;;
   ArchiveSolution) ArchiveSolution ;;
-  PackageSolution) PackageSolution ;;
   InstallDotNetSDK) InstallDotNetSDK ;;
   InstallDotNetSDKManual) InstallDotNetSDKManual ;;
   InstallVisualStudioCode) InstallVisualStudioCode ;;
