@@ -45,6 +45,16 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Serilog.AspNetCore
   dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Swashbuckle.AspNetCore
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package CommandLineParser
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Configuration
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Configuration.CommandLine
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Configuration.Json
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Hosting
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Extensions.Hosting
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Formatting.Compact
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Settings.Configuration
+  dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Sinks.File
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj reference ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package CommandLineParser

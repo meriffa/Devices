@@ -7,7 +7,7 @@ namespace Devices.Service.Services;
 /// PostgreSQL data service
 /// </summary>
 /// <param name="options"></param>
-public abstract class PostgreSqlDataService(DatabaseOptions options)
+public abstract class DataService(DatabaseOptions options)
 {
 
     #region Private Fields

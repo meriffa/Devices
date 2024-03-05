@@ -33,6 +33,48 @@
             "launchSettingsProfile": "Devices.Host (Development)"
         },
         {
+            "name": "Devices.Client (Local)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/Sources/Devices.Client/bin/Debug/net8.0/Devices.Client.dll",
+            "args": [
+                "Identity",
+                "--refresh"
+            ],
+            "cwd": "${workspaceFolder}/Sources/Devices.Client",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "ENVIRONMENT": "Development",
+            }
+        },
+        {
+            "name": "Devices.Client (Remote)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "~/.dotnet/dotnet",
+            "args": [
+                "../Devices.Client/Devices.Client.dll",
+                "Identity",
+                "--refresh"
+            ],
+            "cwd": "~/Devices.Client",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "HOST_SBC"
+                ],
+                "debuggerPath": "~/.vsdbg/vsdbg"
+            },
+            "env": {
+                "ENVIRONMENT": "Production"
+            }
+        },
+        {
             "name": "Devices.Client.Solutions (Local)",
             "type": "coreclr",
             "request": "launch",
@@ -52,7 +94,6 @@
             "name": "Devices.Client.Solutions (Remote)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Deploy Devices.Client.Solutions",
             "program": "~/.dotnet/dotnet",
             "args": [
                 "../Devices.Client.Solutions/Devices.Client.Solutions.dll",
@@ -70,7 +111,6 @@
                 "debuggerPath": "~/.vsdbg/vsdbg"
             },
             "env": {
-                // "ENVIRONMENT": "Development"
                 "ENVIRONMENT": "Production"
             }
         }

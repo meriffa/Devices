@@ -21,7 +21,6 @@ public static class ServiceExtensions
     public static IServiceCollection AddSolutionServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IGardenService, GardenService>();
-        services.AddScoped<IGardenServiceData, GardenServiceData>();
         return services;
     }
     #endregion

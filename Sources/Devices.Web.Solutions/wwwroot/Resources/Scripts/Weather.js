@@ -39,10 +39,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
                     render: DataTable.render.number(",", ".", 2, "", "")
                 }
             ],
-            order: [[0, "desc"]],
-            colResize: {
-                isEnabled: true
-            }
+            order: [[0, "desc"]]
         });
     }
 

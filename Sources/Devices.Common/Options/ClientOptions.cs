@@ -11,6 +11,11 @@ public class ClientOptions
     /// Client options service
     /// </summary>
     public required ServiceClientOptions Service { get; set; }
+
+    /// <summary>
+    /// Client options configuration folder
+    /// </summary>
+    public required string ConfigurationFolder { get; set; }
     #endregion
 
 }

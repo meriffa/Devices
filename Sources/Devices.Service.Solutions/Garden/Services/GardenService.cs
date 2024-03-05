@@ -1,6 +1,10 @@
 using Devices.Common.Solutions.Garden.Models;
+using Devices.Service.Options;
+using Devices.Service.Services;
 using Devices.Service.Solutions.Garden.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NpgsqlTypes;
 
 namespace Devices.Service.Solutions.Garden.Services;
 
@@ -9,12 +13,11 @@ namespace Devices.Service.Solutions.Garden.Services;
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>
-public class GardenService(ILogger<GardenService> logger, IGardenServiceData dataService) : IGardenService
+public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOptions> options) : DataService(options.Value.Database), IGardenService
 {
 
     #region Private Fields
     private readonly ILogger<GardenService> logger = logger;
-    private readonly IGardenServiceData dataService = dataService;
     #endregion
 
     #region Public Methods
@@ -26,7 +29,30 @@ public class GardenService(ILogger<GardenService> logger, IGardenServiceData dat
     {
         try
         {
-            return dataService.GetWeatherConditions();
+            var result = new List<WeatherCondition>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    ""Date"",
+                    ""Temperature"",
+                    ""Humidity"",
+                    ""Pressure"",
+                    ""Illuminance""
+                FROM
+                    ""Garden"".""WeatherCondition""
+                ORDER BY
+                    ""Date"" DESC;", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(new()
+                {
+                    Date = (DateTime)r["Date"],
+                    Temperature = (double)(decimal)r["Temperature"],
+                    Humidity = (double)(decimal)r["Humidity"],
+                    Pressure = (double)(decimal)r["Pressure"],
+                    Illuminance = (double)(decimal)r["Illuminance"]
+                });
+            return result;
         }
         catch (Exception ex)
         {
@@ -43,7 +69,26 @@ public class GardenService(ILogger<GardenService> logger, IGardenServiceData dat
     {
         try
         {
-            dataService.SaveWeatherCondition(weatherCondition);
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @$"INSERT INTO ""Garden"".""WeatherCondition""
+                    (""Date"",
+                    ""Temperature"",
+                    ""Humidity"",
+                    ""Pressure"",
+                    ""Illuminance"")
+                VALUES
+                    (@Date,
+                    @Temperature,
+                    @Humidity,
+                    @Pressure,
+                    @Illuminance);", cn);
+            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = weatherCondition.Date;
+            cmd.Parameters.Add("@Temperature", NpgsqlDbType.Numeric).Value = weatherCondition.Temperature;
+            cmd.Parameters.Add("@Humidity", NpgsqlDbType.Numeric).Value = weatherCondition.Humidity;
+            cmd.Parameters.Add("@Pressure", NpgsqlDbType.Numeric).Value = weatherCondition.Pressure;
+            cmd.Parameters.Add("@Illuminance", NpgsqlDbType.Numeric).Value = weatherCondition.Illuminance;
+            cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
         {

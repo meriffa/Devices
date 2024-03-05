@@ -44,7 +44,9 @@ public class Program
     {
         services.AddServices(configuration);
         services.AddSolutionServices(configuration);
-        services.AddControllers();
+        services.AddControllers()
+            .AddApplicationPart(typeof(Service.Solutions.Garden.Controllers.GardenController).Assembly)
+            .AddApplicationPart(typeof(Service.Controllers.IdentityController).Assembly);
         services.AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
         services.AddRazorPages();
 

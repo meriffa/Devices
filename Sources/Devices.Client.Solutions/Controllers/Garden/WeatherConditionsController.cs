@@ -21,7 +21,7 @@ public class WeatherConditionController : Controller
     {
         DisplayService.WriteInformation($"Weather condition collection started.");
         var weatherCondition = GetWeatherCondition();
-        GardenService.SaveWeatherCondition(weatherCondition);
+        GardenServiceClient.SaveWeatherCondition(weatherCondition);
         DisplayService.WriteInformation($"Temperature = {weatherCondition.Temperature:F2} ℃");
         DisplayService.WriteInformation($"Humidity = {weatherCondition.Humidity:F2} %");
         DisplayService.WriteInformation($"Pressure = {weatherCondition.Pressure:F2} hPa");

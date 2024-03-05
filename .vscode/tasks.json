@@ -40,27 +40,6 @@
                 "clear": true
             },
             "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Deploy Devices.Client.Solutions",
-            "command": "rsync",
-            "type": "process",
-            "args": [
-                "-rlptz",
-                "--no-implied-dirs",
-                "--progress",
-                "--delete",
-                "--mkpath",
-                "./Sources/Devices.Client.Solutions/bin/Debug/net8.0/",
-                "HOST_SBC:~/Devices.Client.Solutions/"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "dependsOn": [
-                "Build Solution"
-            ]
         }
     ]
 }
