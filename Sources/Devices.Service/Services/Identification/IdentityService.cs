@@ -40,7 +40,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 WHERE
                     f.""FingerprintType"" = @FingerprintType AND
                     f.""FingerprintValue"" = @FingerprintValue AND
-                    d.""Active"" = TRUE;", cn);
+                    d.""DeviceActive"" = TRUE;", cn);
             cmd.Parameters.Add("@FingerprintType", NpgsqlDbType.Integer);
             cmd.Parameters.Add("@FingerprintValue", NpgsqlDbType.Varchar, 1024);
             foreach (var fingerprint in fingerprints)
@@ -76,7 +76,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                     ""Device""
                 WHERE
                     ""DeviceID"" = @DeviceID AND
-                    ""Active"" = TRUE;", cn);
+                    ""DeviceActive"" = TRUE;", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = identity.Id;
             var deviceId = cmd.ExecuteScalar();
             if (deviceId == null || deviceId is DBNull)
@@ -103,7 +103,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 @"SELECT
                     ""DeviceID"",
                     ""DeviceName"",
-                    ""Active""
+                    ""DeviceActive""
                 FROM
                     ""Device""
                 ORDER BY
@@ -114,7 +114,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 {
                     Identity = new Identity() { Id = (string)r["DeviceID"] },
                     Name = (string)r["DeviceName"],
-                    Active = (bool)r["Active"]
+                    Active = (bool)r["DeviceActive"]
                 });
             return result;
         }

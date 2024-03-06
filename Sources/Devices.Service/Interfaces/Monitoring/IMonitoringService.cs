@@ -3,7 +3,7 @@ using Devices.Common.Models.Monitoring;
 namespace Devices.Service.Interfaces.Monitoring;
 
 /// <summary>
-/// Identity service interface
+/// Monitoring service interface
 /// </summary>
 public interface IMonitoringService
 {

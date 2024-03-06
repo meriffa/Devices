@@ -1,0 +1,26 @@
+namespace Devices.Common.Models.Configuration;
+
+/// <summary>
+/// Application
+/// </summary>
+public class Application
+{
+
+    #region Properties
+    /// <summary>
+    /// Application id
+    /// </summary>
+    public required int Id { get; set; }
+
+    /// <summary>
+    /// Application name
+    /// </summary>
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Application active flag
+    /// </summary>
+    public required bool Active { get; set; }
+    #endregion
+
+}

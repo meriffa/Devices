@@ -12,4 +12,9 @@ Devices.Host = Devices.Host || {};
         return new Date(value).toISOString().slice(0, 19).replace("T", " ");
     }
 
+    // Format boolean
+    Devices.Host.Site.formatBoolean = function (value) {
+        return value == true ? "Yes" : "No";
+    }
+
 }(Devices.Host.Site = Devices.Host.Site || {}, jQuery));

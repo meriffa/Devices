@@ -1,11 +1,12 @@
+@using static Devices.Host.Extensions.PageExtensions;
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/Resources/Bootstrap/5.1.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Resources/Bootstrap/5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/Resources/Styles/Site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Devices.Host.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
@@ -13,42 +14,43 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">@(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name)</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle menu"><span class="navbar-toggler-icon"></span></button>
+                <div id="navbarContent" class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Framework</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item@(IsActive(ViewData, "Devices"))" asp-area="Framework" asp-page="/Devices">Devices</a></li>
+                                <li><a class="dropdown-item@(IsActive(ViewData, "Monitoring"))" asp-area="Framework" asp-page="/Monitoring">Monitoring</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item@(IsActive(ViewData, "Applications"))" asp-area="Framework" asp-page="/Applications">Applications</a></li>
+                                <li><a class="dropdown-item@(IsActive(ViewData, "Releases"))" asp-area="Framework" asp-page="/Releases">Releases</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Framework" asp-page="/Devices">Devices</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Framework" asp-page="/Monitoring">Monitoring</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
+                            <a class="nav-link@(IsActive(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="container-fluid">
             &copy; 2024 - @(DateTime.Now.Year). Marian Todorov
         </div>
     </footer>
-    <script src="~/Resources/jQuery/3.6.0/jquery.min.js"></script>
-    <script src="~/Resources/Bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Resources/jQuery/3.7.1/jquery.min.js"></script>
+    <script src="~/Resources/Popper/2.11.8/popper.min.js"></script>
+    <script src="~/Resources/Bootstrap/5.3.3/js/bootstrap.min.js"></script>
     <script src="~/Resources/Scripts/Site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>

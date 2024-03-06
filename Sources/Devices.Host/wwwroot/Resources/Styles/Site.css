@@ -1,22 +1,29 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
 }
 
 body {
-  margin-bottom: 60px;
+  font-size: 15px;
+}
+
+:root {
+  --selection-color: #000;
+  --selection-background-color: #e8e8e8;
+}
+
+.navbar {
+  --bs-navbar-active-color: var(--selection-color);
+}
+
+.nav-link.active {
+  background-color: var(--selection-background-color);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-color: var(--selection-color);
+  --bs-dropdown-link-active-bg: var(--selection-background-color);
 }

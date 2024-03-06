@@ -9,7 +9,7 @@ using NpgsqlTypes;
 namespace Devices.Service.Services.Monitoring;
 
 /// <summary>
-/// Identity service
+/// Monitoring service
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>

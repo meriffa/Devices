@@ -1,0 +1,14 @@
+@page
+@{
+    ViewData["Title"] = "Applications";
+}
+@section Styles
+{
+    <link rel="stylesheet" href="~/Resources/DataTables/2.0.1/dataTables.dataTables.min.css" />
+}
+@section Scripts
+{
+    <script src="~/Resources/DataTables/2.0.1/dataTables.min.js"></script>
+    <script type="text/javascript" src="~/_content/Devices.Web/Resources/Scripts/Applications.js" asp-append-version="true"></script>
+}
+<table id="grdData" class="display" width="100%"></table>

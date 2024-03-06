@@ -6,16 +6,16 @@ Devices.Web = Devices.Web || {};
     Devices.Host.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
-                url: "/Service/Identity/GetDevices",
+                url: "/Service/Configuration/GetApplications",
                 dataSrc: ""
             },
             columns: [
                 {
-                    title: "Device ID",
-                    data: "identity.id"
+                    title: "Application ID",
+                    data: "id"
                 },
                 {
-                    title: "Device Name",
+                    title: "Application Name",
                     data: "name"
                 },
                 {
@@ -26,8 +26,8 @@ Devices.Web = Devices.Web || {};
                     }
                 }
             ],
-            order: [[1, "asc"]]
+            order: [[0, "asc"]]
         });
     }
 
-}(Devices.Web.Devices = Devices.Web.Devices || {}, jQuery));
+}(Devices.Web.Applications = Devices.Web.Applications || {}, jQuery));
