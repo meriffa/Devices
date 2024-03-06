@@ -1,10 +1,10 @@
-using Devices.Client.Interfaces;
-using Devices.Common.Models;
+using Devices.Client.Interfaces.Identification;
+using Devices.Common.Models.Identification;
 
-namespace Devices.Client.Services;
+namespace Devices.Client.Services.Identification;
 
 /// <summary>
-/// Fingerprint service using SSH public keys
+/// SSH public keys fingerprint service
 /// </summary>
 public class FingerprintServiceSSH : IFingerprintService
 {

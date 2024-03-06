@@ -3,9 +3,9 @@ using Devices.Common.Options;
 namespace Devices.Common.Services;
 
 /// <summary>
-/// Base service client
+/// Client service
 /// </summary>
-public abstract class ServiceClient : IDisposable
+public abstract class ClientService : IDisposable
 {
 
     #region Private Fields
@@ -31,7 +31,7 @@ public abstract class ServiceClient : IDisposable
     /// Initialization
     /// </summary>
     /// <param name="options"></param>
-    public ServiceClient(ClientOptions options)
+    public ClientService(ClientOptions options)
     {
         Options = options;
         handler = new() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
@@ -71,7 +71,7 @@ public abstract class ServiceClient : IDisposable
     /// <summary>
     /// Finalization
     /// </summary>
-    ~ServiceClient() => Dispose(false);
+    ~ClientService() => Dispose(false);
     #endregion
 
 }

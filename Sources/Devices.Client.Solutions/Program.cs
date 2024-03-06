@@ -73,7 +73,7 @@ class Program
             {
                 services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
                 services.AddSingleton<DisplayService>();
-                services.AddSingleton<IGardenServiceClient, GardenServiceClient>();
+                services.AddSingleton<IGardenService, GardenService>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

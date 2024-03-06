@@ -10,15 +10,15 @@ using System.Text.Json;
 namespace Devices.Client.Solutions.Garden.Services;
 
 /// <summary>
-/// Garden service client
+/// Garden service
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>
-public class GardenServiceClient(ILogger<GardenServiceClient> logger, IOptions<ClientOptions> options) : ServiceClient(options.Value), IGardenServiceClient
+public class GardenService(ILogger<GardenService> logger, IOptions<ClientOptions> options) : ClientService(options.Value), IGardenService
 {
 
     #region Private Fields
-    private readonly ILogger<GardenServiceClient> logger = logger;
+    private readonly ILogger<GardenService> logger = logger;
     #endregion
 
     #region Public Methods

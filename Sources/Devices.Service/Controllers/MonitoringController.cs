@@ -1,31 +1,30 @@
-using Devices.Common.Models.Identification;
+using Devices.Common.Models.Metrics;
 using Devices.Service.Interfaces.Identification;
-using Devices.Service.Models.Identification;
+using Devices.Service.Interfaces.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Devices.Service.Controllers;
 
 /// <summary>
-/// Identity controller
+/// Monitoring controller
 /// </summary>
 [ApiController, Route("/Service/[controller]/[action]")]
-public class IdentityController : ControllerBase
+public class MonitoringController : ControllerBase
 {
 
     #region Public Methods
     /// <summary>
-    /// Return device identity
+    /// Return monitoring metrics
     /// </summary>
     /// <param name="service"></param>
-    /// <param name="fingerprints"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult<Identity> GetIdentity([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
+    [HttpGet]
+    public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService service)
     {
         try
         {
-            return Ok(service.GetIdentity(fingerprints));
+            return Ok(service.GetMonitoringMetrics());
         }
         catch (Exception ex)
         {
@@ -34,16 +33,19 @@ public class IdentityController : ControllerBase
     }
 
     /// <summary>
-    /// Return devices
+    /// Save monitoring metrics
     /// </summary>
     /// <param name="service"></param>
+    /// <param name="metrics"></param>
     /// <returns></returns>
-    [HttpGet]
-    public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService service)
+    [HttpPost]
+    public ActionResult SaveMonitoringMetrics([FromServices] IIdentityService identityService, [FromServices] IMonitoringService service, MonitoringMetrics metrics)
     {
         try
         {
-            return Ok(service.GetDevices());
+            identityService.VerifyIdentity(metrics.Identity);
+            service.SaveMonitoringMetrics(metrics);
+            return Ok();
         }
         catch (Exception ex)
         {

@@ -3,9 +3,9 @@ using Devices.Common.Solutions.Garden.Models;
 namespace Devices.Client.Solutions.Garden.Interfaces;
 
 /// <summary>
-/// Garden service client interface
+/// Garden service interface
 /// </summary>
-public interface IGardenServiceClient
+public interface IGardenService
 {
 
     #region Public Methods

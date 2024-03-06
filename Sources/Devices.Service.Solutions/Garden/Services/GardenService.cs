@@ -71,7 +71,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @$"INSERT INTO ""Garden"".""WeatherCondition""
+                @"INSERT INTO ""Garden"".""WeatherCondition""
                     (""Date"",
                     ""Temperature"",
                     ""Humidity"",

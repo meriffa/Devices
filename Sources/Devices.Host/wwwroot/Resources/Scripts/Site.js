@@ -9,7 +9,7 @@ Devices.Host = Devices.Host || {};
 
     // Format date & time
     Devices.Host.Site.formatDateTime = function (value) {
-        return new Date(value);
+        return new Date(value).toISOString().slice(0, 19).replace("T", " ");
     }
 
 }(Devices.Host.Site = Devices.Host.Site || {}, jQuery));

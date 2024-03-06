@@ -1,30 +1,27 @@
-using Devices.Client.Interfaces;
-using Devices.Common.Models;
+using Devices.Client.Interfaces.Identification;
+using Devices.Common.Models.Identification;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
-namespace Devices.Client.Services;
+namespace Devices.Client.Services.Identification;
 
 /// <summary>
-/// Identity service client
+/// Identity service
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>
 /// <param name="fingerprintServices"></param>
-public class IdentityServiceClient(ILogger<IdentityServiceClient> logger, IOptions<ClientOptions> options, IEnumerable<IFingerprintService> fingerprintServices) : ServiceClient(options.Value), IIdentityServiceClient
+public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOptions> options, IEnumerable<IFingerprintService> fingerprintServices) : ClientService(options.Value), IIdentityService
 {
 
-    #region Constants
-    private const string IDENTITY_FILE = "Devices.Client.Identity.json";
-    #endregion
-
     #region Private Fields
-    private readonly ILogger<IdentityServiceClient> logger = logger;
+    private readonly ILogger<IdentityService> logger = logger;
     private readonly IEnumerable<IFingerprintService> fingerprintServices = fingerprintServices;
     #endregion
 
@@ -34,11 +31,11 @@ public class IdentityServiceClient(ILogger<IdentityServiceClient> logger, IOptio
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    public Identity GetIdentity(bool refresh)
+    public Identity GetIdentity(bool refresh = false)
     {
         try
         {
-            string path = Path.Combine(Options.ConfigurationFolder, IDENTITY_FILE);
+            string path = Path.Combine(Options.ConfigurationFolder, GetConfigurationFile());
             if (refresh || !File.Exists(path))
             {
                 var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
@@ -57,6 +54,12 @@ public class IdentityServiceClient(ILogger<IdentityServiceClient> logger, IOptio
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// Return configuration file
+    /// </summary>
+    /// <returns></returns>
+    private static string GetConfigurationFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.Identity.json";
+
     /// <summary>
     /// Return device fingerprints
     /// </summary>

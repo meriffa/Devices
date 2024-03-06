@@ -1,11 +1,11 @@
-using Devices.Common.Models;
+using Devices.Common.Models.Identification;
 
-namespace Devices.Client.Interfaces;
+namespace Devices.Client.Interfaces.Identification;
 
 /// <summary>
-/// Identity service client interface
+/// Identity service interface
 /// </summary>
-public interface IIdentityServiceClient
+public interface IIdentityService
 {
 
     #region Public Methods
@@ -14,7 +14,7 @@ public interface IIdentityServiceClient
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    Identity GetIdentity(bool refresh);
+    Identity GetIdentity(bool refresh = false);
     #endregion
 
 }

@@ -1,4 +1,5 @@
-using Devices.Client.Interfaces;
+using Devices.Client.Interfaces.Identification;
+using Devices.Client.Interfaces.Metrics;
 using Devices.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,8 @@ public abstract class Controller
     #region Private Fields
     private IServiceProvider services = null!;
     private DisplayService? displayService;
-    private IIdentityServiceClient? identityServiceClient;
+    private IIdentityService? identityService;
+    private IMonitoringService? monitoringService;
     #endregion
 
     #region Properties
@@ -23,9 +25,14 @@ public abstract class Controller
     protected DisplayService DisplayService => displayService ??= services.GetRequiredService<DisplayService>();
 
     /// <summary>
-    /// Garden service
+    /// Identity service
     /// </summary>
-    protected IIdentityServiceClient IdentityServiceClient => identityServiceClient ??= services.GetRequiredService<IIdentityServiceClient>();
+    protected IIdentityService IdentityService => identityService ??= services.GetRequiredService<IIdentityService>();
+
+    /// <summary>
+    /// Monitoring service
+    /// </summary>
+    protected IMonitoringService MonitoringService => monitoringService ??= services.GetRequiredService<IMonitoringService>();
     #endregion
 
     #region Public Methods

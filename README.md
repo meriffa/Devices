@@ -7,7 +7,7 @@ IoT Device Management Framework is an open-source and cross-platform framework f
 The framework provides the following services:
 
 - Device Identity: The service uses fingerprinting services (host name, NIC MAC address, SSH public key) to identify the device using backend database and store the device identity locally.
-- Device Monitoring
+- Device Monitoring: The service captures basic device metrics (CPU, memory, last reboot time) and saves the data into backed databases using device identity.
 - Device Configuration
 - Device Data Exchange
 

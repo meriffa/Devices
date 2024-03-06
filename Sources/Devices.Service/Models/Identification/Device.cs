@@ -1,6 +1,6 @@
-using Devices.Common.Models;
+using Devices.Common.Models.Identification;
 
-namespace Devices.Service.Models;
+namespace Devices.Service.Models.Identification;
 
 /// <summary>
 /// Device

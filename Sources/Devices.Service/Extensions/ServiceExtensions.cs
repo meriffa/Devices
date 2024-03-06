@@ -1,6 +1,8 @@
-using Devices.Service.Interfaces;
+using Devices.Service.Interfaces.Identification;
+using Devices.Service.Interfaces.Metrics;
 using Devices.Service.Options;
-using Devices.Service.Services;
+using Devices.Service.Services.Identification;
+using Devices.Service.Services.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,7 @@ public static class ServiceExtensions
         services.Configure<ServiceOptions>(configuration.GetSection(nameof(ServiceOptions)));
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IMonitoringService, MonitoringService>();
         return services;
     }
     #endregion

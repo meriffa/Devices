@@ -7,10 +7,10 @@ using System.Device.I2c;
 namespace Devices.Client.Solutions.Controllers.Garden;
 
 /// <summary>
-/// Weather condition controller
+/// Garden controller
 /// </summary>
-[Verb("Garden-WeatherCondition", HelpText = "Weather condition collection operation.")]
-public class WeatherConditionController : Controller
+[Verb("Garden", HelpText = "Garden operation.")]
+public class GardenController : Controller
 {
 
     #region Public Methods
@@ -19,14 +19,14 @@ public class WeatherConditionController : Controller
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Weather condition collection started.");
+        DisplayService.WriteInformation($"Garden operation started.");
         var weatherCondition = GetWeatherCondition();
-        GardenServiceClient.SaveWeatherCondition(weatherCondition);
+        GardenService.SaveWeatherCondition(weatherCondition);
         DisplayService.WriteInformation($"Temperature = {weatherCondition.Temperature:F2} ℃");
         DisplayService.WriteInformation($"Humidity = {weatherCondition.Humidity:F2} %");
         DisplayService.WriteInformation($"Pressure = {weatherCondition.Pressure:F2} hPa");
         DisplayService.WriteInformation($"Pressure = {weatherCondition.Illuminance:F2} Lux");
-        DisplayService.WriteInformation($"Weather condition collection completed.");
+        DisplayService.WriteInformation($"Garden operation completed.");
     }
     #endregion
 

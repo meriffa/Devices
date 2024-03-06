@@ -1,11 +1,11 @@
-using Devices.Client.Interfaces;
-using Devices.Common.Models;
+using Devices.Client.Interfaces.Identification;
+using Devices.Common.Models.Identification;
 using System.Net.NetworkInformation;
 
-namespace Devices.Client.Services;
+namespace Devices.Client.Services.Identification;
 
 /// <summary>
-/// Fingerprint service using network interface MAC addresses
+/// Network Interface MAC addresses fingerprint service
 /// </summary>
 public class FingerprintServiceNetworkInterface : IFingerprintService
 {

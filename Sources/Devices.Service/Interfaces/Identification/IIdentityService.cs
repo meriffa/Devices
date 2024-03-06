@@ -1,7 +1,7 @@
-using Devices.Common.Models;
-using Devices.Service.Models;
+using Devices.Common.Models.Identification;
+using Devices.Service.Models.Identification;
 
-namespace Devices.Service.Interfaces;
+namespace Devices.Service.Interfaces.Identification;
 
 /// <summary>
 /// Identity service interface
@@ -16,6 +16,13 @@ public interface IIdentityService
     /// <param name="fingerprints"></param>
     /// <returns></returns>
     Identity GetIdentity(List<Fingerprint> fingerprints);
+
+    /// <summary>
+    /// Verify device identity
+    /// </summary>
+    /// <param name="fingerprints"></param>
+    /// <returns></returns>
+    void VerifyIdentity(Identity identity);
 
     /// <summary>
     /// Return devices
