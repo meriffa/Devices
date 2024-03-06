@@ -1,6 +1,6 @@
-using Devices.Common.Models.Metrics;
+using Devices.Common.Models.Monitoring;
 using Devices.Service.Interfaces.Identification;
-using Devices.Service.Interfaces.Metrics;
+using Devices.Service.Interfaces.Monitoring;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

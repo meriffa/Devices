@@ -1,9 +1,9 @@
 using CommandLine;
 using Devices.Client.Controllers;
 using Devices.Client.Interfaces.Identification;
-using Devices.Client.Interfaces.Metrics;
+using Devices.Client.Interfaces.Monitoring;
 using Devices.Client.Services.Identification;
-using Devices.Client.Services.Metrics;
+using Devices.Client.Services.Monitoring;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Configuration;

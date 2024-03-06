@@ -1,6 +1,6 @@
-using Devices.Common.Models.Metrics;
+using Devices.Common.Models.Monitoring;
 
-namespace Devices.Service.Interfaces.Metrics;
+namespace Devices.Service.Interfaces.Monitoring;
 
 /// <summary>
 /// Identity service interface

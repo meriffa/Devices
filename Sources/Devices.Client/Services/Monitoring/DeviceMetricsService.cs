@@ -1,9 +1,9 @@
-using Devices.Client.Interfaces.Metrics;
-using Devices.Common.Models.Metrics;
+using Devices.Client.Interfaces.Monitoring;
+using Devices.Common.Models.Monitoring;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Devices.Client.Services.Metrics;
+namespace Devices.Client.Services.Monitoring;
 
 /// <summary>
 /// Device metrics service

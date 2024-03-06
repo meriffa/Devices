@@ -1,5 +1,5 @@
 using Devices.Client.Interfaces.Identification;
-using Devices.Client.Interfaces.Metrics;
+using Devices.Client.Interfaces.Monitoring;
 using Devices.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 

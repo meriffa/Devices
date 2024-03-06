@@ -1,12 +1,12 @@
-using Devices.Common.Models.Metrics;
-using Devices.Service.Interfaces.Metrics;
+using Devices.Common.Models.Monitoring;
+using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Devices.Service.Services.Metrics;
+namespace Devices.Service.Services.Monitoring;
 
 /// <summary>
 /// Identity service

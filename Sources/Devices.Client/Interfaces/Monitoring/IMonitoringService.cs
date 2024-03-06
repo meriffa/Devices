@@ -1,6 +1,6 @@
-using Devices.Common.Models.Metrics;
+using Devices.Common.Models.Monitoring;
 
-namespace Devices.Client.Interfaces.Metrics;
+namespace Devices.Client.Interfaces.Monitoring;
 
 /// <summary>
 /// Monitoring service interface

@@ -1,8 +1,8 @@
 using Devices.Service.Interfaces.Identification;
-using Devices.Service.Interfaces.Metrics;
+using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
-using Devices.Service.Services.Metrics;
+using Devices.Service.Services.Monitoring;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

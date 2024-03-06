@@ -1,6 +1,6 @@
 using Devices.Client.Interfaces.Identification;
-using Devices.Client.Interfaces.Metrics;
-using Devices.Common.Models.Metrics;
+using Devices.Client.Interfaces.Monitoring;
+using Devices.Common.Models.Monitoring;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
 
-namespace Devices.Client.Services.Metrics;
+namespace Devices.Client.Services.Monitoring;
 
 /// <summary>
 /// Monitoring service

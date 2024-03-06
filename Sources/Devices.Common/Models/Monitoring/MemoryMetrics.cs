@@ -1,4 +1,4 @@
-namespace Devices.Common.Models.Metrics;
+namespace Devices.Common.Models.Monitoring;
 
 /// <summary>
 /// Memory metrics

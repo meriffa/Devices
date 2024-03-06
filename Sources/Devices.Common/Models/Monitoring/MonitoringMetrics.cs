@@ -1,6 +1,6 @@
 using Devices.Common.Models.Identification;
 
-namespace Devices.Common.Models.Metrics;
+namespace Devices.Common.Models.Monitoring;
 
 /// <summary>
 /// Monitoring metrics
