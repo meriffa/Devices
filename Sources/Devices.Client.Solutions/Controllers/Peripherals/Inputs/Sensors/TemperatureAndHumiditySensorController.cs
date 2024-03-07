@@ -20,7 +20,7 @@ public class TemperatureAndHumiditySensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Temperature & Humidity Sensor operation started.");
+        DisplayService.WriteInformation("Temperature & Humidity Sensor operation started.");
         using var sensor = new Dht11(PIN_NUMBER);
         while (IsRunning())
         {
@@ -30,7 +30,7 @@ public class TemperatureAndHumiditySensorController : PeripheralsController
                 DisplayService.WriteInformation($"Temperature = N/A, Humidity = N/A");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Temperature & Humidity Sensor operation completed.");
+        DisplayService.WriteInformation("Temperature & Humidity Sensor operation completed.");
     }
     #endregion
 

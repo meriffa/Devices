@@ -48,7 +48,7 @@ public abstract class RBGLEDMatrixController : PeripheralsController
     /// <returns></returns>
     protected Matrix GetMatrix()
     {
-        DisplayService.WriteInformation($"Press [Enter] to exit.");
+        DisplayService.WriteInformation("Press [Enter] to exit.");
         return new(new() { Rows = Rows, Columns = Columns, Chains = HorizontalPanels, ParallelChains = VerticalPanels }) { Brightness = Brightness };
     }
 

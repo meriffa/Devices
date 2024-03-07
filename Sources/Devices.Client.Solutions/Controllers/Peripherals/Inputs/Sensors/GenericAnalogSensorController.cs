@@ -24,14 +24,14 @@ public class GenericAnalogSensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Generic Analog Sensor operation started.");
+        DisplayService.WriteInformation("Generic Analog Sensor operation started.");
         using var sensor = new PCF8591();
         while (IsRunning())
         {
             DisplayService.WriteInformation($"{LevelType} Level = {sensor.ReadInput(0)}");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Generic Analog Sensor operation completed.");
+        DisplayService.WriteInformation("Generic Analog Sensor operation completed.");
     }
     #endregion
 

@@ -28,7 +28,7 @@ public class LEDDisplay7Segment4DigitController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"7-Segment 4-Digit LED Display operation started.");
+        DisplayService.WriteInformation("7-Segment 4-Digit LED Display operation started.");
         using var controller = SetupController(DIGIT_SELECT_PIN_NUMBER.ToDictionary(i => i, _ => PinValue.High));
         using var shiftRegister = new Sn74hc595(new Sn74hc595PinMapping(DATA_PIN_NUMBER, SHIFT_PIN_NUMBER, LATCH_PIN_NUMBER));
         using var timer = SetupTimer(1000);
@@ -36,7 +36,7 @@ public class LEDDisplay7Segment4DigitController : LEDController
             SetLEDValues(controller, shiftRegister, value);
         timer.Enabled = false;
         shiftRegister.ShiftByte(0xFF);
-        DisplayService.WriteInformation($"7-Segment 4-Digit LED Display operation completed.");
+        DisplayService.WriteInformation("7-Segment 4-Digit LED Display operation completed.");
     }
     #endregion
 

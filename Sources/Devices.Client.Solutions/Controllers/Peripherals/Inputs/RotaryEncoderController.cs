@@ -23,7 +23,7 @@ public class RotaryEncoderController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Rotary Encoder operation started.");
+        DisplayService.WriteInformation("Rotary Encoder operation started.");
         using var controller = SetupController([BUTTON_PIN_NUMBER], PinMode.InputPullUp);
         using var input = new ScaledQuadratureEncoder(A_PIN_NUMBER, B_PIN_NUMBER, PinEventTypes.Falling, 20, 0.1d, 0.0d, 100.0d)
         {
@@ -35,7 +35,7 @@ public class RotaryEncoderController : PeripheralsController
         controller.RegisterCallbackForPinValueChangedEvent(BUTTON_PIN_NUMBER, PinEventTypes.Rising | PinEventTypes.Falling, (_, e) => DisplayService.WriteInformation($"New Button State = {GetButtonState(e.ChangeType)}"));
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
-        DisplayService.WriteInformation($"Rotary Encoder operation completed.");
+        DisplayService.WriteInformation("Rotary Encoder operation completed.");
     }
     #endregion
 

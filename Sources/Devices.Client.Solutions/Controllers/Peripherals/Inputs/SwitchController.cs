@@ -20,13 +20,13 @@ public class SwitchController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Switch operation started.");
+        DisplayService.WriteInformation("Switch operation started.");
         using var controller = SetupController([PIN_NUMBER], PinMode.Input);
         DisplayService.WriteInformation($"Initial State = {GetSwitchState(controller)}");
         controller.RegisterCallbackForPinValueChangedEvent(PIN_NUMBER, PinEventTypes.Rising | PinEventTypes.Falling, (_, e) => DisplayService.WriteInformation($"New State = {GetSwitchState(e.ChangeType)}"));
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
-        DisplayService.WriteInformation($"Switch operation completed.");
+        DisplayService.WriteInformation("Switch operation completed.");
     }
     #endregion
 

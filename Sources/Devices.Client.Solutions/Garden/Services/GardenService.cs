@@ -31,7 +31,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ClientOptions
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(weatherCondition), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = Client.PostAsync($"/Service/Solutions/Garden/SaveWeatherCondition", content).Result;
+            using var response = Client.PostAsync("/Service/Solutions/Garden/SaveWeatherCondition", content).Result;
             response.EnsureSuccessStatusCode();
         }
         catch (Exception ex)

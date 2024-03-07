@@ -49,10 +49,10 @@ public class TextController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Text operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Text operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Text operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Text operation completed.");
     }
     #endregion
 

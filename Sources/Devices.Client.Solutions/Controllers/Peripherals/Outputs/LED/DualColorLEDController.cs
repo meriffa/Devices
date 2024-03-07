@@ -21,7 +21,7 @@ public class DualColorLEDController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Dual Color LED operation started.");
+        DisplayService.WriteInformation("Dual Color LED operation started.");
         using var controller = SetupController([RED_PIN_NUMBER, GREEN_PIN_NUMBER]);
         using var redPWMChannel = SetupChannel(RED_PIN_NUMBER);
         using var greenPWMChannel = SetupChannel(GREEN_PIN_NUMBER);
@@ -38,7 +38,7 @@ public class DualColorLEDController : LEDController
             SetOutputValue(greenPWMChannel);
             SetOutputValue(controller);
         }
-        DisplayService.WriteInformation($"Dual Color LED operation completed.");
+        DisplayService.WriteInformation("Dual Color LED operation completed.");
     }
     #endregion
 

@@ -23,9 +23,9 @@ public class IdentityController : Controller
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Identity operation started.");
+        DisplayService.WriteInformation("Identity operation started.");
         DisplayService.WriteInformation($"Device ID = {IdentityService.GetIdentity(Refresh).Id}");
-        DisplayService.WriteInformation($"Identity operation completed.");
+        DisplayService.WriteInformation("Identity operation completed.");
     }
     #endregion
 

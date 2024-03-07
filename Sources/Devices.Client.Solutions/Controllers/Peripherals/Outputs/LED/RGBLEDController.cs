@@ -22,7 +22,7 @@ public class RGBLEDController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED operation started.");
+        DisplayService.WriteInformation("RGB LED operation started.");
         using var controller = SetupController([RED_PIN_NUMBER, GREEN_PIN_NUMBER, BLUE_PIN_NUMBER]);
         using var redPWMChannel = SetupChannel(RED_PIN_NUMBER, dutyCycle: 1.0d);
         using var greenPWMChannel = SetupChannel(GREEN_PIN_NUMBER, dutyCycle: 1.0d);
@@ -50,7 +50,7 @@ public class RGBLEDController : LEDController
             SetOutputValue(bluePWMChannel);
             SetOutputValue(controller);
         }
-        DisplayService.WriteInformation($"RGB LED operation completed.");
+        DisplayService.WriteInformation("RGB LED operation completed.");
     }
     #endregion
 

@@ -1,7 +1,5 @@
 using CommandLine;
 using Devices.Client.Solutions.Controllers;
-using Devices.Client.Solutions.Garden.Interfaces;
-using Devices.Client.Solutions.Garden.Services;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Configuration;
@@ -73,7 +71,7 @@ class Program
             {
                 services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
                 services.AddSingleton<DisplayService>();
-                services.AddSingleton<IGardenService, GardenService>();
+                services.AddSingleton<Garden.Interfaces.IGardenService, Garden.Services.GardenService>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

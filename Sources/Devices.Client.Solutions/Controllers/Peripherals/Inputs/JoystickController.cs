@@ -40,7 +40,7 @@ public class JoystickController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Joystick operation started.");
+        DisplayService.WriteInformation("Joystick operation started.");
         using var controller = SetupController([PIN_NUMBER], PinMode.InputPullUp);
         using var input = SetupADConverter();
         DisplayService.WriteInformation($"Initial Button State = {GetJoystickButtonState(controller)}");
@@ -50,7 +50,7 @@ public class JoystickController : PeripheralsController
             DisplayService.WriteInformation($"X = {input.ReadInput(0)}, Y = {input.ReadInput(1)}");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Joystick operation completed.");
+        DisplayService.WriteInformation("Joystick operation completed.");
     }
     #endregion
 

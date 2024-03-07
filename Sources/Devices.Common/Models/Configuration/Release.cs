@@ -28,6 +28,11 @@ public class Release
     public required string Package { get; set; }
 
     /// <summary>
+    /// Release package hash
+    /// </summary>
+    public required string PackageHash { get; set; }
+
+    /// <summary>
     /// Release version
     /// </summary>
     public required string Version { get; set; }

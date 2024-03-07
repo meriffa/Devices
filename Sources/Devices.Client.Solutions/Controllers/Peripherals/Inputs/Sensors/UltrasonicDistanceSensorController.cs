@@ -21,7 +21,7 @@ public class UltrasonicDistanceSensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Ultrasonic Distance Sensor operation started.");
+        DisplayService.WriteInformation("Ultrasonic Distance Sensor operation started.");
         using var sensor = new Hcsr04(TRIGGER_PIN_NUMBER, ECHO_PIN_NUMBER);
         while (IsRunning())
         {
@@ -29,7 +29,7 @@ public class UltrasonicDistanceSensorController : PeripheralsController
                 DisplayService.WriteInformation($"Distance = {distance.Centimeters:0.00} cm");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Ultrasonic Distance Sensor operation completed.");
+        DisplayService.WriteInformation("Ultrasonic Distance Sensor operation completed.");
     }
     #endregion
 

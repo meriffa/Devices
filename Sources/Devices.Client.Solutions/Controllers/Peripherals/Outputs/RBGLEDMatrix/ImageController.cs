@@ -42,10 +42,10 @@ public class ImageController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Image operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Image operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Image operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Image operation completed.");
     }
     #endregion
 

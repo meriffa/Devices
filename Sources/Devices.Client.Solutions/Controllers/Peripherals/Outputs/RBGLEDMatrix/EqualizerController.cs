@@ -17,10 +17,10 @@ public class EqualizerController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Equalizer operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Equalizer operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Equalizer operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Equalizer operation completed.");
     }
     #endregion
 

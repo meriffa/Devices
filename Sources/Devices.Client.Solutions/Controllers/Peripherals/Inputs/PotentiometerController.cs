@@ -16,14 +16,14 @@ public class PotentiometerController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Potentiometer operation started.");
+        DisplayService.WriteInformation("Potentiometer operation started.");
         using var input = new ADS7830();
         while (IsRunning())
         {
             DisplayService.WriteInformation($"Value = {input.ReadInput(0)}");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Potentiometer operation completed.");
+        DisplayService.WriteInformation("Potentiometer operation completed.");
     }
     #endregion
 

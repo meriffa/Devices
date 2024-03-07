@@ -35,6 +35,7 @@ public class MonitoringController : ControllerBase
     /// <summary>
     /// Save monitoring metrics
     /// </summary>
+    /// <param name="identityService"></param>
     /// <param name="service"></param>
     /// <param name="metrics"></param>
     /// <returns></returns>

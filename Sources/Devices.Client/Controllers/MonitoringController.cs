@@ -15,7 +15,7 @@ public class MonitoringController : Controller
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Monitoring operation started.");
+        DisplayService.WriteInformation("Monitoring operation started.");
         var metrics = MonitoringService.GetMonitoringMetrics();
         DisplayService.WriteInformation($"Last Reboot = {metrics.Device.LastRebootDate:yyyy-MM-dd HH:mm:ss}");
         DisplayService.WriteInformation($"CPU User Time = {metrics.Device.Cpu.User:F1} %");
@@ -24,7 +24,7 @@ public class MonitoringController : Controller
         DisplayService.WriteInformation($"Total Memory = {metrics.Device.Memory.Total:N0} MB");
         DisplayService.WriteInformation($"Used Memory = {metrics.Device.Memory.Used:N0} MB");
         DisplayService.WriteInformation($"Free Memory = {metrics.Device.Memory.Free:N0} MB");
-        DisplayService.WriteInformation($"Monitoring operation completed.");
+        DisplayService.WriteInformation("Monitoring operation completed.");
     }
     #endregion
 

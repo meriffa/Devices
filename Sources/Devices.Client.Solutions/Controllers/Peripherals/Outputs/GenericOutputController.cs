@@ -20,14 +20,14 @@ public class GenericOutputController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Generic Output operation started.");
+        DisplayService.WriteInformation("Generic Output operation started.");
         using var controller = SetupController([PIN_NUMBER]);
         while (IsRunning())
         {
             SetOutputValue(controller, PIN_NUMBER, PinValue.High);
             SetOutputValue(controller, PIN_NUMBER, PinValue.Low);
         }
-        DisplayService.WriteInformation($"Generic Output operation completed.");
+        DisplayService.WriteInformation("Generic Output operation completed.");
     }
     #endregion
 

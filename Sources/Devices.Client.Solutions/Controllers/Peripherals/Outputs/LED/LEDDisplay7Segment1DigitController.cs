@@ -22,13 +22,13 @@ public class LEDDisplay7Segment1DigitController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"7-Segment 1-Digit LED Display operation started.");
+        DisplayService.WriteInformation("7-Segment 1-Digit LED Display operation started.");
         using var shiftRegister = new Sn74hc595(new Sn74hc595PinMapping(DATA_PIN_NUMBER, SHIFT_PIN_NUMBER, LATCH_PIN_NUMBER));
         var index = 0;
         while (IsRunning())
             SetLEDValues(shiftRegister, DIGITS[index++ % DIGITS.Length]);
         shiftRegister.ShiftByte(0xFF);
-        DisplayService.WriteInformation($"7-Segment 1-Digit LED Display operation completed.");
+        DisplayService.WriteInformation("7-Segment 1-Digit LED Display operation completed.");
     }
     #endregion
 

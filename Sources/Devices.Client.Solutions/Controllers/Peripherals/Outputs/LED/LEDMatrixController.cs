@@ -50,7 +50,7 @@ public class LEDMatrixController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"LED Matrix operation started.");
+        DisplayService.WriteInformation("LED Matrix operation started.");
         using var shiftRegister = new Sn74hc595(new Sn74hc595PinMapping(DATA_PIN_NUMBER, SHIFT_PIN_NUMBER, LATCH_PIN_NUMBER));
         while (IsRunning())
         {
@@ -59,7 +59,7 @@ public class LEDMatrixController : LEDController
                 SetLEDColumns(shiftRegister, BITMAP_DIGITS[i]);
         }
         SetLEDColumns(shiftRegister, BITMAP_CLEAR);
-        DisplayService.WriteInformation($"LED Matrix operation completed.");
+        DisplayService.WriteInformation("LED Matrix operation completed.");
     }
     #endregion
 

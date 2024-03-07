@@ -17,10 +17,10 @@ public class RainController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Rain operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Rain operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Rain operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Rain operation completed.");
     }
     #endregion
 

@@ -17,14 +17,14 @@ public class BarometricSensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Barometric Sensor operation started.");
+        DisplayService.WriteInformation("Barometric Sensor operation started.");
         using var sensor = GetSensor();
         while (IsRunning())
         {
             DisplayService.WriteInformation($"Temperature = {sensor.ReadTemperature().DegreesCelsius:F2} ℃, Pressure = {sensor.ReadPressure().Hectopascals:0.##} hPa, Altitude = {sensor.ReadAltitude().Meters:0.##} m");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Barometric Sensor operation completed.");
+        DisplayService.WriteInformation("Barometric Sensor operation completed.");
     }
     #endregion
 

@@ -30,7 +30,7 @@ public class VideoController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Video operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Video operation started.");
         using var matrix = GetMatrix();
         var canvas = matrix.CreateOffscreenCanvas();
         if (!File.Exists(FileName))
@@ -42,7 +42,7 @@ public class VideoController : RBGLEDMatrixController
         while (IsRunning())
             Thread.Yield();
         player.Stop();
-        DisplayService.WriteInformation($"RGB LED Matrix Video operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Video operation completed.");
     }
     #endregion
 

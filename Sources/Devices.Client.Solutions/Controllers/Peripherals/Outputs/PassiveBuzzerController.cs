@@ -20,14 +20,14 @@ public class PassiveBuzzerController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Passive Buzzer operation started.");
+        DisplayService.WriteInformation("Passive Buzzer operation started.");
         using var buzzer = new Buzzer(PIN_NUMBER);
         while (IsRunning())
         {
             buzzer.PlayTone(440, 1000);
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Passive Buzzer operation completed.");
+        DisplayService.WriteInformation("Passive Buzzer operation completed.");
     }
     #endregion
 

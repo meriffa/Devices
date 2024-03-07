@@ -21,10 +21,10 @@ public class AntController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Ant operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Ant operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Ant operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Ant operation completed.");
     }
     #endregion
 

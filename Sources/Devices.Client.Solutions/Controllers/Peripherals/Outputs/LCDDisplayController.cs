@@ -19,7 +19,7 @@ public class LCDDisplayController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"LCD Display operation started.");
+        DisplayService.WriteInformation("LCD Display operation started.");
         using var driver = new Pcf8574(I2cDevice.Create(new I2cConnectionSettings(1, 0x27)));
         using var display = new Lcd1602(
             registerSelectPin: 0,
@@ -40,7 +40,7 @@ public class LCDDisplayController : PeripheralsController
             Thread.Sleep(STEP_DURATION);
         }
         display.DisplayOn = false;
-        DisplayService.WriteInformation($"LCD Display operation completed.");
+        DisplayService.WriteInformation("LCD Display operation completed.");
     }
     #endregion
 

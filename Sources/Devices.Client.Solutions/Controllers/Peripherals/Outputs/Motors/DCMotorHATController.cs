@@ -27,14 +27,14 @@ public class DCMotorHATController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"DC Motor (HAT) operation started.");
+        DisplayService.WriteInformation("DC Motor (HAT) operation started.");
         using var hat = new MotorHat(new I2cConnectionSettings(1, 0x40), 1600, new WaveshareMotorPinProvider());
         using var motor = hat.CreateDCMotor(1);
         SetSpeed(motor, Speed);
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
         motor.Stop();
-        DisplayService.WriteInformation($"DC Motor (HAT) operation completed.");
+        DisplayService.WriteInformation("DC Motor (HAT) operation completed.");
     }
     #endregion
 

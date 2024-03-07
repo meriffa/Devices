@@ -72,7 +72,7 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package System.Device.Gpio
   # Setup development certificate
   dotnet dev-certs clean
-  dotnet dev-certs trust
+  dotnet dev-certs https --trust
 }
 
 # Archive solution

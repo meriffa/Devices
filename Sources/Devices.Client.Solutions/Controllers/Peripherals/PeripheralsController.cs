@@ -89,7 +89,7 @@ public abstract class PeripheralsController : Controller
     /// <returns></returns>
     private GpioController GetController()
     {
-        DisplayService.WriteInformation($"Press [Enter] to exit.");
+        DisplayService.WriteInformation("Press [Enter] to exit.");
         return new(PinNumberingScheme.Logical);
     }
     #endregion

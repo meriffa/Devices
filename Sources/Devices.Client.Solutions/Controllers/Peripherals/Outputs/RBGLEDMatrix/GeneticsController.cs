@@ -17,10 +17,10 @@ public class GeneticsController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Genetics operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Genetics operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Genetics operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Genetics operation completed.");
     }
     #endregion
 

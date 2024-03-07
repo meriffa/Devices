@@ -1,9 +1,11 @@
 using Devices.Common.Models.Configuration;
+using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Configuration;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Devices.Service.Services.Configuration;
 
@@ -17,6 +19,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
 
     #region Private Fields
     private readonly ILogger<ConfigurationService> logger = logger;
+    private readonly ServiceOptions options = options.Value;
     #endregion
 
     #region Public Methods
@@ -65,15 +68,17 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 @"SELECT
                     r.""ReleaseID"",
                     r.""Date"",
+                    r.""Package"",
+                    r.""PackageHash"",
+                    r.""Version"",
+                    r.""ReleaseActive"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationActive"",
-                    r.""Package"",
-                    r.""Version"",
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
-                    r.""ReleaseActive""
+                    act.""ActionArguments""
                 FROM
                     ""Release"" r JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
@@ -83,17 +88,181 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""Date"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(new()
-                {
-                    Id = (int)r["ReleaseID"],
-                    Date = (DateTime)r["Date"],
-                    Application = GetApplication(r),
-                    Package = (string)r["Package"],
-                    Version = (string)r["Version"],
-                    Action = GetAction(r),
-                    Active = (bool)r["ReleaseActive"]
-                });
+                result.Add(GetRelease(r));
             return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return pending device releases
+    /// </summary>
+    /// <param name="identity"></param>
+    /// <returns></returns>
+    public List<Release> GetPendingReleases(Identity identity)
+    {
+        try
+        {
+            var result = new List<Release>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    r.""ReleaseID"",
+                    r.""Date"",
+                    r.""Package"",
+                    r.""PackageHash"",
+                    r.""Version"",
+                    r.""ReleaseActive"",
+                    app.""ApplicationID"",
+                    app.""ApplicationName"",
+                    app.""ApplicationActive"",
+                    act.""ActionID"",
+                    act.""ActionType"",
+                    act.""ActionParameters"",
+                    act.""ActionArguments""
+                FROM
+                    ""Release"" r JOIN
+                    ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID"" JOIN
+                    ""DeviceApplication"" da ON da.""ApplicationID"" = app.""ApplicationID"" LEFT JOIN
+                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
+                WHERE
+                    da.""DeviceID"" = @DeviceID AND
+                    app.""ApplicationActive"" = TRUE AND
+                    r.""ReleaseActive"" = TRUE AND
+                    dd.""DeploymentID"" IS NULL
+                ORDER BY
+                    r.""ReleaseID"",
+                    r.""Date"";", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = identity.Id;
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(GetRelease(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return release package
+    /// </summary>
+    /// <param name="identity"></param>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    public Stream GetReleasePackage(Identity identity, int releaseId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    r.""Package""
+                FROM
+                    ""Release"" r JOIN
+                    ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
+                    ""DeviceApplication"" d ON d.""ApplicationID"" = app.""ApplicationID""
+                WHERE
+                    r.""ReleaseID"" = @ReleaseID AND
+                    d.""DeviceID"" = @DeviceID AND
+                    app.""ApplicationActive"" = TRUE AND
+                    r.""ReleaseActive"" = TRUE;", cn);
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = identity.Id;
+            return File.OpenRead(Path.Combine(options.PackageFolder, (string)cmd.ExecuteScalar()!));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return deployments
+    /// </summary>
+    /// <returns></returns>
+    public List<Deployment> GetDeployments()
+    {
+        try
+        {
+            var result = new List<Deployment>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    dd.""DeploymentID"",
+                    dd.""DeviceID"",
+                    dd.""ReleaseID"",
+                    dd.""Date"",
+                    dd.""Success"",
+                    dd.""Details"",
+                    r.""ReleaseID"",
+                    r.""Date"",
+                    r.""Package"",
+                    r.""PackageHash"",
+                    r.""Version"",
+                    r.""ReleaseActive"",
+                    app.""ApplicationID"",
+                    app.""ApplicationName"",
+                    app.""ApplicationActive"",
+                    act.""ActionID"",
+                    act.""ActionType"",
+                    act.""ActionParameters"",
+                    act.""ActionArguments""
+                FROM
+                    ""DeviceDeployment"" dd JOIN
+                    ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
+                    ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID""
+                ORDER BY
+                    dd.""DeploymentID"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(GetDeployment(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Save deployment
+    /// </summary>
+    /// <param name="deployment"></param>
+    public void SaveDeployment(Deployment deployment)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"INSERT INTO ""DeviceDeployment""
+                    (""DeviceID"",
+                    ""ReleaseID"",
+                    ""Date"",
+                    ""Success"",
+                    ""Details"")
+                VALUES
+                    (@DeviceID,
+                    @ReleaseID,
+                    @Date,
+                    @Success,
+                    @Details);", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deployment.Device.Id;
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = deployment.Release.Id;
+            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = deployment.Date;
+            cmd.Parameters.Add("@Success", NpgsqlDbType.Boolean).Value = deployment.Success;
+            cmd.Parameters.Add("@Details", NpgsqlDbType.Text).Value = (object?)deployment.Details ?? DBNull.Value;
+            cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
         {
@@ -116,7 +285,45 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Common.Models.Configuration.Action GetAction(NpgsqlDataReader reader) => new() { Id = (int)reader["ActionID"], Type = (ActionType)(int)reader["ActionType"], Parameters = (string)reader["ActionParameters"] };
+    private static Common.Models.Configuration.Action GetAction(NpgsqlDataReader reader) => new()
+    {
+        Id = (int)reader["ActionID"],
+        Type = (ActionType)(int)reader["ActionType"],
+        Parameters = (string)reader["ActionParameters"],
+        Arguments = reader["ActionArguments"] is DBNull ? null : (string?)reader["ActionArguments"]
+    };
+
+    /// <summary>
+    /// Return release instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static Release GetRelease(NpgsqlDataReader reader) => new()
+    {
+        Id = (int)reader["ReleaseID"],
+        Date = (DateTime)reader["Date"],
+        Application = GetApplication(reader),
+        Package = (string)reader["Package"],
+        PackageHash = (string)reader["PackageHash"],
+        Version = (string)reader["Version"],
+        Action = GetAction(reader),
+        Active = (bool)reader["ReleaseActive"]
+    };
+
+    /// <summary>
+    /// Return deployment instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static Deployment GetDeployment(NpgsqlDataReader reader) => new()
+    {
+        Id = (int)reader["DeploymentID"],
+        Device = new() { Id = (string)reader["DeviceID"] },
+        Release = GetRelease(reader),
+        Date = (DateTime)reader["Date"],
+        Success = (bool)reader["Success"],
+        Details = reader["Details"] is DBNull ? null : (string?)reader["Details"]
+    };
     #endregion
 
 }

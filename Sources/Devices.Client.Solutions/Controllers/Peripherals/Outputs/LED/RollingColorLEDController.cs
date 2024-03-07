@@ -20,12 +20,12 @@ public class RollingColorLEDController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Rolling Color LED operation started.");
+        DisplayService.WriteInformation("Rolling Color LED operation started.");
         using var controller = SetupController([PIN_NUMBER]);
         while (IsRunning())
             SetOutputValue(controller, true);
         SetOutputValue(controller);
-        DisplayService.WriteInformation($"Rolling Color LED operation completed.");
+        DisplayService.WriteInformation("Rolling Color LED operation completed.");
     }
     #endregion
 

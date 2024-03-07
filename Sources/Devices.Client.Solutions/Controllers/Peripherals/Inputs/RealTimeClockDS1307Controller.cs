@@ -17,7 +17,7 @@ public class RealTimeClockDS1307Controller : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Real Time Clock (DS1307) operation started.");
+        DisplayService.WriteInformation("Real Time Clock (DS1307) operation started.");
         using var clock = new Ds1307(I2cDevice.Create(new I2cConnectionSettings(1, Ds1307.DefaultI2cAddress)));
         clock.DateTime = DateTime.Now;
         while (IsRunning())
@@ -25,7 +25,7 @@ public class RealTimeClockDS1307Controller : PeripheralsController
             DisplayService.WriteInformation($"Value = {clock.DateTime:yyyy-MM-dd HH:mm:ss}");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Real Time Clock (DS1307) operation completed.");
+        DisplayService.WriteInformation("Real Time Clock (DS1307) operation completed.");
     }
     #endregion
 

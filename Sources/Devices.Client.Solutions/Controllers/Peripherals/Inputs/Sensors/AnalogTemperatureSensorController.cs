@@ -17,14 +17,14 @@ public class AnalogTemperatureSensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Analog Temperature Sensor operation started.");
+        DisplayService.WriteInformation("Analog Temperature Sensor operation started.");
         using var sensor = new PCF8591();
         while (IsRunning())
         {
             DisplayService.WriteInformation($"Temperature = {GetTemperature(sensor.ReadInput(0)).DegreesCelsius:F2} ℃");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Analog Temperature Sensor operation completed.");
+        DisplayService.WriteInformation("Analog Temperature Sensor operation completed.");
     }
     #endregion
 

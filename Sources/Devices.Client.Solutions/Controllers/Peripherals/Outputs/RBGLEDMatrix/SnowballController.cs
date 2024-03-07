@@ -17,10 +17,10 @@ public class SnowballController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Snowball operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Snowball operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Snowball operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Snowball operation completed.");
     }
     #endregion
 

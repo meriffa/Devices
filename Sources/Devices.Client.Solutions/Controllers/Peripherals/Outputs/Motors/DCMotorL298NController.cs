@@ -30,13 +30,13 @@ public class DCMotorL298NController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"DC Motor (L298N) operation started.");
+        DisplayService.WriteInformation("DC Motor (L298N) operation started.");
         using var motor = new DCMotorWithStartStop(DCMotor.Create(SPEED_CONTROL_PIN_NUMBER, DIRECTION_1_PIN_NUMBER, DIRECTION_2_PIN_NUMBER));
         SetSpeed(motor, Speed);
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
         motor.Stop();
-        DisplayService.WriteInformation($"DC Motor (L298N) operation completed.");
+        DisplayService.WriteInformation("DC Motor (L298N) operation completed.");
     }
     #endregion
 

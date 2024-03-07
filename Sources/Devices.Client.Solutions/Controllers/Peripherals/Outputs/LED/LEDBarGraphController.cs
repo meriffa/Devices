@@ -23,13 +23,13 @@ public class LEDBarGraphController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"LED Bar Graph operation started.");
+        DisplayService.WriteInformation("LED Bar Graph operation started.");
         using var shiftRegister = new Sn74hc595(new Sn74hc595PinMapping(DATA_PIN_NUMBER, SHIFT_PIN_NUMBER, LATCH_PIN_NUMBER));
         var value = PinValue.High;
         while (IsRunning())
             value = !SetLEDValues(shiftRegister, value);
         shiftRegister.ShiftByte(0b0000_0000);
-        DisplayService.WriteInformation($"LED Bar Graph operation completed.");
+        DisplayService.WriteInformation("LED Bar Graph operation completed.");
     }
     #endregion
 

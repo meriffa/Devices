@@ -1,5 +1,3 @@
-using Devices.Service.Solutions.Garden.Interfaces;
-using Devices.Service.Solutions.Garden.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +18,7 @@ public static class ServiceExtensions
     /// <returns></returns>
     public static IServiceCollection AddSolutionServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IGardenService, GardenService>();
+        services.AddScoped<Garden.Interfaces.IGardenService, Garden.Services.GardenService>();
         return services;
     }
     #endregion

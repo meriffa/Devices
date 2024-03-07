@@ -1,3 +1,4 @@
+using Devices.Client.Interfaces.Configuration;
 using Devices.Client.Interfaces.Identification;
 using Devices.Client.Interfaces.Monitoring;
 using Devices.Common.Services;
@@ -16,6 +17,7 @@ public abstract class Controller
     private DisplayService? displayService;
     private IIdentityService? identityService;
     private IMonitoringService? monitoringService;
+    private IConfigurationService? configurationService;
     #endregion
 
     #region Properties
@@ -33,6 +35,11 @@ public abstract class Controller
     /// Monitoring service
     /// </summary>
     protected IMonitoringService MonitoringService => monitoringService ??= services.GetRequiredService<IMonitoringService>();
+
+    /// <summary>
+    /// Configuration service
+    /// </summary>
+    protected IConfigurationService ConfigurationService => configurationService ??= services.GetRequiredService<IConfigurationService>();
     #endregion
 
     #region Public Methods

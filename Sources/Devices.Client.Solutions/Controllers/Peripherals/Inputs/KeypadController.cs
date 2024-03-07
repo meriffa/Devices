@@ -28,14 +28,14 @@ public class KeypadController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Keypad operation started.");
+        DisplayService.WriteInformation("Keypad operation started.");
         using var keyMatrix = new KeyMatrix(OUTPUT_PIN_NUMBERS, INPUT_PIN_NUMBERS, TimeSpan.FromMilliseconds(20), PinMode.InputPullDown);
         keyMatrix.KeyEvent += (s, e) => { DisplayService.WriteInformation($"Key = '{GetKey(e.Output, e.Input)}', Event = {GetEventType(e.EventType)}"); };
         keyMatrix.StartListeningKeyEvent();
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
         keyMatrix.StopListeningKeyEvent();
-        DisplayService.WriteInformation($"Keypad operation completed.");
+        DisplayService.WriteInformation("Keypad operation completed.");
     }
     #endregion
 

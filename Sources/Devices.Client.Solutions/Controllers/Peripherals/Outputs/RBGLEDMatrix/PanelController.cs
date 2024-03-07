@@ -19,10 +19,10 @@ public class PanelController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Panel operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Panel operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Panel operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Panel operation completed.");
     }
     #endregion
 

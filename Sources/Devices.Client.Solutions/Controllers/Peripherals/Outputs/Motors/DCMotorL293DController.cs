@@ -31,7 +31,7 @@ public class DCMotorL293DController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"DC Motor (L293D) operation started.");
+        DisplayService.WriteInformation("DC Motor (L293D) operation started.");
         using var controller = SetupController([INPUT_1_PIN_NUMBER, INPUT_2_PIN_NUMBER]);
         using var motor = SetupMotor();
         SetSpeed(controller, motor, Speed);
@@ -39,7 +39,7 @@ public class DCMotorL293DController : PeripheralsController
             Thread.Sleep(STEP_DURATION);
         SetSpeed(controller, motor, 0);
         motor.Stop();
-        DisplayService.WriteInformation($"DC Motor (L293D) operation completed.");
+        DisplayService.WriteInformation("DC Motor (L293D) operation completed.");
     }
     #endregion
 

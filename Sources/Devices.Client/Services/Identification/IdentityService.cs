@@ -39,7 +39,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
             if (refresh || !File.Exists(path))
             {
                 var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = Client.PostAsync($"/Service/Identity/GetIdentity", content).Result;
+                using var response = Client.PostAsync("/Service/Identity/GetIdentity", content).Result;
                 response.EnsureSuccessStatusCode();
                 SaveIdentity(Options.ConfigurationFolder, path, response.Content.ReadFromJsonAsync<Identity>().Result!);
             }

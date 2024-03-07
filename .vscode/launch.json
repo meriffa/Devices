@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Devices.Host (Services)",
+            "name": "Host (Services)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Solution",
@@ -18,7 +18,7 @@
             "launchSettingsProfile": "Devices.Host (Development)"
         },
         {
-            "name": "Devices.Host (Web)",
+            "name": "Host (Web)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Solution",
@@ -33,13 +33,13 @@
             "launchSettingsProfile": "Devices.Host (Development)"
         },
         {
-            "name": "Devices.Client (Local)",
+            "name": "Client (Local)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Solution",
             "program": "${workspaceFolder}/Sources/Devices.Client/bin/Debug/net8.0/Devices.Client.dll",
             "args": [
-                "Monitoring"
+                "Configuration"
             ],
             "cwd": "${workspaceFolder}/Sources/Devices.Client",
             "console": "integratedTerminal",
@@ -49,13 +49,13 @@
             }
         },
         {
-            "name": "Devices.Client (Remote)",
+            "name": "Client (Remote)",
             "type": "coreclr",
             "request": "launch",
             "program": "~/.dotnet/dotnet",
             "args": [
                 "../Devices.Client/Devices.Client.dll",
-                "Monitoring"
+                "Configuration"
             ],
             "cwd": "~/Devices.Client",
             "console": "integratedTerminal",
@@ -73,7 +73,7 @@
             }
         },
         {
-            "name": "Devices.Client.Solutions (Local)",
+            "name": "Client.Solutions (Local)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Solution",
@@ -89,7 +89,7 @@
             }
         },
         {
-            "name": "Devices.Client.Solutions (Remote)",
+            "name": "Client.Solutions (Remote)",
             "type": "coreclr",
             "request": "launch",
             "program": "~/.dotnet/dotnet",

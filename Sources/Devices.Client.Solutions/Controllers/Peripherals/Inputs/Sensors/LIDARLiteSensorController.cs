@@ -22,7 +22,7 @@ public class LIDARLiteSensorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"LIDAR Lite Sensor operation started.");
+        DisplayService.WriteInformation("LIDAR Lite Sensor operation started.");
         using var sensor = GetSensor();
         sensor.PowerOn();
         while (IsRunning())
@@ -31,7 +31,7 @@ public class LIDARLiteSensorController : PeripheralsController
             Thread.Sleep(STEP_DURATION);
         }
         sensor.PowerOff();
-        DisplayService.WriteInformation($"LIDAR Lite Sensor operation completed.");
+        DisplayService.WriteInformation("LIDAR Lite Sensor operation completed.");
     }
     #endregion
 

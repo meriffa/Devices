@@ -34,7 +34,7 @@ public class StepperMotorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Stepper Motor operation started.");
+        DisplayService.WriteInformation("Stepper Motor operation started.");
         using var motor = new Uln2003(BLUE_PIN_NUMBER, PINK_PIN_NUMBER, YELLOW_PIN_NUMBER, ORANGE_PIN_NUMBER);
         motor.RPM = (short)Speed;
         while (IsRunning())
@@ -43,7 +43,7 @@ public class StepperMotorController : PeripheralsController
             RotateMotor(motor, StepperMode.FullStepDualPhase, -2048);   // 360 degrees counterclockwise
         }
         motor.Stop();
-        DisplayService.WriteInformation($"Stepper Motor operation completed.");
+        DisplayService.WriteInformation("Stepper Motor operation completed.");
     }
     #endregion
 

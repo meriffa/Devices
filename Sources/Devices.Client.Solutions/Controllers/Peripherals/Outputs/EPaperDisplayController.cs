@@ -28,7 +28,7 @@ public class EPaperDisplayController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"e-Paper Display operation started.");
+        DisplayService.WriteInformation("e-Paper Display operation started.");
         if (!File.Exists(ImageFileName))
             throw new($"Image file '{ImageFileName}' not found.");
         using var display = SetupDisplay();
@@ -38,7 +38,7 @@ public class EPaperDisplayController : PeripheralsController
             Thread.Sleep(STEP_DURATION);
         ClearDisplay(display);
         SleepDisplay(display);
-        DisplayService.WriteInformation($"e-Paper Display operation completed.");
+        DisplayService.WriteInformation("e-Paper Display operation completed.");
     }
     #endregion
 
@@ -50,7 +50,7 @@ public class EPaperDisplayController : PeripheralsController
     private IImageDevice<Image<Rgba32>> SetupDisplay()
     {
         var display = DisplayFactory<Rgba32>.Create(DisplayType.Waveshare75B);
-        DisplayService.WriteInformation($"e-Paper Display initialized.");
+        DisplayService.WriteInformation("e-Paper Display initialized.");
         return display;
     }
 
@@ -61,7 +61,7 @@ public class EPaperDisplayController : PeripheralsController
     private void ClearDisplay(IImageDevice<Image<Rgba32>> display)
     {
         display.Clear();
-        DisplayService.WriteInformation($"e-Paper Display cleared.");
+        DisplayService.WriteInformation("e-Paper Display cleared.");
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class EPaperDisplayController : PeripheralsController
     private void SleepDisplay(IImageDevice<Image<Rgba32>> display)
     {
         display.Sleep();
-        DisplayService.WriteInformation($"e-Paper Display deep sleep mode on.");
+        DisplayService.WriteInformation("e-Paper Display deep sleep mode on.");
     }
     #endregion
 

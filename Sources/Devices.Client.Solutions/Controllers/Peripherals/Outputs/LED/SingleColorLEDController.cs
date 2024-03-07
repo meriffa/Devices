@@ -20,14 +20,14 @@ public class SingleColorLEDController : LEDController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Single Color LED operation started.");
+        DisplayService.WriteInformation("Single Color LED operation started.");
         using var controller = SetupController([PIN_NUMBER]);
         while (IsRunning())
         {
             SetOutputValue(controller, true);
             SetOutputValue(controller);
         }
-        DisplayService.WriteInformation($"Single Color LED operation completed.");
+        DisplayService.WriteInformation("Single Color LED operation completed.");
     }
     #endregion
 

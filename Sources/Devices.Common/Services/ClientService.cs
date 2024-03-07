@@ -23,7 +23,6 @@ public abstract class ClientService : IDisposable
     /// HttpClient instance
     /// </summary>
     protected HttpClient Client => client!;
-
     #endregion
 
     #region Initialization

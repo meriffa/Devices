@@ -37,7 +37,7 @@ public class ServoMotorController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Servo Motor operation started.");
+        DisplayService.WriteInformation("Servo Motor operation started.");
         using var motor = SetupServoMotor();
         var angle = 0;
         var step = Step;
@@ -48,7 +48,7 @@ public class ServoMotorController : PeripheralsController
             UpdateAngleAndStep(ref angle, ref step);
         }
         motor.Stop();
-        DisplayService.WriteInformation($"Servo Motor operation completed.");
+        DisplayService.WriteInformation("Servo Motor operation completed.");
     }
     #endregion
 

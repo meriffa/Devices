@@ -21,7 +21,7 @@ public class LaserTripwireController : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Laser Tripwire operation started.");
+        DisplayService.WriteInformation("Laser Tripwire operation started.");
         using var controller = SetupController(SetupController([SENSOR_PIN_NUMBER], PinMode.InputPullUp), [LASER_PIN_NUMBER], PinMode.Output);
         controller.Write(LASER_PIN_NUMBER, PinValue.High);
         DisplayService.WriteInformation($"Initial State = {GetSensorState(controller)}");
@@ -29,7 +29,7 @@ public class LaserTripwireController : PeripheralsController
         while (IsRunning())
             Thread.Sleep(STEP_DURATION);
         controller.Write(LASER_PIN_NUMBER, PinValue.Low);
-        DisplayService.WriteInformation($"Laser Tripwire operation completed.");
+        DisplayService.WriteInformation("Laser Tripwire operation completed.");
     }
     #endregion
 

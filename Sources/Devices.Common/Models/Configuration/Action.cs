@@ -21,6 +21,11 @@ public class Action
     /// Action parameters
     /// </summary>
     public required string Parameters { get; set; }
+
+    /// <summary>
+    /// Action arguments
+    /// </summary>
+    public string? Arguments { get; set; }
     #endregion
 
 }

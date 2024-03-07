@@ -21,10 +21,10 @@ public class SandpileController : RBGLEDMatrixController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"RGB LED Matrix Sandpile operation started.");
+        DisplayService.WriteInformation("RGB LED Matrix Sandpile operation started.");
         using var matrix = GetMatrix();
         DisplayCanvas(matrix);
-        DisplayService.WriteInformation($"RGB LED Matrix Sandpile operation completed.");
+        DisplayService.WriteInformation("RGB LED Matrix Sandpile operation completed.");
     }
     #endregion
 

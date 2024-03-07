@@ -22,7 +22,7 @@ public class RealTimeClockDS1302Controller : PeripheralsController
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation($"Real Time Clock (DS1302) operation started.");
+        DisplayService.WriteInformation("Real Time Clock (DS1302) operation started.");
         using var clock = new DS1302(CLOCK_PIN_NUMBER, DATA_PIN_NUMBER, CLOCK_SELECT_PIN_NUMBER);
         if (!clock.Enabled)
             clock.Enabled = true;
@@ -31,7 +31,7 @@ public class RealTimeClockDS1302Controller : PeripheralsController
             DisplayService.WriteInformation($"Value = {clock.DateTime:yyyy-MM-dd HH:mm:ss}");
             Thread.Sleep(STEP_DURATION);
         }
-        DisplayService.WriteInformation($"Real Time Clock (DS1302) operation completed.");
+        DisplayService.WriteInformation("Real Time Clock (DS1302) operation completed.");
     }
     #endregion
 

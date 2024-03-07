@@ -1,9 +1,5 @@
 using CommandLine;
 using Devices.Client.Controllers;
-using Devices.Client.Interfaces.Identification;
-using Devices.Client.Interfaces.Monitoring;
-using Devices.Client.Services.Identification;
-using Devices.Client.Services.Monitoring;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Configuration;
@@ -75,11 +71,12 @@ class Program
             {
                 services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
                 services.AddSingleton<DisplayService>();
-                services.AddSingleton<IFingerprintService, FingerprintServiceHost>();
-                services.AddSingleton<IFingerprintService, FingerprintServiceNetworkInterface>();
-                services.AddSingleton<IIdentityService, IdentityService>();
-                services.AddSingleton<IDeviceMetricsService, DeviceMetricsService>();
-                services.AddSingleton<IMonitoringService, MonitoringService>();
+                services.AddSingleton<Interfaces.Identification.IFingerprintService, Services.Identification.FingerprintServiceHost>();
+                services.AddSingleton<Interfaces.Identification.IFingerprintService, Services.Identification.FingerprintServiceNetworkInterface>();
+                services.AddSingleton<Interfaces.Identification.IIdentityService, Services.Identification.IdentityService>();
+                services.AddSingleton<Interfaces.Monitoring.IDeviceMetricsService, Services.Monitoring.DeviceMetricsService>();
+                services.AddSingleton<Interfaces.Monitoring.IMonitoringService, Services.Monitoring.MonitoringService>();
+                services.AddSingleton<Interfaces.Configuration.IConfigurationService, Services.Configuration.ConfigurationService>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

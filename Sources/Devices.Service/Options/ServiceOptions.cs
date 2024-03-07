@@ -11,6 +11,11 @@ public class ServiceOptions
     /// Service options database
     /// </summary>
     public required DatabaseOptions Database { get; set; }
+
+    /// <summary>
+    /// Service options package folder
+    /// </summary>
+    public required string PackageFolder { get; set; }
     #endregion
 
 }
