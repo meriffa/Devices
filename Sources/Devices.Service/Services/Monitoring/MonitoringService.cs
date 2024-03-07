@@ -1,6 +1,7 @@
 using Devices.Common.Models.Monitoring;
 using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Options;
+using Devices.Service.Services.Identification;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -33,26 +34,29 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    ""DeviceID"",
-                    ""Date"",
-                    ""LastReboot"",
-                    ""CpuUser"",
-                    ""CpuSystem"",
-                    ""CpuIdle"",
-                    ""MemoryTotal"",
-                    ""MemoryUsed"",
-                    ""MemoryFree""
+                    m.""Date"",
+                    m.""LastReboot"",
+                    m.""CpuUser"",
+                    m.""CpuSystem"",
+                    m.""CpuIdle"",
+                    m.""MemoryTotal"",
+                    m.""MemoryUsed"",
+                    m.""MemoryFree"",
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceActive""
                 FROM
-                    ""DeviceMetric""
+                    ""DeviceMetric"" m JOIN
+                    ""Device"" d ON d.""DeviceID"" = m.""DeviceID""
                 ORDER BY
-                    ""DeviceID"",
-                    ""Date"" DESC;", cn);
+                    d.""DeviceName"",
+                    m.""Date"" DESC;", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(new()
                 {
-                    Identity = new() { Id = (string)r["DeviceID"] },
-                    Device = new()
+                    Device = IdentityService.GetDevice(r),
+                    DeviceMetrics = new()
                     {
                         Date = (DateTime)r["Date"],
                         LastRebootDate = (DateTime)r["LastReboot"],
@@ -110,15 +114,15 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     @MemoryTotal,
                     @MemoryUsed,
                     @MemoryFree);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Identity.Id;
-            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.Device.Date;
-            cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.Device.LastRebootDate;
-            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Device.Cpu.User;
-            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.Device.Cpu.System;
-            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.Device.Cpu.Idle;
-            cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.Device.Memory.Total;
-            cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.Device.Memory.Used;
-            cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.Device.Memory.Free;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Device.Id;
+            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.Date;
+            cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.LastRebootDate;
+            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.User;
+            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.System;
+            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.Idle;
+            cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Total;
+            cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Used;
+            cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Free;
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -138,8 +142,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     private void CleanupMonitoringMetrics(NpgsqlConnection cn, MonitoringMetrics metrics)
     {
         using var cmd = GetCommand(@"DELETE FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID AND ""Date"" < @Date;", cn);
-        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Identity.Id;
-        cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.Device.Date.AddMonths(-1);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Device.Id;
+        cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.Date.AddMonths(-1);
         cmd.ExecuteNonQuery();
     }
     #endregion

@@ -1,23 +1,23 @@
 using Devices.Common.Models.Identification;
 
-namespace Devices.Common.Models.Monitoring;
+namespace Devices.Common.Models.Configuration;
 
 /// <summary>
-/// Monitoring metrics
+/// Pending deployment
 /// </summary>
-public class MonitoringMetrics
+public class PendingDeployment
 {
 
     #region Properties
     /// <summary>
-    /// Monitoring metrics device
+    /// Pending deployment device
     /// </summary>
     public required Device Device { get; set; }
 
     /// <summary>
-    /// Monitoring metrics device metrics
+    /// Pending deployment release
     /// </summary>
-    public required DeviceMetrics DeviceMetrics { get; set; }
+    public required Release Release { get; set; }
     #endregion
 
 }

@@ -27,11 +27,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
 
     #region Public Methods
     /// <summary>
-    /// Return device identity
+    /// Return device
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    public Identity GetIdentity(bool refresh = false)
+    public Device GetDevice(bool refresh = false)
     {
         try
         {
@@ -39,11 +39,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
             if (refresh || !File.Exists(path))
             {
                 var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-                using var response = Client.PostAsync("/Service/Identity/GetIdentity", content).Result;
+                using var response = Client.PostAsync("/Service/Identity/GetDevice", content).Result;
                 response.EnsureSuccessStatusCode();
-                SaveIdentity(Options.ConfigurationFolder, path, response.Content.ReadFromJsonAsync<Identity>().Result!);
+                SaveDevice(Options.ConfigurationFolder, path, response.Content.ReadFromJsonAsync<Device>().Result!);
             }
-            return LoadIdentity(path);
+            return LoadDevice(path);
         }
         catch (Exception ex)
         {
@@ -58,7 +58,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     /// Return configuration file
     /// </summary>
     /// <returns></returns>
-    private static string GetConfigurationFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.Identity.json";
+    private static string GetConfigurationFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.Device.json";
 
     /// <summary>
     /// Return device fingerprints
@@ -73,26 +73,26 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     }
 
     /// <summary>
-    /// Load identity
+    /// Load device
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static Identity LoadIdentity(string path)
+    private static Device LoadDevice(string path)
     {
-        return JsonSerializer.Deserialize<Identity>(File.ReadAllText(path))!;
+        return JsonSerializer.Deserialize<Device>(File.ReadAllText(path))!;
     }
 
     /// <summary>
-    /// Save identity
+    /// Save device
     /// </summary>
     /// <param name="folder"></param>
     /// <param name="path"></param>
-    /// <param name="identity"></param>
-    private static void SaveIdentity(string folder, string path, Identity identity)
+    /// <param name="device"></param>
+    private static void SaveDevice(string folder, string path, Device device)
     {
         if (!Path.Exists(folder))
             Directory.CreateDirectory(folder);
-        File.WriteAllText(path, JsonSerializer.Serialize(identity));
+        File.WriteAllText(path, JsonSerializer.Serialize(device));
     }
     #endregion
 

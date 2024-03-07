@@ -12,7 +12,7 @@ Devices.Web = Devices.Web || {};
             columns: [
                 {
                     title: "Device ID",
-                    data: "identity.id"
+                    data: "id"
                 },
                 {
                     title: "Device Name",

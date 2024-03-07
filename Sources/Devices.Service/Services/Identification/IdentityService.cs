@@ -1,9 +1,9 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Identification;
-using Devices.Service.Models.Identification;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using NpgsqlTypes;
 
 namespace Devices.Service.Services.Identification;
@@ -22,18 +22,20 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
 
     #region Public Methods
     /// <summary>
-    /// Return device identity
+    /// Return device
     /// </summary>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    public Identity GetIdentity(List<Fingerprint> fingerprints)
+    public Device GetDevice(List<Fingerprint> fingerprints)
     {
         try
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    f.""DeviceID""
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceActive""
                 FROM
                     ""DeviceFingerprint"" f JOIN
                     ""Device"" d ON d.""DeviceID"" = f.""DeviceID""
@@ -47,8 +49,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             {
                 cmd.Parameters["@FingerprintType"].Value = (int)fingerprint.Type;
                 cmd.Parameters["@FingerprintValue"].Value = fingerprint.Value;
-                if (cmd.ExecuteScalar() is string deviceId)
-                    return new Identity() { Id = deviceId };
+                using var r = cmd.ExecuteReader();
+                if (r.Read())
+                    return GetDevice(r);
             }
             throw new("Unknown device specified.");
         }
@@ -60,11 +63,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
-    /// Verify device identity
+    /// Verify device
     /// </summary>
-    /// <param name="fingerprints"></param>
-    /// <returns></returns>
-    public void VerifyIdentity(Identity identity)
+    /// <param name="device"></param>
+    public void VerifyDevice(Device device)
     {
         try
         {
@@ -77,10 +79,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 WHERE
                     ""DeviceID"" = @DeviceID AND
                     ""DeviceActive"" = TRUE;", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = identity.Id;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = device.Id;
             var deviceId = cmd.ExecuteScalar();
             if (deviceId == null || deviceId is DBNull)
-                throw new($"Invalid device id '{identity.Id}' specified.");
+                throw new($"Invalid device id '{device.Id}' specified.");
         }
         catch (Exception ex)
         {
@@ -110,12 +112,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                     ""DeviceName"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(new()
-                {
-                    Identity = new Identity() { Id = (string)r["DeviceID"] },
-                    Name = (string)r["DeviceName"],
-                    Active = (bool)r["DeviceActive"]
-                });
+                result.Add(GetDevice(r));
             return result;
         }
         catch (Exception ex)
@@ -124,6 +121,20 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             throw;
         }
     }
+    #endregion
+
+    #region Internal Methods
+    /// <summary>
+    /// Return device instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    internal static Device GetDevice(NpgsqlDataReader reader) => new()
+    {
+        Id = (string)reader["DeviceID"],
+        Name = (string)reader["DeviceName"],
+        Active = (bool)reader["DeviceActive"]
+    };
     #endregion
 
 }

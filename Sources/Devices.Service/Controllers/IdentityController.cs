@@ -1,6 +1,5 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Identification;
-using Devices.Service.Models.Identification;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,17 +14,17 @@ public class IdentityController : ControllerBase
 
     #region Public Methods
     /// <summary>
-    /// Return device identity
+    /// Return device
     /// </summary>
     /// <param name="service"></param>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<Identity> GetIdentity([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
+    public ActionResult<Device> GetDevice([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
     {
         try
         {
-            return Ok(service.GetIdentity(fingerprints));
+            return Ok(service.GetDevice(fingerprints));
         }
         catch (Exception ex)
         {

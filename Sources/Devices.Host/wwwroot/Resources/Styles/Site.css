@@ -27,3 +27,7 @@ body {
   --bs-dropdown-link-active-color: var(--selection-color);
   --bs-dropdown-link-active-bg: var(--selection-background-color);
 }
+
+.devices-host-toolbar {
+  text-align: right;
+}

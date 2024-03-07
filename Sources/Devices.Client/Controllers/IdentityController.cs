@@ -11,9 +11,9 @@ public class IdentityController : Controller
 
     #region Properties
     /// <summary>
-    /// Force identity refresh flag
+    /// Force refresh flag
     /// </summary>
-    [Option('r', "refresh", Default = false, HelpText = "Force identity refresh.")]
+    [Option('r', "refresh", Default = false, HelpText = "Force refresh.")]
     public bool Refresh { get; set; }
     #endregion
 
@@ -24,7 +24,7 @@ public class IdentityController : Controller
     protected override void Execute()
     {
         DisplayService.WriteInformation("Identity operation started.");
-        DisplayService.WriteInformation($"Device ID = {IdentityService.GetIdentity(Refresh).Id}");
+        DisplayService.WriteInformation($"Device ID = {IdentityService.GetDevice(Refresh).Id}");
         DisplayService.WriteInformation("Identity operation completed.");
     }
     #endregion

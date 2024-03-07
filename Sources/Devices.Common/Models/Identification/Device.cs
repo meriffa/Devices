@@ -1,6 +1,4 @@
-using Devices.Common.Models.Identification;
-
-namespace Devices.Service.Models.Identification;
+namespace Devices.Common.Models.Identification;
 
 /// <summary>
 /// Device
@@ -10,9 +8,9 @@ public class Device
 
     #region Properties
     /// <summary>
-    /// Device identity
+    /// Device id
     /// </summary>
-    public required Identity Identity { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// Device name

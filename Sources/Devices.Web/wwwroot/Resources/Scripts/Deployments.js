@@ -4,7 +4,7 @@ Devices.Web = Devices.Web || {};
 
     // Initialization
     Devices.Host.Site.initContentPage = function () {
-        new DataTable("#grdData", {
+        const table = new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Configuration/GetDeployments",
                 dataSrc: ""
@@ -23,7 +23,7 @@ Devices.Web = Devices.Web || {};
                 },
                 {
                     title: "Device",
-                    data: "device.id"
+                    data: "device.name"
                 },
                 {
                     title: "Application",
@@ -42,10 +42,19 @@ Devices.Web = Devices.Web || {};
                 },
                 {
                     title: "Details",
-                    data: "details"
+                    data: "details",
+                    visible: false,
+                    render: function (data, type) {
+                        return `<span>${data.replace("\n", "<br />")}</span>`;
+                    }
                 }
             ],
-            order: [[0, "asc"]]
+            order: [[2, "asc"], [1, "desc"]]
+        });
+        $("#btnToggleDetails").click(function () {
+            var column = table.column(6);
+            column.visible(!column.visible());
+            $("#btnToggleDetails").text(column.visible() ? "Hide Details" : "Show Details");
         });
     }
 

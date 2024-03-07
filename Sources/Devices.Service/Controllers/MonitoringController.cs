@@ -44,7 +44,7 @@ public class MonitoringController : ControllerBase
     {
         try
         {
-            identityService.VerifyIdentity(metrics.Identity);
+            identityService.VerifyDevice(metrics.Device);
             service.SaveMonitoringMetrics(metrics);
             return Ok();
         }

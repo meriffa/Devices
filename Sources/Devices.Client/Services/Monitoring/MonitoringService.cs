@@ -37,8 +37,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Clien
         {
             var metrics = new MonitoringMetrics()
             {
-                Identity = identityService.GetIdentity(),
-                Device = deviceMetricsService.GetMetrics()
+                Device = identityService.GetDevice(),
+                DeviceMetrics = deviceMetricsService.GetMetrics()
             };
             var content = new StringContent(JsonSerializer.Serialize(metrics), Encoding.UTF8, "application/json");
             using var response = Client.PostAsync("/Service/Monitoring/SaveMonitoringMetrics", content).Result;

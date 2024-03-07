@@ -12,54 +12,54 @@ Devices.Web = Devices.Web || {};
             columns: [
                 {
                     title: "Device",
-                    data: "identity.id"
+                    data: "device.name"
                 },
                 {
                     title: "Date & Time",
-                    data: "device.date",
+                    data: "deviceMetrics.date",
                     render: function (data, type) {
                         return Devices.Host.Site.formatDateTime(data);
                     }
                 },
                 {
                     title: "Last Reboot",
-                    data: "device.lastRebootDate",
+                    data: "deviceMetrics.lastRebootDate",
                     render: function (data, type) {
                         return Devices.Host.Site.formatDateTime(data);
                     }
                 },
                 {
                     title: "CPU User [%]",
-                    data: "device.cpu.user",
+                    data: "deviceMetrics.cpu.user",
                     render: DataTable.render.number(",", ".", 1, "", "")
                 },
                 {
                     title: "CPU System [%]",
-                    data: "device.cpu.system",
+                    data: "deviceMetrics.cpu.system",
                     render: DataTable.render.number(",", ".", 1, "", "")
                 },
                 {
                     title: "CPU Idle [%]",
-                    data: "device.cpu.idle",
+                    data: "deviceMetrics.cpu.idle",
                     render: DataTable.render.number(",", ".", 1, "", "")
                 },
                 {
                     title: "Total [MB]",
-                    data: "device.memory.total",
+                    data: "deviceMetrics.memory.total",
                     render: DataTable.render.number(",", ".", 0, "", "")
                 },
                 {
                     title: "Used [MB]",
-                    data: "device.memory.used",
+                    data: "deviceMetrics.memory.used",
                     render: DataTable.render.number(",", ".", 0, "", "")
                 },
                 {
                     title: "Free [MB]",
-                    data: "device.memory.free",
+                    data: "deviceMetrics.memory.free",
                     render: DataTable.render.number(",", ".", 0, "", "")
                 }
             ],
-            order: [[1, "asc"]]
+            order: [[0, "asc"], [1, "desc"]]
         });
     }
 

@@ -1,11 +1,9 @@
-using Devices.Common.Models.Identification;
-
 namespace Devices.Common.Models.Configuration;
 
 /// <summary>
 /// Deployment
 /// </summary>
-public class Deployment
+public class Deployment : PendingDeployment
 {
 
     #region Properties
@@ -18,16 +16,6 @@ public class Deployment
     /// Deployment date & time
     /// </summary>
     public required DateTime Date { get; set; }
-
-    /// <summary>
-    /// Deployment device
-    /// </summary>
-    public required Identity Device { get; set; }
-
-    /// <summary>
-    /// Deployment release
-    /// </summary>
-    public required Release Release { get; set; }
 
     /// <summary>
     /// Deployment success flag

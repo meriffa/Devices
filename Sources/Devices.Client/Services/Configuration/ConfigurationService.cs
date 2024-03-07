@@ -34,7 +34,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            var content = new StringContent(JsonSerializer.Serialize(identityService.GetIdentity()), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(identityService.GetDevice()), Encoding.UTF8, "application/json");
             using var response = Client.PostAsync("/Service/Configuration/GetPendingReleases", content).Result;
             response.EnsureSuccessStatusCode();
             return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
@@ -55,7 +55,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            var content = new StringContent(JsonSerializer.Serialize(identityService.GetIdentity()), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(identityService.GetDevice()), Encoding.UTF8, "application/json");
             using var response = Client.PostAsync($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}", content).Result;
             response.EnsureSuccessStatusCode();
             using var stream = File.Create(fileName);
@@ -82,7 +82,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             {
                 Id = 0,
                 Date = DateTime.UtcNow,
-                Device = identityService.GetIdentity(),
+                Device = identityService.GetDevice(),
                 Release = release,
                 Success = success,
                 Details = details

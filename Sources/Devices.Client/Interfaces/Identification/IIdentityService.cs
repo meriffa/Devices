@@ -10,11 +10,11 @@ public interface IIdentityService
 
     #region Public Methods
     /// <summary>
-    /// Return device identity
+    /// Return device
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    Identity GetIdentity(bool refresh = false);
+    Device GetDevice(bool refresh = false);
     #endregion
 
 }

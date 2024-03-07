@@ -22,7 +22,7 @@ Devices.Web = Devices.Web || {};
                     }
                 },
                 {
-                    title: "Application Name",
+                    title: "Application",
                     data: "application.name"
                 },
                 {
@@ -30,7 +30,7 @@ Devices.Web = Devices.Web || {};
                     data: "package"
                 },
                 {
-                    title: "Release Version",
+                    title: "Version",
                     data: "version"
                 },
                 {

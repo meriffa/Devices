@@ -56,15 +56,15 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="identityService"></param>
     /// <param name="service"></param>
-    /// <param name="identity"></param>
+    /// <param name="device"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<List<Release>> GetPendingReleases([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Identity identity)
+    public ActionResult<List<Release>> GetPendingReleases([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Device device)
     {
         try
         {
-            identityService.VerifyIdentity(identity);
-            return Ok(service.GetPendingReleases(identity));
+            identityService.VerifyDevice(device);
+            return Ok(service.GetPendingReleases(device));
         }
         catch (Exception ex)
         {
@@ -77,16 +77,16 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="identityService"></param>
     /// <param name="service"></param>
-    /// <param name="identity"></param>
+    /// <param name="device"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult GetReleasePackage([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Identity identity, int releaseId)
+    public ActionResult GetReleasePackage([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Device device, int releaseId)
     {
         try
         {
-            identityService.VerifyIdentity(identity);
-            return new FileStreamResult(service.GetReleasePackage(identity, releaseId), "application/octet-stream");
+            identityService.VerifyDevice(device);
+            return new FileStreamResult(service.GetReleasePackage(device, releaseId), "application/octet-stream");
         }
         catch (Exception ex)
         {
@@ -113,6 +113,24 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
+    /// Return pending deployments
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public ActionResult<List<PendingDeployment>> GetPendingDeployments([FromServices] IConfigurationService service)
+    {
+        try
+        {
+            return Ok(service.GetPendingDeployments());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Save deployment
     /// </summary>
     /// <param name="identityService"></param>
@@ -124,7 +142,7 @@ public class ConfigurationController : ControllerBase
     {
         try
         {
-            identityService.VerifyIdentity(deployment.Device);
+            identityService.VerifyDevice(deployment.Device);
             service.SaveDeployment(deployment);
             return Ok();
         }

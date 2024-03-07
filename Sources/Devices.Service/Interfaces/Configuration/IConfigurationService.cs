@@ -25,23 +25,29 @@ public interface IConfigurationService
     /// <summary>
     /// Return pending device releases
     /// </summary>
-    /// <param name="identity"></param>
+    /// <param name="device"></param>
     /// <returns></returns>
-    List<Release> GetPendingReleases(Identity identity);
+    List<Release> GetPendingReleases(Device device);
 
     /// <summary>
     /// Return release package
     /// </summary>
-    /// <param name="identity"></param>
+    /// <param name="device"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    Stream GetReleasePackage(Identity identity, int releaseId);
+    Stream GetReleasePackage(Device device, int releaseId);
 
     /// <summary>
     /// Return deployments
     /// </summary>
     /// <returns></returns>
     List<Deployment> GetDeployments();
+
+    /// <summary>
+    /// Return pending deployments
+    /// </summary>
+    /// <returns></returns>
+    List<PendingDeployment> GetPendingDeployments();
 
     /// <summary>
     /// Save deployment
