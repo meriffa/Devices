@@ -9,12 +9,17 @@ Devices.Host = Devices.Host || {};
 
     // Format date & time
     Devices.Host.Site.formatDateTime = function (value) {
-        return new Date(value).toISOString().slice(0, 19).replace("T", " ");
+        return convertToLocalDateTime(new Date(value)).toISOString().slice(0, 19).replace("T", " ");
     }
 
     // Format boolean
     Devices.Host.Site.formatBoolean = function (value) {
         return value == true ? "Yes" : "No";
+    }
+
+    // Convert UTC to local date & time
+    function convertToLocalDateTime(value) {
+        return new Date(value.getTime() - value.getTimezoneOffset() * 60 * 1000);
     }
 
 }(Devices.Host.Site = Devices.Host.Site || {}, jQuery));
