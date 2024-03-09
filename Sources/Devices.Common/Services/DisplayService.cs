@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Devices.Common.Services;
@@ -19,15 +20,16 @@ public class DisplayService(ILogger<DisplayService>? logger)
 
     #region Public Methods
     /// <summary>
-    /// Display new line
+    /// Display application title
     /// </summary>
-    public static void WriteText() => Console.WriteLine();
-
-    /// <summary>
-    /// Display text
-    /// </summary>
-    /// <param name="value"></param>
-    public static void WriteText(string value) => Console.WriteLine(value);
+    public static void WriteTitle()
+    {
+        var title = $"- {Assembly.GetCallingAssembly().GetName().Name} ({AssemblyService.GetBuildVersion()}) -";
+        var line = "".PadLeft(title.Length, '-');
+        Console.WriteLine(line);
+        Console.WriteLine(title);
+        Console.WriteLine(line);
+    }
 
     /// <summary>
     /// Display information

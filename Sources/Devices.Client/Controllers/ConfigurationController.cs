@@ -40,13 +40,13 @@ public class ConfigurationController : Controller
             var package = DownloadPackage(release, folder);
             ExtractPackage(package, folder);
             (bool success, string details) = ExecuteAction(folder, release.Action);
+            ConfigurationService.SaveDeployment(release, success, details);
+            if (Directory.Exists(folder))
+                Directory.Delete(folder, true);
             if (success)
                 DisplayService.WriteInformation($"Release deployment completed (Release ID = {release.Id}).");
             else
                 DisplayService.WriteWarning($"Release deployment failed (Release ID = {release.Id}, Details = '{details}').");
-            ConfigurationService.SaveDeployment(release, success, details);
-            if (Directory.Exists(folder))
-                Directory.Delete(folder, true);
         }
         catch (Exception ex)
         {
@@ -80,7 +80,7 @@ public class ConfigurationController : Controller
         var path = Path.Combine(folder, release.Package);
         ConfigurationService.DownloadReleasePackage(release.Id, path);
         DisplayService.WriteInformation($"Package downloaded (File = '{path}').");
-        if (!release.PackageHash.Equals(CryptographyService.GetHash(path), StringComparison.InvariantCultureIgnoreCase))
+        if (release.PackageHash != null && !release.PackageHash.Equals(CryptographyService.GetHash(path), StringComparison.InvariantCultureIgnoreCase))
             throw new($"Package '{release.Package}' integrity verification failed.");
         return path;
     }

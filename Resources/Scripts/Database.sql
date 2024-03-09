@@ -37,7 +37,7 @@ CREATE TABLE "Release" (
 	"Date" timestamp with time zone NOT NULL,
 	"ApplicationID" int NOT NULL,
 	"Package" varchar(1024) NOT NULL,
-	"PackageHash" varchar(64) NOT NULL,
+	"PackageHash" varchar(64) NULL,
 	"Version" varchar(64) NOT NULL,
 	"ActionID" int NOT NULL,
 	"ReleaseActive" boolean NOT NULL,

@@ -27,10 +27,7 @@ class Program
         var host = CreateApplicationHost(args);
         try
         {
-            DisplayService.WriteText("******************");
-            DisplayService.WriteText("* Devices.Client *");
-            DisplayService.WriteText("******************");
-            DisplayService.WriteText();
+            DisplayService.WriteTitle();
             Parser.Default
                 .ParseArguments(args, Assembly.GetExecutingAssembly()
                 .GetTypes()

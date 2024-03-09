@@ -364,7 +364,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         Date = (DateTime)reader["Date"],
         Application = GetApplication(reader),
         Package = (string)reader["Package"],
-        PackageHash = (string)reader["PackageHash"],
+        PackageHash = reader["PackageHash"] is DBNull ? null : (string?)reader["PackageHash"],
         Version = (string)reader["Version"],
         Action = GetAction(reader),
         Active = (bool)reader["ReleaseActive"]

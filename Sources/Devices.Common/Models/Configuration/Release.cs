@@ -30,7 +30,7 @@ public class Release
     /// <summary>
     /// Release package hash
     /// </summary>
-    public required string PackageHash { get; set; }
+    public string? PackageHash { get; set; }
 
     /// <summary>
     /// Release version
