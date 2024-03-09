@@ -59,7 +59,7 @@ Devices.Web = Devices.Web || {};
                     render: DataTable.render.number(",", ".", 0, "", "")
                 }
             ],
-            order: [[0, "asc"], [1, "desc"]]
+            order: [[1, "desc"]]
         });
     }
 
