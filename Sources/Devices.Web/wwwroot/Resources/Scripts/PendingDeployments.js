@@ -21,6 +21,10 @@ Devices.Web = Devices.Web || {};
                 {
                     title: "Release",
                     data: "release.version"
+                },
+                {
+                    title: "Arguments",
+                    data: "release.action.arguments"
                 }
             ],
             order: [[0, "asc"], [2, "asc"]]

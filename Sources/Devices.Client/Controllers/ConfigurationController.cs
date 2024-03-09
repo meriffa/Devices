@@ -110,7 +110,7 @@ public class ConfigurationController : Controller
             ActionType.Script => ExecuteActionScript(folder, action.Parameters, action.Arguments),
             _ => throw new($"Action type '{action.Type}' is not supported.")
         };
-        DisplayService.WriteInformation($"Release action completed (Type = '{action.Type}', Parameters = '{action.Parameters}').");
+        DisplayService.WriteInformation($"Release action completed (Type = '{action.Type}', Parameters = '{action.Parameters}', Success = {success}, Details = '{details}').");
         return (success, details);
     }
 

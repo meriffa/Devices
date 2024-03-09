@@ -41,6 +41,10 @@ Devices.Web = Devices.Web || {};
                     }
                 },
                 {
+                    title: "Arguments",
+                    data: "release.action.arguments"
+                },
+                {
                     title: "Details",
                     data: "details",
                     visible: false,
@@ -49,10 +53,10 @@ Devices.Web = Devices.Web || {};
                     }
                 }
             ],
-            order: [[2, "asc"], [1, "desc"]]
+            order: [[1, "desc"]]
         });
         $("#btnToggleDetails").click(function () {
-            var column = table.column(6);
+            var column = table.column(7);
             column.visible(!column.visible());
             $("#btnToggleDetails").text(column.visible() ? "Hide Details" : "Show Details");
         });

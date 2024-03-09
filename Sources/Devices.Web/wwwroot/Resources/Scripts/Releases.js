@@ -41,6 +41,14 @@ Devices.Web = Devices.Web || {};
                     }
                 },
                 {
+                    title: "Parameters",
+                    data: "action.parameters"
+                },
+                {
+                    title: "Arguments",
+                    data: "action.arguments"
+                },
+                {
                     title: "Active",
                     data: "active",
                     render: function (data, type) {
