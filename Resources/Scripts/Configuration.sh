@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Setup Scheduled Job
-crontab -l > crontab.txt
-echo "*/5 * * * * cd /root/Devices.Client.Solutions && /root/.dotnet/dotnet Devices.Client.Solutions.dll Garden-WeatherCondition >> Devices.Client.Solutions.log 2>&1" >> crontab.txt
-crontab crontab.txt
-rm crontab.txt
-crontab -u root -e
-crontab -l
-
 # DietPi Configuration
 dietpi-config 1 -> RPi Camera = On -> Reboot                                                    # Enable Camera
 ls /dev/video*
