@@ -1,5 +1,7 @@
 @using Devices.Common.Services;
 @using static Devices.Host.Extensions.PageExtensions;
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,20 +23,40 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle menu"><span class="navbar-toggler-icon"></span></button>
                 <div id="navbarContent" class="collapse navbar-collapse">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Framework</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Devices"))" asp-area="Framework" asp-page="/Devices">Devices</a></li>
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Monitoring"))" asp-area="Framework" asp-page="/Monitoring">Monitoring</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Applications"))" asp-area="Framework" asp-page="/Applications">Applications</a></li>
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Releases"))" asp-area="Framework" asp-page="/Releases">Releases</a></li>
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Deployments"))" asp-area="Framework" asp-page="/Deployments">Deployments</a></li>
-                                <li><a class="dropdown-item@(IsActive(ViewData, "Pending Deployments"))" asp-area="Framework" asp-page="/PendingDeployments">Pending Deployments</a></li>
-                            </ul>
-                        </li>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Model, "FrameworkPolicy")).Succeeded)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Framework</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Devices"))" asp-area="Framework" asp-page="/Devices">Devices</a></li>
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Monitoring"))" asp-area="Framework" asp-page="/Monitoring">Monitoring</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Applications"))" asp-area="Framework" asp-page="/Applications">Applications</a></li>
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Releases"))" asp-area="Framework" asp-page="/Releases">Releases</a></li>
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Deployments"))" asp-area="Framework" asp-page="/Deployments">Deployments</a></li>
+                                    <li><a class="dropdown-item@(IsActive(ViewData, "Pending Deployments"))" asp-area="Framework" asp-page="/PendingDeployments">Pending Deployments</a></li>
+                                </ul>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Model, "GardenPolicy")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link@(IsActive(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link@(IsActive(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
+                            @if (!HttpContextAccessor.HttpContext!.User.Identity!.IsAuthenticated)
+                            {
+                                <a class="nav-link" asp-page="/SignIn">Sign In</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-controller="Security" asp-action="SignOut" title="Signed in as '@(HttpContextAccessor.HttpContext?.User.Identity?.Name)'">Sign Out</a>
+                            }
                         </li>
                     </ul>
                 </div>

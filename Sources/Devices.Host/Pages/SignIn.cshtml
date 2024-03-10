@@ -1,0 +1,40 @@
+@page
+@model Devices.Host.Pages.SignInModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+@section Scripts
+{
+    <script type="text/javascript" src="~/Resources/Scripts/SignIn.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+<div class="col-md-4 offset-md-4">
+    <div class="ip-view-content container-fluid shadow-sm rounded">
+        <form method="post" class="needs-validation" novalidate>
+            <div class="row p-2">
+                <label asp-for="Username" class="col-md-4 col-form-label">User Name</label>
+                <div class="col-md-8 has-validation">
+                    <input asp-for="Username" class="form-control" required autofocus>
+                    <div class="invalid-feedback">User name field is required.</div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <label asp-for="Password" class="col-md-4 col-form-label"></label>
+                <div class="col-md-8">
+                    <input asp-for="Password" class="form-control" required>
+                    <div class="invalid-feedback">Password field is required.</div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-md-8 offset-md-4">
+                    <button id="btnSignIn" type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-md-8 offset-md-4">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

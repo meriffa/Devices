@@ -43,13 +43,20 @@ public class Program
     private static void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddServices(configuration);
-        services.AddSolutionServices(configuration);
+        services.AddServicesSolutions(configuration);
+        services.AddSecurity();
+        services.AddAuthorizationBuilder()
+            .AddPolicies()
+            .AddPoliciesSolutions();
         services.AddControllers()
             .AddApplicationPart(typeof(Service.Solutions.Garden.Controllers.GardenController).Assembly)
             .AddApplicationPart(typeof(Service.Controllers.IdentityController).Assembly);
         services.AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
-        services.AddRazorPages();
-
+        services.AddRazorPages(options =>
+        {
+            options.AuthorizeAreas();
+            options.AuthorizeAreasSolutions();
+        });
     }
 
     /// <summary>
@@ -71,6 +78,7 @@ public class Program
         application.UseHttpsRedirection();
         application.UseStaticFiles();
         application.UseRouting();
+        application.UseSecurity();
         application.MapControllers();
         application.MapRazorPages();
         return application;

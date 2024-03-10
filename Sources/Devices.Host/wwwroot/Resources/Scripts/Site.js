@@ -3,23 +3,35 @@ Devices.Host = Devices.Host || {};
 (function (namespace, $, undefined) {
 
     // Format number
-    Devices.Host.Site.formatNumber = function (value, digits) {
+    namespace.formatNumber = function (value, digits) {
         return new Intl.NumberFormat("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
     }
 
     // Format date & time
-    Devices.Host.Site.formatDateTime = function (value) {
+    namespace.formatDateTime = function (value) {
         return convertToLocalDateTime(new Date(value)).toISOString().slice(0, 19).replace("T", " ");
     }
 
     // Format boolean
-    Devices.Host.Site.formatBoolean = function (value) {
+    namespace.formatBoolean = function (value) {
         return value == true ? "Yes" : "No";
     }
 
     // Convert UTC to local date & time
     function convertToLocalDateTime(value) {
         return new Date(value.getTime() - value.getTimezoneOffset() * 60 * 1000);
+    }
+
+    // Validate form
+    namespace.validateForm = function() {
+        if ($(".needs-validation")[0].checkValidity()) {
+            $(".needs-validation").removeClass("was-validated");
+            return true;
+        }
+        else {
+            $(".needs-validation").addClass("was-validated");
+            return false;
+        }
     }
 
 }(Devices.Host.Site = Devices.Host.Site || {}, jQuery));
