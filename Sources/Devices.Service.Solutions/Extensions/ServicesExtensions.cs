@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -32,8 +33,12 @@ public static class ServicesExtensions
     /// <returns></returns>
     public static AuthorizationBuilder AddPoliciesSolutions(this AuthorizationBuilder builder)
     {
-        builder.AddPolicy("GardenPolicy", policy => policy.RequireClaim(ClaimTypes.Role, ["Administrator", "User"]));
-        return builder;
+        return builder
+            .AddPolicy("GardenPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, ["Administrator", "User"]);
+            });
     }
 
     /// <summary>

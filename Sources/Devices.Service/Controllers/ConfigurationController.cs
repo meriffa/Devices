@@ -1,7 +1,8 @@
 using Devices.Common.Models.Configuration;
-using Devices.Common.Models.Identification;
+using Devices.Service.Extensions;
 using Devices.Service.Interfaces.Configuration;
-using Devices.Service.Interfaces.Identification;
+using Devices.Service.Models.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
     public ActionResult<List<Application>> GetApplications([FromServices] IConfigurationService service)
     {
         try
@@ -38,7 +39,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
     public ActionResult<List<Release>> GetReleases([FromServices] IConfigurationService service)
     {
         try
@@ -54,17 +55,14 @@ public class ConfigurationController : ControllerBase
     /// <summary>
     /// Return pending device releases
     /// </summary>
-    /// <param name="identityService"></param>
     /// <param name="service"></param>
-    /// <param name="device"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult<List<Release>> GetPendingReleases([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Device device)
+    [HttpGet, Authorize(Policy = "DevicePolicy")]
+    public ActionResult<List<Release>> GetPendingReleases([FromServices] IConfigurationService service)
     {
         try
         {
-            identityService.VerifyDevice(device);
-            return Ok(service.GetPendingReleases(device));
+            return Ok(service.GetPendingReleases(HttpContext.User.GetDeviceId()));
         }
         catch (Exception ex)
         {
@@ -75,18 +73,15 @@ public class ConfigurationController : ControllerBase
     /// <summary>
     /// Return release package
     /// </summary>
-    /// <param name="identityService"></param>
     /// <param name="service"></param>
-    /// <param name="device"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult GetReleasePackage([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Device device, int releaseId)
+    [HttpGet, Authorize(Policy = "DevicePolicy")]
+    public ActionResult GetReleasePackage([FromServices] IConfigurationService service, int releaseId)
     {
         try
         {
-            identityService.VerifyDevice(device);
-            return new FileStreamResult(service.GetReleasePackage(device, releaseId), "application/octet-stream");
+            return new FileStreamResult(service.GetReleasePackage(HttpContext.User.GetDeviceId(), releaseId), "application/octet-stream");
         }
         catch (Exception ex)
         {
@@ -95,16 +90,16 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
-    /// Return deployments
+    /// Return completed deployments
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
-    public ActionResult<List<Deployment>> GetDeployments([FromServices] IConfigurationService service)
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<List<Deployment>> GetCompletedDeployments([FromServices] IConfigurationService service)
     {
         try
         {
-            return Ok(service.GetDeployments());
+            return Ok(service.GetCompletedDeployments());
         }
         catch (Exception ex)
         {
@@ -117,7 +112,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
     public ActionResult<List<PendingDeployment>> GetPendingDeployments([FromServices] IConfigurationService service)
     {
         try
@@ -133,17 +128,15 @@ public class ConfigurationController : ControllerBase
     /// <summary>
     /// Save deployment
     /// </summary>
-    /// <param name="identityService"></param>
     /// <param name="service"></param>
     /// <param name="deployment"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult SaveDeployment([FromServices] IIdentityService identityService, [FromServices] IConfigurationService service, Deployment deployment)
+    [HttpPost, Authorize(Policy = "DevicePolicy")]
+    public ActionResult SaveDeployment([FromServices] IConfigurationService service, Deployment deployment)
     {
         try
         {
-            identityService.VerifyDevice(deployment.Device);
-            service.SaveDeployment(deployment);
+            service.SaveDeployment(HttpContext.User.GetDeviceId(), deployment);
             return Ok();
         }
         catch (Exception ex)

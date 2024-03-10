@@ -9,7 +9,7 @@ namespace Devices.Service.Services.Security;
 /// Web cookie authentication events
 /// </summary>
 /// <param name="options"></param>
-public class WebCookieAuthenticationService(ISecurityService service) : CookieAuthenticationEvents
+public class WebAuthenticationService(ISecurityService service) : CookieAuthenticationEvents
 {
 
     #region Private Fields
@@ -24,7 +24,7 @@ public class WebCookieAuthenticationService(ISecurityService service) : CookieAu
     /// <returns></returns>
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
-        var userId = context.Principal?.GetId();
+        var userId = context.Principal?.GetUserId();
         if (userId == null || !service.IsUserEnabled(userId.Value))
         {
             context.RejectPrincipal();

@@ -1,5 +1,6 @@
 using Devices.Common.Solutions.Garden.Models;
 using Devices.Service.Solutions.Garden.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace Devices.Service.Solutions.Garden.Controllers;
 /// <summary>
 /// Garden controller
 /// </summary>
-[ApiController, Route("/Service/Solutions/[controller]/[action]")]
+[ApiController, Route("/Service/[controller]/[action]"), Authorize(Policy = "GardenPolicy")]
 public class GardenController : ControllerBase
 {
 

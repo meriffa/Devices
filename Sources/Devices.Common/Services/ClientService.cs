@@ -38,6 +38,19 @@ public abstract class ClientService : IDisposable
     }
     #endregion
 
+    #region Protected Methods
+    /// <summary>
+    /// Add request header & value
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    protected void AddHeader(string name, string value)
+    {
+        Client.DefaultRequestHeaders.Clear();
+        Client.DefaultRequestHeaders.Add(name, value);
+    }
+    #endregion
+
     #region Finalization
     /// <summary>
     /// Finalization

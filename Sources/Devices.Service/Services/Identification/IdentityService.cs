@@ -1,5 +1,6 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Identification;
+using Devices.Service.Models.Identification;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,20 +23,18 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
 
     #region Public Methods
     /// <summary>
-    /// Return device
+    /// Return device id
     /// </summary>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    public Device GetDevice(List<Fingerprint> fingerprints)
+    public string GetDeviceId(List<Fingerprint> fingerprints)
     {
         try
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    d.""DeviceID"",
-                    d.""DeviceName"",
-                    d.""DeviceActive""
+                    d.""DeviceID""
                 FROM
                     ""DeviceFingerprint"" f JOIN
                     ""Device"" d ON d.""DeviceID"" = f.""DeviceID""
@@ -49,9 +48,8 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             {
                 cmd.Parameters["@FingerprintType"].Value = (int)fingerprint.Type;
                 cmd.Parameters["@FingerprintValue"].Value = fingerprint.Value;
-                using var r = cmd.ExecuteReader();
-                if (r.Read())
-                    return GetDevice(r);
+                if (cmd.ExecuteScalar() is string result)
+                    return result;
             }
             throw new("Unknown device specified.");
         }
@@ -63,10 +61,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
-    /// Verify device
+    /// Check if device is enabled
     /// </summary>
-    /// <param name="device"></param>
-    public void VerifyDevice(Device device)
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public bool IsDeviceEnabled(string deviceId)
     {
         try
         {
@@ -79,10 +78,8 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 WHERE
                     ""DeviceID"" = @DeviceID AND
                     ""DeviceActive"" = TRUE;", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = device.Id;
-            var deviceId = cmd.ExecuteScalar();
-            if (deviceId == null || deviceId is DBNull)
-                throw new($"Invalid device id '{device.Id}' specified.");
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            return cmd.ExecuteScalar() != null;
         }
         catch (Exception ex)
         {

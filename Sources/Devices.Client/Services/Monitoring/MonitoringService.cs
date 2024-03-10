@@ -1,5 +1,6 @@
 using Devices.Client.Interfaces.Identification;
 using Devices.Client.Interfaces.Monitoring;
+using Devices.Common.Models;
 using Devices.Common.Models.Monitoring;
 using Devices.Common.Options;
 using Devices.Common.Services;
@@ -28,20 +29,17 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Clien
 
     #region Public Methods
     /// <summary>
-    /// Return monitoring metrics
+    /// Return device metrics
     /// </summary>
     /// <returns></returns>
-    public MonitoringMetrics GetMonitoringMetrics()
+    public DeviceMetrics GetDeviceMetrics()
     {
         try
         {
-            var metrics = new MonitoringMetrics()
-            {
-                Device = identityService.GetDevice(),
-                DeviceMetrics = deviceMetricsService.GetMetrics()
-            };
+            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
+            var metrics = deviceMetricsService.GetMetrics();
             var content = new StringContent(JsonSerializer.Serialize(metrics), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync("/Service/Monitoring/SaveMonitoringMetrics", content).Result;
+            using var response = Client.PostAsync("/Service/Monitoring/SaveDeviceMetrics", content).Result;
             response.EnsureSuccessStatusCode();
             return metrics;
         }

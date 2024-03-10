@@ -6,7 +6,7 @@ Devices.Web = Devices.Web || {};
     Devices.Host.Site.initContentPage = function () {
         const table = new DataTable("#grdData", {
             ajax: {
-                url: "/Service/Configuration/GetDeployments",
+                url: "/Service/Configuration/GetCompletedDeployments",
                 dataSrc: ""
             },
             columns: [

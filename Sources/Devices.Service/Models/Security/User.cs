@@ -1,4 +1,4 @@
-namespace Devices.Common.Models.Security;
+namespace Devices.Service.Models.Security;
 
 /// <summary>
 /// User

@@ -1,4 +1,5 @@
 using Devices.Common.Models.Monitoring;
+using Devices.Service.Models.Monitoring;
 
 namespace Devices.Service.Interfaces.Monitoring;
 
@@ -16,10 +17,11 @@ public interface IMonitoringService
     List<MonitoringMetrics> GetMonitoringMetrics();
 
     /// <summary>
-    /// Save monitoring metrics
+    /// Save device metrics
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="metrics"></param>
-    void SaveMonitoringMetrics(MonitoringMetrics metrics);
+    void SaveDeviceMetrics(string deviceId, DeviceMetrics metrics);
     #endregion
 
 }

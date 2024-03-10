@@ -1,6 +1,7 @@
-using Devices.Common.Models.Identification;
+using Devices.Common.Models.Configuration;
+using Devices.Service.Models.Identification;
 
-namespace Devices.Common.Models.Configuration;
+namespace Devices.Service.Models.Configuration;
 
 /// <summary>
 /// Pending deployment

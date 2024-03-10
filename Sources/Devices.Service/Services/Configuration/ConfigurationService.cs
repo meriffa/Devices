@@ -1,6 +1,6 @@
 using Devices.Common.Models.Configuration;
-using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Configuration;
+using Devices.Service.Models.Configuration;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
 using Microsoft.Extensions.Logging;
@@ -102,9 +102,9 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <summary>
     /// Return pending device releases
     /// </summary>
-    /// <param name="device"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    public List<Release> GetPendingReleases(Device device)
+    public List<Release> GetPendingReleases(string deviceId)
     {
         try
         {
@@ -139,7 +139,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 ORDER BY
                     r.""ReleaseID"",
                     r.""Date"";", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = device.Id;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetRelease(r));
@@ -155,10 +155,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <summary>
     /// Return release package
     /// </summary>
-    /// <param name="device"></param>
+    /// <param name="deviceId"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    public Stream GetReleasePackage(Device device, int releaseId)
+    public Stream GetReleasePackage(string deviceId, int releaseId)
     {
         try
         {
@@ -176,7 +176,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     app.""ApplicationActive"" = TRUE AND
                     r.""ReleaseActive"" = TRUE;", cn);
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = device.Id;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
             return File.OpenRead(Path.Combine(options.PackageFolder, (string)cmd.ExecuteScalar()!));
         }
         catch (Exception ex)
@@ -187,14 +187,14 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
-    /// Return deployments
+    /// Return completed deployments
     /// </summary>
     /// <returns></returns>
-    public List<Deployment> GetDeployments()
+    public List<CompletedDeployment> GetCompletedDeployments()
     {
         try
         {
-            var result = new List<Deployment>();
+            var result = new List<CompletedDeployment>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
@@ -230,7 +230,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     dd.""DeploymentID"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(GetDeployment(r));
+                result.Add(GetCompletedDeployment(r));
             return result;
         }
         catch (Exception ex)
@@ -298,8 +298,9 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <summary>
     /// Save deployment
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="deployment"></param>
-    public void SaveDeployment(Deployment deployment)
+    public void SaveDeployment(string deviceId, Deployment deployment)
     {
         try
         {
@@ -317,7 +318,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     @Date,
                     @Success,
                     @Details);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deployment.Device.Id;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = deployment.Release.Id;
             cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = deployment.Date;
             cmd.Parameters.Add("@Success", NpgsqlDbType.Boolean).Value = deployment.Success;
@@ -382,11 +383,11 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     };
 
     /// <summary>
-    /// Return deployment instance
+    /// Return completed deployment instance
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Deployment GetDeployment(NpgsqlDataReader reader) => new()
+    private static CompletedDeployment GetCompletedDeployment(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["DeploymentID"],
         Device = IdentityService.GetDevice(reader),

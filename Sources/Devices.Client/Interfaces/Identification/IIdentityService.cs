@@ -1,5 +1,3 @@
-using Devices.Common.Models.Identification;
-
 namespace Devices.Client.Interfaces.Identification;
 
 /// <summary>
@@ -10,11 +8,11 @@ public interface IIdentityService
 
     #region Public Methods
     /// <summary>
-    /// Return device
+    /// Return device id
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    Device GetDevice(bool refresh = false);
+    string GetDeviceId(bool refresh = false);
     #endregion
 
 }

@@ -10,7 +10,7 @@ namespace Devices.Service.Controllers;
 /// <summary>
 /// Security controller
 /// </summary>
-[ApiController, Route("/Services/[controller]/[action]"), Authorize]
+[ApiController, Route("/Services/[controller]/[action]"), Authorize(Policy = "WebPolicy")]
 public class SecurityController : Controller
 {
 
@@ -23,7 +23,7 @@ public class SecurityController : Controller
     [HttpGet]
     public async Task<IActionResult> SignOut([FromServices] ILogger<SecurityController> logger)
     {
-        logger.LogInformation("User signed out (ID = {ID}, Name = '{Name}', Time = '{Time}').", User.GetId(), User.Identity?.Name, DateTime.UtcNow);
+        logger.LogInformation("User signed out (ID = {ID}, Name = '{Name}', Time = '{Time}').", User.GetUserId(), User.Identity?.Name, DateTime.UtcNow);
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToPage("/Index");
     }

@@ -1,4 +1,4 @@
-using Devices.Common.Models.Security;
+using Devices.Service.Models.Security;
 
 namespace Devices.Service.Interfaces.Security;
 

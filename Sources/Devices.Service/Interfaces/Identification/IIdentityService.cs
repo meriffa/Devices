@@ -1,4 +1,5 @@
 using Devices.Common.Models.Identification;
+using Devices.Service.Models.Identification;
 
 namespace Devices.Service.Interfaces.Identification;
 
@@ -10,17 +11,18 @@ public interface IIdentityService
 
     #region Public Methods
     /// <summary>
-    /// Return device
+    /// Return device id
     /// </summary>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    Device GetDevice(List<Fingerprint> fingerprints);
+    string GetDeviceId(List<Fingerprint> fingerprints);
 
     /// <summary>
-    /// Verify device
+    /// Check if device is enabled
     /// </summary>
-    /// <param name="device"></param>
-    void VerifyDevice(Device device);
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    bool IsDeviceEnabled(string deviceId);
 
     /// <summary>
     /// Return devices

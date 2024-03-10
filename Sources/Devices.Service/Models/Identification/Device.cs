@@ -1,4 +1,4 @@
-namespace Devices.Common.Models.Identification;
+namespace Devices.Service.Models.Identification;
 
 /// <summary>
 /// Device

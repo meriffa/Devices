@@ -1,5 +1,5 @@
 using Devices.Common.Models.Configuration;
-using Devices.Common.Models.Identification;
+using Devices.Service.Models.Configuration;
 
 namespace Devices.Service.Interfaces.Configuration;
 
@@ -25,23 +25,23 @@ public interface IConfigurationService
     /// <summary>
     /// Return pending device releases
     /// </summary>
-    /// <param name="device"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    List<Release> GetPendingReleases(Device device);
+    List<Release> GetPendingReleases(string deviceId);
 
     /// <summary>
     /// Return release package
     /// </summary>
-    /// <param name="device"></param>
+    /// <param name="deviceId"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    Stream GetReleasePackage(Device device, int releaseId);
+    Stream GetReleasePackage(string deviceId, int releaseId);
 
     /// <summary>
-    /// Return deployments
+    /// Return completed deployments
     /// </summary>
     /// <returns></returns>
-    List<Deployment> GetDeployments();
+    List<CompletedDeployment> GetCompletedDeployments();
 
     /// <summary>
     /// Return pending deployments
@@ -52,8 +52,9 @@ public interface IConfigurationService
     /// <summary>
     /// Save deployment
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="deployment"></param>
-    void SaveDeployment(Deployment deployment);
+    void SaveDeployment(string deviceId, Deployment deployment);
     #endregion
 
 }

@@ -44,8 +44,7 @@ public class Program
     {
         services.AddServices(configuration);
         services.AddServicesSolutions(configuration);
-        services.AddSecurity();
-        services.AddAuthorizationBuilder()
+        services.AddSecurity()
             .AddPolicies()
             .AddPoliciesSolutions();
         services.AddControllers()

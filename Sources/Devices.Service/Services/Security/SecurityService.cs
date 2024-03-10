@@ -1,5 +1,5 @@
-using Devices.Common.Models.Security;
 using Devices.Service.Interfaces.Security;
+using Devices.Service.Models.Security;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -4,7 +4,6 @@ using Devices.Common.Options;
 using Devices.Common.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -27,23 +26,23 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
 
     #region Public Methods
     /// <summary>
-    /// Return device
+    /// Return device id
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    public Device GetDevice(bool refresh = false)
+    public string GetDeviceId(bool refresh = false)
     {
         try
         {
-            string path = Path.Combine(Options.ConfigurationFolder, GetConfigurationFile());
+            string path = Path.Combine(Options.ConfigurationFolder, GetIdentityFile());
             if (refresh || !File.Exists(path))
             {
                 var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-                using var response = Client.PostAsync("/Service/Identity/GetDevice", content).Result;
+                using var response = Client.PostAsync("/Service/Identity/GetDeviceId", content).Result;
                 response.EnsureSuccessStatusCode();
-                SaveDevice(Options.ConfigurationFolder, path, response.Content.ReadFromJsonAsync<Device>().Result!);
+                SaveIdentity(Options.ConfigurationFolder, path, response.Content.ReadAsStringAsync().Result!);
             }
-            return LoadDevice(path);
+            return LoadIdentity(path);
         }
         catch (Exception ex)
         {
@@ -55,10 +54,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
 
     #region Private Methods
     /// <summary>
-    /// Return configuration file
+    /// Return device identity file
     /// </summary>
     /// <returns></returns>
-    private static string GetConfigurationFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.Device.json";
+    private static string GetIdentityFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.Identity";
 
     /// <summary>
     /// Return device fingerprints
@@ -73,26 +72,26 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     }
 
     /// <summary>
-    /// Load device
+    /// Load device identity
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static Device LoadDevice(string path)
+    private static string LoadIdentity(string path)
     {
-        return JsonSerializer.Deserialize<Device>(File.ReadAllText(path))!;
+        return File.ReadAllText(path);
     }
 
     /// <summary>
-    /// Save device
+    /// Save device identity
     /// </summary>
     /// <param name="folder"></param>
     /// <param name="path"></param>
-    /// <param name="device"></param>
-    private static void SaveDevice(string folder, string path, Device device)
+    /// <param name="deviceId"></param>
+    private static void SaveIdentity(string folder, string path, string deviceId)
     {
         if (!Path.Exists(folder))
             Directory.CreateDirectory(folder);
-        File.WriteAllText(path, JsonSerializer.Serialize(device));
+        File.WriteAllText(path, deviceId);
     }
     #endregion
 

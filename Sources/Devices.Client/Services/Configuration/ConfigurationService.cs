@@ -1,5 +1,6 @@
 using Devices.Client.Interfaces.Configuration;
 using Devices.Client.Interfaces.Identification;
+using Devices.Common.Models;
 using Devices.Common.Models.Configuration;
 using Devices.Common.Options;
 using Devices.Common.Services;
@@ -34,8 +35,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            var content = new StringContent(JsonSerializer.Serialize(identityService.GetDevice()), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync("/Service/Configuration/GetPendingReleases", content).Result;
+            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
+            using var response = Client.GetAsync("/Service/Configuration/GetPendingReleases").Result;
             response.EnsureSuccessStatusCode();
             return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
         }
@@ -55,8 +56,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            var content = new StringContent(JsonSerializer.Serialize(identityService.GetDevice()), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}", content).Result;
+            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
+            using var response = Client.GetAsync($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}").Result;
             response.EnsureSuccessStatusCode();
             using var stream = File.Create(fileName);
             response.Content.ReadAsStream().CopyTo(stream);
@@ -78,11 +79,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
+            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
             var deployment = new Deployment()
             {
-                Id = 0,
                 Date = DateTime.UtcNow,
-                Device = identityService.GetDevice(),
                 Release = release,
                 Success = success,
                 Details = details

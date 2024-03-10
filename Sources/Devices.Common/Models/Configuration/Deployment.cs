@@ -3,14 +3,14 @@ namespace Devices.Common.Models.Configuration;
 /// <summary>
 /// Deployment
 /// </summary>
-public class Deployment : PendingDeployment
+public class Deployment
 {
 
     #region Properties
     /// <summary>
-    /// Deployment id
+    /// Deployment release
     /// </summary>
-    public required int Id { get; set; }
+    public required Release Release { get; set; }
 
     /// <summary>
     /// Deployment date & time

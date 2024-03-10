@@ -1,5 +1,7 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Identification;
+using Devices.Service.Models.Identification;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,23 +10,23 @@ namespace Devices.Service.Controllers;
 /// <summary>
 /// Identity controller
 /// </summary>
-[ApiController, Route("/Service/[controller]/[action]")]
+[ApiController, Route("/Service/[controller]/[action]"), Authorize(Policy = "FrameworkPolicy")]
 public class IdentityController : ControllerBase
 {
 
     #region Public Methods
     /// <summary>
-    /// Return device
+    /// Return device id
     /// </summary>
     /// <param name="service"></param>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult<Device> GetDevice([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
+    [HttpPost, AllowAnonymous]
+    public ActionResult<string> GetDeviceId([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
     {
         try
         {
-            return Ok(service.GetDevice(fingerprints));
+            return Ok(service.GetDeviceId(fingerprints));
         }
         catch (Exception ex)
         {

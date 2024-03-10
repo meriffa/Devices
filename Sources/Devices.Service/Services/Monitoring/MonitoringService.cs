@@ -1,5 +1,6 @@
 using Devices.Common.Models.Monitoring;
 using Devices.Service.Interfaces.Monitoring;
+using Devices.Service.Models.Monitoring;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
 using Microsoft.Extensions.Logging;
@@ -84,15 +85,16 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     }
 
     /// <summary>
-    /// Save monitoring metrics
+    /// Save device metrics
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="metrics"></param>
-    public void SaveMonitoringMetrics(MonitoringMetrics metrics)
+    public void SaveDeviceMetrics(string deviceId, DeviceMetrics metrics)
     {
         try
         {
             using var cn = GetConnection();
-            CleanupMonitoringMetrics(cn, metrics);
+            CleanupMonitoringMetrics(cn, deviceId, metrics.Date);
             using var cmd = GetCommand(
                 @"INSERT INTO ""DeviceMetric""
                     (""DeviceID"",
@@ -114,15 +116,15 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     @MemoryTotal,
                     @MemoryUsed,
                     @MemoryFree);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Device.Id;
-            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.Date;
-            cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.LastRebootDate;
-            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.User;
-            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.System;
-            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.DeviceMetrics.Cpu.Idle;
-            cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Total;
-            cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Used;
-            cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.DeviceMetrics.Memory.Free;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.Date;
+            cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.LastRebootDate;
+            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Cpu.User;
+            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.Cpu.System;
+            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.Cpu.Idle;
+            cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.Memory.Total;
+            cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.Memory.Used;
+            cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.Memory.Free;
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -138,12 +140,13 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// Cleanup monitoring metrics (1 month or older)
     /// </summary>
     /// <param name="cn"></param>
-    /// <param name="metrics"></param>
-    private void CleanupMonitoringMetrics(NpgsqlConnection cn, MonitoringMetrics metrics)
+    /// <param name="deviceId"></param>
+    /// <param name="cutOffDate"></param>
+    private void CleanupMonitoringMetrics(NpgsqlConnection cn, string deviceId, DateTime cutOffDate)
     {
         using var cmd = GetCommand(@"DELETE FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID AND ""Date"" < @Date;", cn);
-        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = metrics.Device.Id;
-        cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.DeviceMetrics.Date.AddMonths(-1);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+        cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = cutOffDate.AddMonths(-1);
         cmd.ExecuteNonQuery();
     }
     #endregion

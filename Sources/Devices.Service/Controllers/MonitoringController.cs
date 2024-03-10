@@ -1,6 +1,8 @@
 using Devices.Common.Models.Monitoring;
-using Devices.Service.Interfaces.Identification;
+using Devices.Service.Extensions;
 using Devices.Service.Interfaces.Monitoring;
+using Devices.Service.Models.Monitoring;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +21,7 @@ public class MonitoringController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
     public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService service)
     {
         try
@@ -33,19 +35,17 @@ public class MonitoringController : ControllerBase
     }
 
     /// <summary>
-    /// Save monitoring metrics
+    /// Save device metrics
     /// </summary>
-    /// <param name="identityService"></param>
     /// <param name="service"></param>
     /// <param name="metrics"></param>
     /// <returns></returns>
-    [HttpPost]
-    public ActionResult SaveMonitoringMetrics([FromServices] IIdentityService identityService, [FromServices] IMonitoringService service, MonitoringMetrics metrics)
+    [HttpPost, Authorize(Policy = "DevicePolicy")]
+    public ActionResult SaveDeviceMetrics([FromServices] IMonitoringService service, DeviceMetrics metrics)
     {
         try
         {
-            identityService.VerifyDevice(metrics.Device);
-            service.SaveMonitoringMetrics(metrics);
+            service.SaveDeviceMetrics(HttpContext.User.GetDeviceId(), metrics);
             return Ok();
         }
         catch (Exception ex)

@@ -27,7 +27,7 @@ public static class ServicesExtensions
         services.Configure<ServiceOptions>(configuration.GetSection(nameof(ServiceOptions)));
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<Interfaces.Security.ISecurityService, Services.Security.SecurityService>();
-        services.AddScoped<Services.Security.WebCookieAuthenticationService>();
+        services.AddScoped<Services.Security.WebAuthenticationService>();
         services.AddScoped<Interfaces.Identification.IIdentityService, Services.Identification.IdentityService>();
         services.AddScoped<Interfaces.Monitoring.IMonitoringService, Services.Monitoring.MonitoringService>();
         services.AddScoped<Interfaces.Configuration.IConfigurationService, Services.Configuration.ConfigurationService>();
@@ -39,7 +39,7 @@ public static class ServicesExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddSecurity(this IServiceCollection services)
+    public static AuthorizationBuilder AddSecurity(this IServiceCollection services)
     {
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
@@ -49,9 +49,15 @@ public static class ServicesExtensions
                 options.LoginPath = "/SignIn";
                 options.LogoutPath = "/Services/Security/SignOut";
                 options.AccessDeniedPath = "/AccessDenied";
-                options.EventsType = typeof(Services.Security.WebCookieAuthenticationService);
-            });
-        return services;
+                options.EventsType = typeof(Services.Security.WebAuthenticationService);
+            })
+            .AddScheme<DeviceAuthenticationOptions, Services.Security.DeviceAuthenticationService>(Services.Security.DeviceAuthenticationService.AuthenticationScheme, options => { });
+        var builder = services.AddAuthorizationBuilder()
+            .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme, Services.Security.DeviceAuthenticationService.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build());
+        return builder;
     }
 
     /// <summary>
@@ -61,8 +67,22 @@ public static class ServicesExtensions
     /// <returns></returns>
     public static AuthorizationBuilder AddPolicies(this AuthorizationBuilder builder)
     {
-        builder.AddPolicy("FrameworkPolicy", policy => policy.RequireClaim(ClaimTypes.Role, ["Administrator"]));
-        return builder;
+        return builder
+            .AddPolicy("WebPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireAuthenticatedUser();
+            })
+            .AddPolicy("FrameworkPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, ["Administrator"]);
+            })
+            .AddPolicy("DevicePolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(Services.Security.DeviceAuthenticationService.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, ["Device"]);
+            });
     }
 
     /// <summary>

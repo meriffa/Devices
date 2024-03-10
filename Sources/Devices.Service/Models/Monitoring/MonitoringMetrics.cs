@@ -1,6 +1,7 @@
-using Devices.Common.Models.Identification;
+using Devices.Common.Models.Monitoring;
+using Devices.Service.Models.Identification;
 
-namespace Devices.Common.Models.Monitoring;
+namespace Devices.Service.Models.Monitoring;
 
 /// <summary>
 /// Monitoring metrics

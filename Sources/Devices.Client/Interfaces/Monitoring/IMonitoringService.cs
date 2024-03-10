@@ -10,10 +10,10 @@ public interface IMonitoringService
 
     #region Public Methods
     /// <summary>
-    /// Return monitoring metrics
+    /// Return device metrics
     /// </summary>
     /// <returns></returns>
-    MonitoringMetrics GetMonitoringMetrics();
+    DeviceMetrics GetDeviceMetrics();
     #endregion
 
 }
