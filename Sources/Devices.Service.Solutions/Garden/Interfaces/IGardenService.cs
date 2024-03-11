@@ -1,4 +1,5 @@
 using Devices.Common.Solutions.Garden.Models;
+using Devices.Service.Solutions.Garden.Models;
 
 namespace Devices.Service.Solutions.Garden.Interfaces;
 
@@ -10,16 +11,17 @@ public interface IGardenService
 
     #region Public Methods
     /// <summary>
-    /// Return weather conditions
+    /// Return device weather conditions
     /// </summary>
     /// <returns></returns>
-    List<WeatherCondition> GetWeatherConditions();
+    List<DeviceWeatherCondition> GetDeviceWeatherConditions();
 
     /// <summary>
     /// Save weather condition
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
-    void SaveWeatherCondition(WeatherCondition weatherCondition);
+    void SaveWeatherCondition(string deviceId, WeatherCondition weatherCondition);
     #endregion
 
 }

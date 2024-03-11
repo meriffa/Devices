@@ -1,6 +1,6 @@
 using Devices.Common.Models.Identification;
 
-namespace Devices.Client.Interfaces.Identification;
+namespace Devices.Common.Interfaces.Identification;
 
 /// <summary>
 /// Fingerprint service interface

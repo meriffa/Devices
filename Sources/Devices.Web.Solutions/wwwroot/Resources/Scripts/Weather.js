@@ -7,10 +7,14 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     Devices.Host.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
-                url: "/Service/Solutions/Garden/GetWeatherConditions",
+                url: "/Service/Solutions/Garden/GetDeviceWeatherConditions",
                 dataSrc: ""
             },
             columns: [
+                {
+                    title: "Device",
+                    data: "device.name"
+                },
                 {
                     title: "Date & Time",
                     data: "date",
@@ -39,7 +43,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
                     render: DataTable.render.number(",", ".", 2, "", "")
                 }
             ],
-            order: [[0, "desc"]]
+            order: [[1, "desc"]]
         });
     }
 

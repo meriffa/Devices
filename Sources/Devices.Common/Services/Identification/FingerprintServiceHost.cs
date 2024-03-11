@@ -1,8 +1,8 @@
-using Devices.Client.Interfaces.Identification;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Models.Identification;
 using System.Net.NetworkInformation;
 
-namespace Devices.Client.Services.Identification;
+namespace Devices.Common.Services.Identification;
 
 /// <summary>
 /// Host Name fingerprint service

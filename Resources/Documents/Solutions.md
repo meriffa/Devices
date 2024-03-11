@@ -5,7 +5,7 @@
 - Hardware
   - BME280 Module (VCC = 3V3 [1], GND = GND [9], SCL = SCL [5], SDA = SDA [3])
   - MAX44009 Module (VCC = 3V3 [1], GND = GND [9], SCL = SCL [5], SDA = SDA [3])
-- Software: Enable I2C, dotnet Devices.Client.Solutions.dll Garden-WeatherCondition
+- Software: Enable I2C, dotnet Devices.Client.Solutions.dll Garden
 
 ### Peripherals
 

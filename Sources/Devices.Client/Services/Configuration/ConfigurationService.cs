@@ -1,6 +1,5 @@
 using Devices.Client.Interfaces.Configuration;
-using Devices.Client.Interfaces.Identification;
-using Devices.Common.Models;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Models.Configuration;
 using Devices.Common.Options;
 using Devices.Common.Services;
@@ -18,12 +17,11 @@ namespace Devices.Client.Services.Configuration;
 /// <param name="logger"></param>
 /// <param name="options"></param>
 /// <param name="identityService"></param>
-public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions<ClientOptions> options, IIdentityService identityService) : ClientService(options.Value), IConfigurationService
+public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions<ClientOptions> options, IIdentityService identityService) : DeviceClientService(options.Value, identityService), IConfigurationService
 {
 
     #region Private Fields
     private readonly ILogger<ConfigurationService> logger = logger;
-    private readonly IIdentityService identityService = identityService;
     #endregion
 
     #region Public Methods
@@ -35,7 +33,6 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
             using var response = Client.GetAsync("/Service/Configuration/GetPendingReleases").Result;
             response.EnsureSuccessStatusCode();
             return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
@@ -56,7 +53,6 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
             using var response = Client.GetAsync($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}").Result;
             response.EnsureSuccessStatusCode();
             using var stream = File.Create(fileName);
@@ -79,7 +75,6 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            AddHeader(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
             var deployment = new Deployment()
             {
                 Date = DateTime.UtcNow,

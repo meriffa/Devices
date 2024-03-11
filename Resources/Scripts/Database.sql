@@ -110,10 +110,12 @@ CREATE TABLE "User" (
 );
 
 CREATE TABLE "Garden"."WeatherCondition" (
+	"DeviceID" varchar(64) NOT NULL,
 	"Date" timestamp with time zone NOT NULL,
 	"Temperature" numeric NOT NULL,
 	"Humidity" numeric NOT NULL,
 	"Pressure" numeric NOT NULL,
 	"Illuminance" numeric NOT NULL,
-	CONSTRAINT "PK_WeatherCondition" PRIMARY KEY ("Date")
+	CONSTRAINT "PK_WeatherCondition" PRIMARY KEY ("DeviceID", "Date"),
+	CONSTRAINT "FK_WeatherCondition_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID")
 );

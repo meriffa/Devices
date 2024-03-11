@@ -31,7 +31,10 @@ CreateSolution() {
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Client/Devices.Client.csproj
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj
   # Add project references
+  dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Configuration
+  dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Hosting
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Logging
+  dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Options.ConfigurationExtensions
   dotnet add ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj package Npgsql

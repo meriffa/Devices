@@ -2,6 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Host (Web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/Sources/Devices.Host/bin/Debug/net8.0/Devices.Host.dll",
+            "cwd": "${workspaceFolder}/Sources/Devices.Host",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "launchSettingsFilePath": "${workspaceFolder}/Sources/Devices.Host/Properties/launchSettings.json",
+            "launchSettingsProfile": "Devices.Host (Development)"
+        },
+        {
             "name": "Host (Services)",
             "type": "coreclr",
             "request": "launch",
@@ -13,21 +28,6 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
                 "uriFormat": "%s/swagger"
-            },
-            "launchSettingsFilePath": "${workspaceFolder}/Sources/Devices.Host/Properties/launchSettings.json",
-            "launchSettingsProfile": "Devices.Host (Development)"
-        },
-        {
-            "name": "Host (Web)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build Solution",
-            "program": "${workspaceFolder}/Sources/Devices.Host/bin/Debug/net8.0/Devices.Host.dll",
-            "cwd": "${workspaceFolder}/Sources/Devices.Host",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
             "launchSettingsFilePath": "${workspaceFolder}/Sources/Devices.Host/Properties/launchSettings.json",
             "launchSettingsProfile": "Devices.Host (Development)"
@@ -79,7 +79,7 @@
             "preLaunchTask": "Build Solution",
             "program": "${workspaceFolder}/Sources/Devices.Client.Solutions/bin/Debug/net8.0/Devices.Client.Solutions.dll",
             "args": [
-                "Garden-WeatherCondition"
+                "Garden"
             ],
             "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions",
             "console": "integratedTerminal",
@@ -95,7 +95,7 @@
             "program": "~/.dotnet/dotnet",
             "args": [
                 "../Devices.Client.Solutions/Devices.Client.Solutions.dll",
-                "Garden-WeatherCondition"
+                "Garden"
             ],
             "cwd": "~/Devices.Client.Solutions",
             "console": "integratedTerminal",

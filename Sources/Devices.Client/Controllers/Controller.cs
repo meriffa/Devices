@@ -1,6 +1,6 @@
 using Devices.Client.Interfaces.Configuration;
-using Devices.Client.Interfaces.Identification;
 using Devices.Client.Interfaces.Monitoring;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 

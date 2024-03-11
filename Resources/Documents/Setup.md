@@ -9,4 +9,4 @@
 ### Device Configuration
 - Install .NET SDK 8.0: `./Setup.sh InstallDotNetSDKManual`
 - Install Visual Studio Debugger: `./Setup.sh InstallVisualStudioDebugger`
-- Install RSync: `./Setup.sh InstallRSync`3
+- Install RSync: `./Setup.sh InstallRSync`

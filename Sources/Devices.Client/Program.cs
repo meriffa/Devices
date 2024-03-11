@@ -1,14 +1,13 @@
 using CommandLine;
 using Devices.Client.Controllers;
-using Devices.Common.Options;
+using Devices.Common.Extensions;
 using Devices.Common.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Reflection;
 
-namespace Devices.Client.Solutions;
+namespace Devices.Client;
 
 /// <summary>
 /// Application class
@@ -52,25 +51,10 @@ class Program
     private static IHost CreateApplicationHost(string[] args)
     {
         return Host.CreateDefaultBuilder()
-            .ConfigureHostConfiguration((configuration) =>
-            {
-                configuration.AddEnvironmentVariables();
-            })
-            .ConfigureAppConfiguration((context, configuration) =>
-            {
-                configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
-                configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                configuration.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                configuration.AddEnvironmentVariables();
-                configuration.AddCommandLine(args);
-            })
+            .ConfigreHost(args)
             .ConfigureServices((context, services) =>
             {
-                services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
-                services.AddSingleton<DisplayService>();
-                services.AddSingleton<Interfaces.Identification.IFingerprintService, Services.Identification.FingerprintServiceHost>();
-                services.AddSingleton<Interfaces.Identification.IFingerprintService, Services.Identification.FingerprintServiceNetworkInterface>();
-                services.AddSingleton<Interfaces.Identification.IIdentityService, Services.Identification.IdentityService>();
+                services.AddDeviceServices(context.Configuration);
                 services.AddSingleton<Interfaces.Monitoring.IDeviceMetricsService, Services.Monitoring.DeviceMetricsService>();
                 services.AddSingleton<Interfaces.Monitoring.IMonitoringService, Services.Monitoring.MonitoringService>();
                 services.AddSingleton<Interfaces.Configuration.IConfigurationService, Services.Configuration.ConfigurationService>();

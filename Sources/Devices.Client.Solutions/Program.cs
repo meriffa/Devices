@@ -1,8 +1,7 @@
 using CommandLine;
 using Devices.Client.Solutions.Controllers;
-using Devices.Common.Options;
+using Devices.Common.Extensions;
 using Devices.Common.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -52,22 +51,10 @@ class Program
     private static IHost CreateApplicationHost(string[] args)
     {
         return Host.CreateDefaultBuilder()
-            .ConfigureHostConfiguration((configuration) =>
-            {
-                configuration.AddEnvironmentVariables();
-            })
-            .ConfigureAppConfiguration((context, configuration) =>
-            {
-                configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
-                configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                configuration.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                configuration.AddEnvironmentVariables();
-                configuration.AddCommandLine(args);
-            })
+            .ConfigreHost(args)
             .ConfigureServices((context, services) =>
             {
-                services.AddOptions<ClientOptions>().Bind(context.Configuration.GetRequiredSection(nameof(ClientOptions)));
-                services.AddSingleton<DisplayService>();
+                services.AddDeviceServices(context.Configuration);
                 services.AddSingleton<Garden.Interfaces.IGardenService, Garden.Services.GardenService>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))

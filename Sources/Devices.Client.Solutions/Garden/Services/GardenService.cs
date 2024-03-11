@@ -1,4 +1,5 @@
 using Devices.Client.Solutions.Garden.Interfaces;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Options;
 using Devices.Common.Services;
 using Devices.Common.Solutions.Garden.Models;
@@ -14,7 +15,8 @@ namespace Devices.Client.Solutions.Garden.Services;
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>
-public class GardenService(ILogger<GardenService> logger, IOptions<ClientOptions> options) : ClientService(options.Value), IGardenService
+/// <param name="identityService"></param>
+public class GardenService(ILogger<GardenService> logger, IOptions<ClientOptions> options, IIdentityService identityService) : DeviceClientService(options.Value, identityService), IGardenService
 {
 
     #region Private Fields

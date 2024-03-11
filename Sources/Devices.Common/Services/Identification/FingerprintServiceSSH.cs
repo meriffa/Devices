@@ -1,7 +1,7 @@
-using Devices.Client.Interfaces.Identification;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Models.Identification;
 
-namespace Devices.Client.Services.Identification;
+namespace Devices.Common.Services.Identification;
 
 /// <summary>
 /// SSH public keys fingerprint service

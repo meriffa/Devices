@@ -1,7 +1,9 @@
 using Devices.Common.Solutions.Garden.Models;
 using Devices.Service.Options;
 using Devices.Service.Services;
+using Devices.Service.Services.Identification;
 using Devices.Service.Solutions.Garden.Interfaces;
+using Devices.Service.Solutions.Garden.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NpgsqlTypes;
@@ -25,27 +27,32 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     /// Return weather conditions
     /// </summary>
     /// <returns></returns>
-    public List<WeatherCondition> GetWeatherConditions()
+    public List<DeviceWeatherCondition> GetDeviceWeatherConditions()
     {
         try
         {
-            var result = new List<WeatherCondition>();
+            var result = new List<DeviceWeatherCondition>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    ""Date"",
-                    ""Temperature"",
-                    ""Humidity"",
-                    ""Pressure"",
-                    ""Illuminance""
+                    w.""Date"",
+                    w.""Temperature"",
+                    w.""Humidity"",
+                    w.""Pressure"",
+                    w.""Illuminance"",
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceActive""                    
                 FROM
-                    ""Garden"".""WeatherCondition""
+                    ""Garden"".""WeatherCondition"" w JOIN
+                    ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
                 ORDER BY
-                    ""Date"" DESC;", cn);
+                    w.""Date"" DESC;", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(new()
                 {
+                    Device = IdentityService.GetDevice(r),
                     Date = (DateTime)r["Date"],
                     Temperature = (double)(decimal)r["Temperature"],
                     Humidity = (double)(decimal)r["Humidity"],
@@ -64,25 +71,29 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     /// <summary>
     /// Save weather condition
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
-    public void SaveWeatherCondition(WeatherCondition weatherCondition)
+    public void SaveWeatherCondition(string deviceId, WeatherCondition weatherCondition)
     {
         try
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"INSERT INTO ""Garden"".""WeatherCondition""
-                    (""Date"",
+                    (""DeviceID"",
+                    ""Date"",
                     ""Temperature"",
                     ""Humidity"",
                     ""Pressure"",
                     ""Illuminance"")
                 VALUES
-                    (@Date,
+                    (@DeviceID,
+                    @Date,
                     @Temperature,
                     @Humidity,
                     @Pressure,
                     @Illuminance);", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
             cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = weatherCondition.Date;
             cmd.Parameters.Add("@Temperature", NpgsqlDbType.Numeric).Value = weatherCondition.Temperature;
             cmd.Parameters.Add("@Humidity", NpgsqlDbType.Numeric).Value = weatherCondition.Humidity;

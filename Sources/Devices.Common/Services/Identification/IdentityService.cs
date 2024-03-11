@@ -1,14 +1,13 @@
-using Devices.Client.Interfaces.Identification;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Models.Identification;
 using Devices.Common.Options;
-using Devices.Common.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
-namespace Devices.Client.Services.Identification;
+namespace Devices.Common.Services.Identification;
 
 /// <summary>
 /// Identity service

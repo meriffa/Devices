@@ -19,6 +19,7 @@ public abstract class ClientService : IDisposable
     /// Service client options
     /// </summary>
     protected ClientOptions Options { get; private set; }
+
     /// <summary>
     /// HttpClient instance
     /// </summary>
@@ -35,19 +36,6 @@ public abstract class ClientService : IDisposable
         Options = options;
         handler = new() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
         client = new(handler) { BaseAddress = new Uri(options.Service.Host), Timeout = TimeSpan.FromSeconds(options.Service.Timeout) };
-    }
-    #endregion
-
-    #region Protected Methods
-    /// <summary>
-    /// Add request header & value
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    protected void AddHeader(string name, string value)
-    {
-        Client.DefaultRequestHeaders.Clear();
-        Client.DefaultRequestHeaders.Add(name, value);
     }
     #endregion
 

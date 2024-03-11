@@ -1,4 +1,4 @@
-namespace Devices.Client.Interfaces.Identification;
+namespace Devices.Common.Interfaces.Identification;
 
 /// <summary>
 /// Identity service interface

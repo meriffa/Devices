@@ -126,7 +126,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    internal static Device GetDevice(NpgsqlDataReader reader) => new()
+    public static Device GetDevice(NpgsqlDataReader reader) => new()
     {
         Id = (string)reader["DeviceID"],
         Name = (string)reader["DeviceName"],
