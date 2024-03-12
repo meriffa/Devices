@@ -3,6 +3,7 @@ using Devices.Common.Models.Configuration;
 using Devices.Common.Services;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Text;
 
 namespace Devices.Client.Controllers;
 
@@ -124,9 +125,14 @@ public class ConfigurationController : Controller
     private static (bool success, string details) ExecuteActionScript(string folder, string fileName, string? arguments)
     {
         var path = Path.Combine(folder, fileName);
-        using var process = Process.Start(new ProcessStartInfo(path) { WorkingDirectory = folder, RedirectStandardOutput = true, Arguments = arguments ?? string.Empty });
+        using var process = Process.Start(new ProcessStartInfo(path) { WorkingDirectory = folder, RedirectStandardOutput = true, RedirectStandardError = true, Arguments = arguments ?? string.Empty });
         process!.WaitForExit();
-        return (process.ExitCode == 0, process.StandardOutput.ReadToEnd().Trim());
+        var details = new StringBuilder();
+        details.Append(process.StandardOutput.ReadToEnd().Trim());
+        var error = process.StandardError.ReadToEnd().Trim();
+        if (!string.IsNullOrEmpty(error))
+            details.AppendLine().AppendLine("ERROR:").Append(error);
+        return (process.ExitCode == 0, details.ToString());
     }
     #endregion
 }
