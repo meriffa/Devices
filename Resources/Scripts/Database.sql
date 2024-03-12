@@ -1,12 +1,4 @@
 --
--- Database
---
-
-CREATE ROLE "DevicesUser" WITH LOGIN ENCRYPTED PASSWORD $$DevicesUserPassword$$;
-CREATE DATABASE "Devices.Data";
-ALTER DATABASE "Devices.Data" OWNER TO "DevicesUser";
-
---
 -- Schemas
 --
 
