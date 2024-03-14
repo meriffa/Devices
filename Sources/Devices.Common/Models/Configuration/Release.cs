@@ -43,9 +43,9 @@ public class Release
     public required Action Action { get; set; }
 
     /// <summary>
-    /// Release active flag
+    /// Release enabled flag
     /// </summary>
-    public required bool Active { get; set; }
+    public required bool Enabled { get; set; }
     #endregion
 
 }

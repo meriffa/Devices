@@ -34,11 +34,11 @@ public class DeviceAuthenticationService(IIdentityService identityService, IOpti
     {
         if (Request.Headers.TryGetValue(Options.HeaderName, out var headerValue) && !string.IsNullOrEmpty(headerValue))
         {
-            if (identityService.IsDeviceEnabled(headerValue!))
+            if (identityService.GetDeviceId(headerValue!) is int deviceId)
             {
                 var claims = new List<Claim>()
                 {
-                    new(ClaimTypes.NameIdentifier, headerValue!),
+                    new(ClaimTypes.NameIdentifier, deviceId.ToString()),
                     new(ClaimTypes.Role, "Device")
                 };
                 return await Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new(new ClaimsIdentity(claims, Scheme.Name)), Scheme.Name)));

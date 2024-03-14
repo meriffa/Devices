@@ -38,7 +38,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 @"SELECT
                     ""ApplicationID"",
                     ""ApplicationName"",
-                    ""ApplicationActive""
+                    ""ApplicationEnabled""
                 FROM
                     ""Application""
                 ORDER BY
@@ -72,10 +72,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
-                    r.""ReleaseActive"",
+                    r.""ReleaseEnabled"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
-                    app.""ApplicationActive"",
+                    app.""ApplicationEnabled"",
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
@@ -104,7 +104,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    public List<Release> GetPendingReleases(string deviceId)
+    public List<Release> GetPendingReleases(int deviceId)
     {
         try
         {
@@ -117,10 +117,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
-                    r.""ReleaseActive"",
+                    r.""ReleaseEnabled"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
-                    app.""ApplicationActive"",
+                    app.""ApplicationEnabled"",
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
@@ -133,13 +133,14 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
                 WHERE
                     da.""DeviceID"" = @DeviceID AND
-                    app.""ApplicationActive"" = TRUE AND
-                    r.""ReleaseActive"" = TRUE AND
+                    app.""ApplicationEnabled"" = TRUE AND
+                    r.""ReleaseEnabled"" = TRUE AND
+                    da.""DeviceApplicationEnabled"" = TRUE AND
                     dd.""DeploymentID"" IS NULL
                 ORDER BY
                     r.""ReleaseID"",
                     r.""Date"";", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetRelease(r));
@@ -158,7 +159,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <param name="deviceId"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    public Stream GetReleasePackage(string deviceId, int releaseId)
+    public Stream GetReleasePackage(int deviceId, int releaseId)
     {
         try
         {
@@ -173,10 +174,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 WHERE
                     r.""ReleaseID"" = @ReleaseID AND
                     d.""DeviceID"" = @DeviceID AND
-                    app.""ApplicationActive"" = TRUE AND
-                    r.""ReleaseActive"" = TRUE;", cn);
+                    app.""ApplicationEnabled"" = TRUE AND
+                    r.""ReleaseEnabled"" = TRUE;", cn);
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             return File.OpenRead(Path.Combine(options.PackageFolder, (string)cmd.ExecuteScalar()!));
         }
         catch (Exception ex)
@@ -209,17 +210,19 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
-                    r.""ReleaseActive"",
+                    r.""ReleaseEnabled"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
-                    app.""ApplicationActive"",
+                    app.""ApplicationEnabled"",
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
                     act.""ActionArguments"",
                     d.""DeviceID"",
+                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceActive""
+                    d.""DeviceLocation"",
+                    d.""DeviceEnabled""
                 FROM
                     ""DeviceDeployment"" dd JOIN
                     ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
@@ -253,17 +256,19 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             using var cmd = GetCommand(
                 @"SELECT
                     d.""DeviceID"",
+                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceActive"",
+                    d.""DeviceLocation"",
+                    d.""DeviceEnabled"",
                     r.""ReleaseID"",
                     r.""Date"",
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
-                    r.""ReleaseActive"",
+                    r.""ReleaseEnabled"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
-                    app.""ApplicationActive"",
+                    app.""ApplicationEnabled"",
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
@@ -276,9 +281,10 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" LEFT JOIN
                     ""DeviceDeployment"" dd ON dd.""DeviceID"" = d.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
                 WHERE
-                    d.""DeviceActive"" = TRUE AND
-                    app.""ApplicationActive"" = TRUE AND
-                    r.""ReleaseActive"" = TRUE AND
+                    d.""DeviceEnabled"" = TRUE AND
+                    app.""ApplicationEnabled"" = TRUE AND
+                    r.""ReleaseEnabled"" = TRUE AND
+                    da.""DeviceApplicationEnabled"" = TRUE AND
                     dd.""DeploymentID"" IS NULL
                 ORDER BY
                     d.""DeviceID"",
@@ -300,7 +306,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="deployment"></param>
-    public void SaveDeployment(string deviceId, Deployment deployment)
+    public void SaveDeployment(int deviceId, Deployment deployment)
     {
         try
         {
@@ -318,7 +324,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     @Date,
                     @Success,
                     @Details);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = deployment.Release.Id;
             cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = deployment.Date;
             cmd.Parameters.Add("@Success", NpgsqlDbType.Boolean).Value = deployment.Success;
@@ -339,7 +345,12 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Application GetApplication(NpgsqlDataReader reader) => new() { Id = (int)reader["ApplicationID"], Name = (string)reader["ApplicationName"], Active = (bool)reader["ApplicationActive"] };
+    private static Application GetApplication(NpgsqlDataReader reader) => new()
+    {
+        Id = (int)reader["ApplicationID"],
+        Name = (string)reader["ApplicationName"],
+        Enabled = (bool)reader["ApplicationEnabled"]
+    };
 
     /// <summary>
     /// Return action instance
@@ -368,7 +379,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         PackageHash = reader["PackageHash"] is DBNull ? null : (string?)reader["PackageHash"],
         Version = (string)reader["Version"],
         Action = GetAction(reader),
-        Active = (bool)reader["ReleaseActive"]
+        Enabled = (bool)reader["ReleaseEnabled"]
     };
 
     /// <summary>

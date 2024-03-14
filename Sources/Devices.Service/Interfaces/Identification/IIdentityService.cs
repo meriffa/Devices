@@ -11,18 +11,18 @@ public interface IIdentityService
 
     #region Public Methods
     /// <summary>
-    /// Return device id
+    /// Return device token
     /// </summary>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    string GetDeviceId(List<Fingerprint> fingerprints);
+    string GetDeviceToken(List<Fingerprint> fingerprints);
 
     /// <summary>
-    /// Check if device is enabled
+    /// Return device id
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="deviceToken"></param>
     /// <returns></returns>
-    bool IsDeviceEnabled(string deviceId);
+    int? GetDeviceId(string deviceToken);
 
     /// <summary>
     /// Return devices

@@ -26,7 +26,7 @@ public class IdentityController : ControllerBase
     {
         try
         {
-            return Ok(service.GetDeviceId(fingerprints));
+            return Ok(service.GetDeviceToken(fingerprints));
         }
         catch (Exception ex)
         {

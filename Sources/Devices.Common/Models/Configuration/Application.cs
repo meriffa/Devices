@@ -18,9 +18,9 @@ public class Application
     public required string Name { get; set; }
 
     /// <summary>
-    /// Application active flag
+    /// Application enabled flag
     /// </summary>
-    public required bool Active { get; set; }
+    public required bool Enabled { get; set; }
     #endregion
 
 }

@@ -21,7 +21,7 @@ public static class UserExtensions
     /// </summary>
     /// <param name="claimsPrincipal"></param>
     /// <returns></returns>
-    public static string GetDeviceId(this ClaimsPrincipal claimsPrincipal) => claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    public static int GetDeviceId(this ClaimsPrincipal claimsPrincipal) => Convert.ToInt32(claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier));
     #endregion
 
 }

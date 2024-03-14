@@ -41,8 +41,10 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     w.""Pressure"",
                     w.""Illuminance"",
                     d.""DeviceID"",
+                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceActive""                    
+                    d.""DeviceLocation"",
+                    d.""DeviceEnabled""                    
                 FROM
                     ""Garden"".""WeatherCondition"" w JOIN
                     ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
@@ -73,7 +75,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
-    public void SaveWeatherCondition(string deviceId, WeatherCondition weatherCondition)
+    public void SaveWeatherCondition(int deviceId, WeatherCondition weatherCondition)
     {
         try
         {
@@ -93,7 +95,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     @Humidity,
                     @Pressure,
                     @Illuminance);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = weatherCondition.Date;
             cmd.Parameters.Add("@Temperature", NpgsqlDbType.Numeric).Value = weatherCondition.Temperature;
             cmd.Parameters.Add("@Humidity", NpgsqlDbType.Numeric).Value = weatherCondition.Humidity;

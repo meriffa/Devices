@@ -28,22 +28,22 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Framework</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Devices"))" asp-area="Framework" asp-page="/Devices">Devices</a></li>
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Monitoring"))" asp-area="Framework" asp-page="/Monitoring">Monitoring</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Devices"))" asp-area="Framework" asp-page="/Devices">Devices</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Monitoring"))" asp-area="Framework" asp-page="/Monitoring">Monitoring</a></li>
                                     <li>
                                         <hr class="dropdown-divider" />
                                     </li>
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Applications"))" asp-area="Framework" asp-page="/Applications">Applications</a></li>
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Releases"))" asp-area="Framework" asp-page="/Releases">Releases</a></li>
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Deployments"))" asp-area="Framework" asp-page="/Deployments">Deployments</a></li>
-                                    <li><a class="dropdown-item@(IsActive(ViewData, "Pending Deployments"))" asp-area="Framework" asp-page="/PendingDeployments">Pending Deployments</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Applications"))" asp-area="Framework" asp-page="/Applications">Applications</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Releases"))" asp-area="Framework" asp-page="/Releases">Releases</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Deployments"))" asp-area="Framework" asp-page="/Deployments">Deployments</a></li>
+                                    <li><a class="dropdown-item@(IsSelected(ViewData, "Pending Deployments"))" asp-area="Framework" asp-page="/PendingDeployments">Pending Deployments</a></li>
                                 </ul>
                             </li>
                         }
                         @if ((await AuthorizationService.AuthorizeAsync(User, Model, "GardenPolicy")).Succeeded)
                         {
                             <li class="nav-item">
-                                <a class="nav-link@(IsActive(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
+                                <a class="nav-link@(IsSelected(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a>
                             </li>
                         }
                     </ul>

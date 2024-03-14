@@ -15,18 +15,26 @@ Devices.Web = Devices.Web || {};
                     data: "id"
                 },
                 {
+                    title: "Device Token",
+                    data: "token"
+                },
+                {
                     title: "Device Name",
                     data: "name"
                 },
                 {
-                    title: "Active",
-                    data: "active",
+                    title: "Device Location",
+                    data: "location"
+                },
+                {
+                    title: "Enabled",
+                    data: "enabled",
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
                     }
                 }
             ],
-            order: [[1, "asc"]]
+            order: [[0, "asc"]]
         });
     }
 

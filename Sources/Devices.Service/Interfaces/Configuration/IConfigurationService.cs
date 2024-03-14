@@ -27,7 +27,7 @@ public interface IConfigurationService
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    List<Release> GetPendingReleases(string deviceId);
+    List<Release> GetPendingReleases(int deviceId);
 
     /// <summary>
     /// Return release package
@@ -35,7 +35,7 @@ public interface IConfigurationService
     /// <param name="deviceId"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    Stream GetReleasePackage(string deviceId, int releaseId);
+    Stream GetReleasePackage(int deviceId, int releaseId);
 
     /// <summary>
     /// Return completed deployments
@@ -54,7 +54,7 @@ public interface IConfigurationService
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="deployment"></param>
-    void SaveDeployment(string deviceId, Deployment deployment);
+    void SaveDeployment(int deviceId, Deployment deployment);
     #endregion
 
 }

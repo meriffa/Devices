@@ -44,7 +44,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
                 WHERE
                     LOWER(""Username"") = LOWER(@Username) AND
                     LOWER(""Password"") = LOWER(@Password) AND
-                    ""Enabled"" = TRUE;", cn);
+                    ""UserEnabled"" = TRUE;", cn);
             cmd.Parameters.Add("@Username", NpgsqlDbType.Varchar, 128).Value = username;
             cmd.Parameters.Add("@Password", NpgsqlDbType.Varchar, 128).Value = HashPassword(password);
             using var r = cmd.ExecuteReader();
@@ -82,7 +82,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
                     ""User""
                 WHERE
                     ""UserID"" = @UserID AND
-                    ""Enabled"" = TRUE;", cn);
+                    ""UserEnabled"" = TRUE;", cn);
             cmd.Parameters.Add("@UserID", NpgsqlDbType.Integer).Value = userId;
             return cmd.ExecuteScalar() != null;
         }

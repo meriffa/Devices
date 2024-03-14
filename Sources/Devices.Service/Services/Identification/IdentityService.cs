@@ -23,25 +23,25 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
 
     #region Public Methods
     /// <summary>
-    /// Return device id
+    /// Return device token
     /// </summary>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
-    public string GetDeviceId(List<Fingerprint> fingerprints)
+    public string GetDeviceToken(List<Fingerprint> fingerprints)
     {
         try
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    d.""DeviceID""
+                    d.""DeviceToken""
                 FROM
                     ""DeviceFingerprint"" f JOIN
                     ""Device"" d ON d.""DeviceID"" = f.""DeviceID""
                 WHERE
                     f.""FingerprintType"" = @FingerprintType AND
                     f.""FingerprintValue"" = @FingerprintValue AND
-                    d.""DeviceActive"" = TRUE;", cn);
+                    d.""DeviceEnabled"" = TRUE;", cn);
             cmd.Parameters.Add("@FingerprintType", NpgsqlDbType.Integer);
             cmd.Parameters.Add("@FingerprintValue", NpgsqlDbType.Varchar, 1024);
             foreach (var fingerprint in fingerprints)
@@ -61,11 +61,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
-    /// Check if device is enabled
+    /// Return device id
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="deviceToken"></param>
     /// <returns></returns>
-    public bool IsDeviceEnabled(string deviceId)
+    public int? GetDeviceId(string deviceToken)
     {
         try
         {
@@ -76,10 +76,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 FROM
                     ""Device""
                 WHERE
-                    ""DeviceID"" = @DeviceID AND
-                    ""DeviceActive"" = TRUE;", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
-            return cmd.ExecuteScalar() != null;
+                    ""DeviceToken"" = @DeviceToken AND
+                    ""DeviceEnabled"" = TRUE;", cn);
+            cmd.Parameters.Add("@DeviceToken", NpgsqlDbType.Varchar, 64).Value = deviceToken;
+            return (int?)cmd.ExecuteScalar();
         }
         catch (Exception ex)
         {
@@ -101,8 +101,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             using var cmd = GetCommand(
                 @"SELECT
                     ""DeviceID"",
+                    ""DeviceToken"",
                     ""DeviceName"",
-                    ""DeviceActive""
+                    ""DeviceLocation"",
+                    ""DeviceEnabled""
                 FROM
                     ""Device""
                 ORDER BY
@@ -128,9 +130,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// <returns></returns>
     public static Device GetDevice(NpgsqlDataReader reader) => new()
     {
-        Id = (string)reader["DeviceID"],
+        Id = (int)reader["DeviceID"],
+        Token = (string)reader["DeviceToken"],
         Name = (string)reader["DeviceName"],
-        Active = (bool)reader["DeviceActive"]
+        Location = (string)reader["DeviceLocation"],
+        Enabled = (bool)reader["DeviceEnabled"]
     };
     #endregion
 

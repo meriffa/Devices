@@ -49,8 +49,8 @@ Devices.Web = Devices.Web || {};
                     data: "action.arguments"
                 },
                 {
-                    title: "Active",
-                    data: "active",
+                    title: "Enabled",
+                    data: "enabled",
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
                     }

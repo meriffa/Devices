@@ -44,8 +44,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     m.""MemoryUsed"",
                     m.""MemoryFree"",
                     d.""DeviceID"",
+                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceActive""
+                    d.""DeviceLocation"",
+                    d.""DeviceEnabled""
                 FROM
                     ""DeviceMetric"" m JOIN
                     ""Device"" d ON d.""DeviceID"" = m.""DeviceID""
@@ -89,7 +91,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="metrics"></param>
-    public void SaveDeviceMetrics(string deviceId, DeviceMetrics metrics)
+    public void SaveDeviceMetrics(int deviceId, DeviceMetrics metrics)
     {
         try
         {
@@ -116,7 +118,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     @MemoryTotal,
                     @MemoryUsed,
                     @MemoryFree);", cn);
-            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.Date;
             cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.LastRebootDate;
             cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Cpu.User;
@@ -142,10 +144,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// <param name="cn"></param>
     /// <param name="deviceId"></param>
     /// <param name="cutOffDate"></param>
-    private void CleanupMonitoringMetrics(NpgsqlConnection cn, string deviceId, DateTime cutOffDate)
+    private void CleanupMonitoringMetrics(NpgsqlConnection cn, int deviceId, DateTime cutOffDate)
     {
         using var cmd = GetCommand(@"DELETE FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID AND ""Date"" < @Date;", cn);
-        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Varchar, 64).Value = deviceId;
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
         cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = cutOffDate.AddMonths(-1);
         cmd.ExecuteNonQuery();
     }

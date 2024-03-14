@@ -10,12 +10,12 @@ public static class PageExtensions
 
     #region Public Methods
     /// <summary>
-    /// Check if page is active
+    /// Check if page is selected
     /// </summary>
     /// <param name="viewData"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string IsActive(ViewDataDictionary viewData, string value)
+    public static string IsSelected(ViewDataDictionary viewData, string value)
     {
         var title = viewData["Title"]!.ToString();
         return title != null && title.Equals(value, StringComparison.InvariantCultureIgnoreCase) ? " active" : string.Empty;

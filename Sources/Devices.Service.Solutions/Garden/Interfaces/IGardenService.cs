@@ -21,7 +21,7 @@ public interface IGardenService
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
-    void SaveWeatherCondition(string deviceId, WeatherCondition weatherCondition);
+    void SaveWeatherCondition(int deviceId, WeatherCondition weatherCondition);
     #endregion
 
 }
