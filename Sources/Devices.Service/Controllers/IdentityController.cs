@@ -16,13 +16,13 @@ public class IdentityController : ControllerBase
 
     #region Public Methods
     /// <summary>
-    /// Return device id
+    /// Return device token
     /// </summary>
     /// <param name="service"></param>
     /// <param name="fingerprints"></param>
     /// <returns></returns>
     [HttpPost, AllowAnonymous]
-    public ActionResult<string> GetDeviceId([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
+    public ActionResult<string> GetDeviceToken([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
     {
         try
         {

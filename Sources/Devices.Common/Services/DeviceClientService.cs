@@ -18,7 +18,7 @@ public abstract class DeviceClientService : ClientService
     /// <param name="identityService"></param>
     public DeviceClientService(ClientOptions options, IIdentityService identityService) : base(options)
     {
-        Client.DefaultRequestHeaders.Add(Constants.DeviceAuthenticationHeader, identityService.GetDeviceId());
+        Client.DefaultRequestHeaders.Add(Constants.DeviceAuthenticationHeader, identityService.GetDeviceToken());
     }
     #endregion
 

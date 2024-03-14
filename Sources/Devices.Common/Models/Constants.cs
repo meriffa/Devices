@@ -7,7 +7,7 @@ public static class Constants
 {
 
     #region Constants
-    public const string DeviceAuthenticationHeader = "deviceId";
+    public const string DeviceAuthenticationHeader = "deviceToken";
     #endregion
 
 }
