@@ -49,7 +49,7 @@ public class GardenController : Controller
         var temperatureSensorData = temperatureSensor.Read();
         return new()
         {
-            Date = DateTime.UtcNow,
+            DeviceDate = DateTime.UtcNow,
             Temperature = temperatureSensorData.Temperature!.Value.DegreesCelsius,
             Humidity = temperatureSensorData.Humidity!.Value.Percent,
             Pressure = temperatureSensorData.Pressure!.Value.Hectopascals,

@@ -13,9 +13,9 @@ public class Deployment
     public required Release Release { get; set; }
 
     /// <summary>
-    /// Deployment date & time
+    /// Deployment device date & time
     /// </summary>
-    public required DateTime Date { get; set; }
+    public required DateTime DeviceDate { get; set; }
 
     /// <summary>
     /// Deployment success flag

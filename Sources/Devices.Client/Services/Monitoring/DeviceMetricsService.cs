@@ -19,13 +19,18 @@ public class DeviceMetricsService : IDeviceMetricsService
     public DeviceMetrics GetMetrics()
     {
         if (OperatingSystem.IsLinux())
+        {
+            var lastRebootDate = GetLinuxLastRebootDate();
+            var cpu = GetLinuxCpuMetrics();
+            var memory = GetLinuxMemoryMetrics();
             return new()
             {
-                Date = DateTime.UtcNow,
-                LastRebootDate = GetLinuxLastRebootDate(),
-                Cpu = GetLinuxCpuMetrics(),
-                Memory = GetLinuxMemoryMetrics()
+                DeviceDate = DateTime.UtcNow,
+                LastRebootDate = lastRebootDate,
+                Cpu = cpu,
+                Memory = memory
             };
+        }
         throw new("Device metrics not supported on current platform.");
     }
     #endregion

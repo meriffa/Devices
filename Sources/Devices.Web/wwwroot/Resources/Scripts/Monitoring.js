@@ -15,11 +15,15 @@ Devices.Web = Devices.Web || {};
                     data: "device.name"
                 },
                 {
-                    title: "Date & Time",
-                    data: "deviceMetrics.date",
+                    title: "Service Date & Time",
+                    data: "serviceDate",
                     render: function (data, type) {
                         return Devices.Host.Site.formatDateTime(data);
                     }
+                },
+                {
+                    title: "Device Date & Time Offset",
+                    data: "deviceDateOffset"
                 },
                 {
                     title: "Last Reboot",

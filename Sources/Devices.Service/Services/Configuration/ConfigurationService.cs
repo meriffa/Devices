@@ -68,7 +68,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             using var cmd = GetCommand(
                 @"SELECT
                     r.""ReleaseID"",
-                    r.""Date"",
+                    r.""ServiceDate"",
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
@@ -83,10 +83,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 FROM
                     ""Release"" r JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
-                    ""Action"" act ON act.""ActionID"" = r.""ActionID""
-                ORDER BY
-                    app.""ApplicationID"",
-                    r.""Date"";", cn);
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetRelease(r));
@@ -113,7 +110,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             using var cmd = GetCommand(
                 @"SELECT
                     r.""ReleaseID"",
-                    r.""Date"",
+                    r.""ServiceDate"",
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
@@ -136,10 +133,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     app.""ApplicationEnabled"" = TRUE AND
                     r.""ReleaseEnabled"" = TRUE AND
                     da.""DeviceApplicationEnabled"" = TRUE AND
-                    dd.""DeploymentID"" IS NULL
-                ORDER BY
-                    r.""ReleaseID"",
-                    r.""Date"";", cn);
+                    dd.""DeploymentID"" IS NULL;", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             using var r = cmd.ExecuteReader();
             while (r.Read())
@@ -202,11 +196,11 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     dd.""DeploymentID"",
                     dd.""DeviceID"",
                     dd.""ReleaseID"",
-                    dd.""Date"",
+                    dd.""DeviceDate"",
                     dd.""Success"",
                     dd.""Details"",
                     r.""ReleaseID"",
-                    r.""Date"",
+                    r.""ServiceDate"",
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
@@ -228,9 +222,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" JOIN
-                    ""Device"" d ON d.""DeviceID"" = dd.""DeviceID""
-                ORDER BY
-                    dd.""DeploymentID"";", cn);
+                    ""Device"" d ON d.""DeviceID"" = dd.""DeviceID"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetCompletedDeployment(r));
@@ -261,7 +253,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     d.""DeviceLocation"",
                     d.""DeviceEnabled"",
                     r.""ReleaseID"",
-                    r.""Date"",
+                    r.""ServiceDate"",
                     r.""Package"",
                     r.""PackageHash"",
                     r.""Version"",
@@ -285,10 +277,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     app.""ApplicationEnabled"" = TRUE AND
                     r.""ReleaseEnabled"" = TRUE AND
                     da.""DeviceApplicationEnabled"" = TRUE AND
-                    dd.""DeploymentID"" IS NULL
-                ORDER BY
-                    d.""DeviceID"",
-                    r.""ReleaseID"";", cn);
+                    dd.""DeploymentID"" IS NULL;", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetPendingDeployment(r));
@@ -315,18 +304,18 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 @"INSERT INTO ""DeviceDeployment""
                     (""DeviceID"",
                     ""ReleaseID"",
-                    ""Date"",
+                    ""DeviceDate"",
                     ""Success"",
                     ""Details"")
                 VALUES
                     (@DeviceID,
                     @ReleaseID,
-                    @Date,
+                    @DeviceDate,
                     @Success,
                     @Details);", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = deployment.Release.Id;
-            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = deployment.Date;
+            cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = deployment.DeviceDate;
             cmd.Parameters.Add("@Success", NpgsqlDbType.Boolean).Value = deployment.Success;
             cmd.Parameters.Add("@Details", NpgsqlDbType.Text).Value = (object?)deployment.Details ?? DBNull.Value;
             cmd.ExecuteNonQuery();
@@ -373,7 +362,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     private static Release GetRelease(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["ReleaseID"],
-        Date = (DateTime)reader["Date"],
+        ServiceDate = (DateTime)reader["ServiceDate"],
         Application = GetApplication(reader),
         Package = (string)reader["Package"],
         PackageHash = reader["PackageHash"] is DBNull ? null : (string?)reader["PackageHash"],
@@ -403,7 +392,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         Id = (int)reader["DeploymentID"],
         Device = IdentityService.GetDevice(reader),
         Release = GetRelease(reader),
-        Date = (DateTime)reader["Date"],
+        DeviceDate = (DateTime)reader["DeviceDate"],
         Success = (bool)reader["Success"],
         Details = reader["Details"] is DBNull ? null : (string?)reader["Details"]
     };

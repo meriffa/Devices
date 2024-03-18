@@ -13,9 +13,9 @@ public class Release
     public required int Id { get; set; }
 
     /// <summary>
-    /// Release date & time
+    /// Release service date & time
     /// </summary>
-    public required DateTime Date { get; set; }
+    public required DateTime ServiceDate { get; set; }
 
     /// <summary>
     /// Release application

@@ -35,7 +35,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    m.""Date"",
+                    m.""ServiceDate"",
+                    m.""DeviceDate"",
                     m.""LastReboot"",
                     m.""CpuUser"",
                     m.""CpuSystem"",
@@ -50,33 +51,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     d.""DeviceEnabled""
                 FROM
                     ""DeviceMetric"" m JOIN
-                    ""Device"" d ON d.""DeviceID"" = m.""DeviceID""
-                ORDER BY
-                    d.""DeviceName"",
-                    m.""Date"" DESC;", cn);
+                    ""Device"" d ON d.""DeviceID"" = m.""DeviceID"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(new()
-                {
-                    Device = IdentityService.GetDevice(r),
-                    DeviceMetrics = new()
-                    {
-                        Date = (DateTime)r["Date"],
-                        LastRebootDate = (DateTime)r["LastReboot"],
-                        Cpu = new()
-                        {
-                            User = (float)r["CpuUser"],
-                            System = (float)r["CpuSystem"],
-                            Idle = (float)r["CpuIdle"]
-                        },
-                        Memory = new()
-                        {
-                            Total = (int)r["MemoryTotal"],
-                            Used = (int)r["MemoryUsed"],
-                            Free = (int)r["MemoryFree"]
-                        }
-                    }
-                });
+                result.Add(GetMonitoringMetrics(r));
             return result;
         }
         catch (Exception ex)
@@ -90,17 +68,19 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// Save device metrics
     /// </summary>
     /// <param name="deviceId"></param>
+    /// <param name="serviceDate"></param>
     /// <param name="metrics"></param>
-    public void SaveDeviceMetrics(int deviceId, DeviceMetrics metrics)
+    public void SaveDeviceMetrics(int deviceId, DateTime serviceDate, DeviceMetrics metrics)
     {
         try
         {
             using var cn = GetConnection();
-            CleanupMonitoringMetrics(cn, deviceId, metrics.Date);
+            CleanupMonitoringMetrics(cn, deviceId, serviceDate);
             using var cmd = GetCommand(
                 @"INSERT INTO ""DeviceMetric""
                     (""DeviceID"",
-                    ""Date"",
+                    ""ServiceDate"",
+                    ""DeviceDate"",
                     ""LastReboot"",
                     ""CpuUser"",
                     ""CpuSystem"",
@@ -110,7 +90,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     ""MemoryFree"")
                 VALUES
                     (@DeviceID,
-                    @Date,
+                    @ServiceDate,
+                    @DeviceDate,
                     @LastReboot,
                     @CpuUser,
                     @CpuSystem,
@@ -119,7 +100,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     @MemoryUsed,
                     @MemoryFree);", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
-            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = metrics.Date;
+            cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = serviceDate;
+            cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = metrics.DeviceDate;
             cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.LastRebootDate;
             cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Cpu.User;
             cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.Cpu.System;
@@ -139,16 +121,45 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
 
     #region Private Methods
     /// <summary>
+    /// Return monitoring metrics instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static MonitoringMetrics GetMonitoringMetrics(NpgsqlDataReader reader) => new()
+    {
+        ServiceDate = (DateTime)reader["ServiceDate"],
+        DeviceDateOffset = ((DateTime)reader["DeviceDate"]).Subtract((DateTime)reader["ServiceDate"]),
+        Device = IdentityService.GetDevice(reader),
+        DeviceMetrics = new()
+        {
+            DeviceDate = (DateTime)reader["DeviceDate"],
+            LastRebootDate = (DateTime)reader["LastReboot"],
+            Cpu = new()
+            {
+                User = (float)reader["CpuUser"],
+                System = (float)reader["CpuSystem"],
+                Idle = (float)reader["CpuIdle"]
+            },
+            Memory = new()
+            {
+                Total = (int)reader["MemoryTotal"],
+                Used = (int)reader["MemoryUsed"],
+                Free = (int)reader["MemoryFree"]
+            }
+        }
+    };
+
+    /// <summary>
     /// Cleanup monitoring metrics (1 month or older)
     /// </summary>
     /// <param name="cn"></param>
     /// <param name="deviceId"></param>
-    /// <param name="cutOffDate"></param>
-    private void CleanupMonitoringMetrics(NpgsqlConnection cn, int deviceId, DateTime cutOffDate)
+    /// <param name="serviceDate"></param>
+    private void CleanupMonitoringMetrics(NpgsqlConnection cn, int deviceId, DateTime serviceDate)
     {
-        using var cmd = GetCommand(@"DELETE FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID AND ""Date"" < @Date;", cn);
+        using var cmd = GetCommand(@"DELETE FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID AND ""ServiceDate"" < @ServiceDate;", cn);
         cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
-        cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = cutOffDate.AddMonths(-1);
+        cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = serviceDate.AddMonths(-1);
         cmd.ExecuteNonQuery();
     }
     #endregion

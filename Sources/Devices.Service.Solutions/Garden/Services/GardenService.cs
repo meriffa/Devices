@@ -35,7 +35,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    w.""Date"",
+                    w.""DeviceDate"",
                     w.""Temperature"",
                     w.""Humidity"",
                     w.""Pressure"",
@@ -47,15 +47,13 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     d.""DeviceEnabled""                    
                 FROM
                     ""Garden"".""WeatherCondition"" w JOIN
-                    ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
-                ORDER BY
-                    w.""Date"" DESC;", cn);
+                    ""Device"" d ON d.""DeviceID"" = w.""DeviceID"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(new()
                 {
                     Device = IdentityService.GetDevice(r),
-                    Date = (DateTime)r["Date"],
+                    DeviceDate = (DateTime)r["DeviceDate"],
                     Temperature = (double)(decimal)r["Temperature"],
                     Humidity = (double)(decimal)r["Humidity"],
                     Pressure = (double)(decimal)r["Pressure"],
@@ -83,20 +81,20 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             using var cmd = GetCommand(
                 @"INSERT INTO ""Garden"".""WeatherCondition""
                     (""DeviceID"",
-                    ""Date"",
+                    ""DeviceDate"",
                     ""Temperature"",
                     ""Humidity"",
                     ""Pressure"",
                     ""Illuminance"")
                 VALUES
                     (@DeviceID,
-                    @Date,
+                    @DeviceDate,
                     @Temperature,
                     @Humidity,
                     @Pressure,
                     @Illuminance);", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
-            cmd.Parameters.Add("@Date", NpgsqlDbType.TimestampTz).Value = weatherCondition.Date;
+            cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = weatherCondition.DeviceDate;
             cmd.Parameters.Add("@Temperature", NpgsqlDbType.Numeric).Value = weatherCondition.Temperature;
             cmd.Parameters.Add("@Humidity", NpgsqlDbType.Numeric).Value = weatherCondition.Humidity;
             cmd.Parameters.Add("@Pressure", NpgsqlDbType.Numeric).Value = weatherCondition.Pressure;

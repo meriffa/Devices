@@ -8,12 +8,12 @@ public class DeviceMetrics
 
     #region Properties
     /// <summary>
-    /// Device metrics date & time
+    /// Device metrics device date & time
     /// </summary>
-    public required DateTime Date { get; set; }
+    public required DateTime DeviceDate { get; set; }
 
     /// <summary>
-    /// Device metrics las reboot date & time
+    /// Device metrics last reboot date & time
     /// </summary>
     public required DateTime LastRebootDate { get; set; }
 

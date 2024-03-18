@@ -16,8 +16,8 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
                     data: "device.name"
                 },
                 {
-                    title: "Date & Time",
-                    data: "date",
+                    title: "Device Date & Time",
+                    data: "deviceDate",
                     render: function (data, type) {
                         return Devices.Host.Site.formatDateTime(data);
                     }

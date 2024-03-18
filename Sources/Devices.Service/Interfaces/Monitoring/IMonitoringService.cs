@@ -20,8 +20,9 @@ public interface IMonitoringService
     /// Save device metrics
     /// </summary>
     /// <param name="deviceId"></param>
+    /// <param name="serviceDate"></param>
     /// <param name="metrics"></param>
-    void SaveDeviceMetrics(int deviceId, DeviceMetrics metrics);
+    void SaveDeviceMetrics(int deviceId, DateTime serviceDate, DeviceMetrics metrics);
     #endregion
 
 }

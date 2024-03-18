@@ -45,7 +45,7 @@ public class MonitoringController : ControllerBase
     {
         try
         {
-            service.SaveDeviceMetrics(HttpContext.User.GetDeviceId(), metrics);
+            service.SaveDeviceMetrics(HttpContext.User.GetDeviceId(), DateTime.UtcNow, metrics);
             return Ok();
         }
         catch (Exception ex)

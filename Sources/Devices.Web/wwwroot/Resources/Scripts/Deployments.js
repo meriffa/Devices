@@ -15,8 +15,8 @@ Devices.Web = Devices.Web || {};
                     data: "id"
                 },
                 {
-                    title: "Deployment Date & Time",
-                    data: "date",
+                    title: "Deployment Device Date & Time",
+                    data: "deviceDate",
                     render: function (data, type) {
                         return Devices.Host.Site.formatDateTime(data);
                     }

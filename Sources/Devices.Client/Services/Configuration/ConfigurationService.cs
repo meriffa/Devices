@@ -77,7 +77,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         {
             var deployment = new Deployment()
             {
-                Date = DateTime.UtcNow,
+                DeviceDate = DateTime.UtcNow,
                 Release = release,
                 Success = success,
                 Details = details

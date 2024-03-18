@@ -8,9 +8,9 @@ public class WeatherCondition
 
     #region Properties
     /// <summary>
-    /// Weather condition date & time
+    /// Weather condition device date & time
     /// </summary>
-    public required DateTime Date { get; set; }
+    public required DateTime DeviceDate { get; set; }
 
     /// <summary>
     /// Weather condition temperature [℃]
