@@ -116,3 +116,30 @@ CREATE TABLE "Garden"."WeatherCondition" (
 	CONSTRAINT "PK_WeatherCondition" PRIMARY KEY ("DeviceID", "DeviceDate"),
 	CONSTRAINT "FK_WeatherCondition_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID")
 );
+
+--
+-- Static Data
+--
+
+INSERT INTO "Application" ("ApplicationID", "ApplicationName", "ApplicationEnabled") VALUES
+    (1, 'Devices.Client', TRUE),
+    (2, 'Devices.Client.Solutions', TRUE),
+    (3, 'System', TRUE);
+INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArguments") VALUES
+    (1, 1, 'Install.sh', 'InstallClient "Devices.Client"'),
+    (2, 1, 'Install.sh', 'InstallClient "Devices.Client.Solutions"'),
+    (3, 1, 'Install.sh', 'SystemUpdate'),
+    (4, 1, 'Install.sh', 'SystemRestart'),
+    (5, 1, 'Install.sh', 'SynchronizeClock'),
+    (6, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client"'),
+    (7, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client.Solutions"'),
+    (8, 1, 'Install.sh', 'ExecuteCommand "ls ~"');
+INSERT INTO "Release" ("ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled") VALUES
+    (NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE),
+    (NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 3, FALSE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 4, FALSE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 5, FALSE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 6, TRUE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 7, TRUE),
+    (NOW(), 3, 'Install.zip', NULL, '1.0.0', 8, FALSE);

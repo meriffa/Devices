@@ -10,7 +10,7 @@
 - Connectivity: Bluetooth, BLE, Zigbee
 - Edge ML: Google Coral Accelerator, [TensorFlow Lite](https://www.tensorflow.org/lite)
 - Proprietary IoT Framework Integration: [AWS IoT Device Management](https://aws.amazon.com/iot-device-management/), [Azure IoT Hub](https://azure.microsoft.com/products/iot-hub), [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com/)
-- Device Configuration: Release Dependency Graph, Deployment Groups (based on device attributes), Configurable Deployment Retries
+- Device Configuration: Deployment Groups (based on device attributes), Configurable Deployment Retries
 
 ### Garden Management System
 
