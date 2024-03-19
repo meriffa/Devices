@@ -39,7 +39,8 @@ The framework has been tested with the following platforms:
 
 - Devices
   - Raspberry Pi 4 Model B
+  - Raspberry Pi Zero 2 W
 - Device Operating Systems
-  - DietPi 9.1.1
+  - DietPi 9
 - Programming
-  - .NET Core 8.0
+  - .NET Core 8

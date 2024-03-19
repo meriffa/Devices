@@ -54,6 +54,13 @@ Devices.Web = Devices.Web || {};
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
                     }
+                },
+                {
+                    title: "Parent Release IDs",
+                    data: "parentReleaseIDs",
+                    render: function (data, type) {
+                        return data.join(", ");
+                    }
                 }
             ],
             order: [[0, "asc"]]

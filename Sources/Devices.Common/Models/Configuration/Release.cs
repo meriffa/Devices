@@ -46,6 +46,12 @@ public class Release
     /// Release enabled flag
     /// </summary>
     public required bool Enabled { get; set; }
+
+
+    /// <summary>
+    /// Release parent release ids
+    /// </summary>
+    public required int[] ParentReleaseIDs { get; set; }
     #endregion
 
 }
