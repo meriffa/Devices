@@ -42,11 +42,49 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Deploy Devices.Host",
-            "command": "./Resources/Scripts/Setup.sh",
+            "label": "Package & Deploy Devices.Host",
+            "command": "./Resources/Scripts/AWS.sh",
             "type": "process",
             "args": [
                 "DeployDevicesHost"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Package Devices.Client",
+            "command": "./Resources/Scripts/AWS.sh",
+            "type": "process",
+            "args": [
+                "PackageClient",
+                "Devices.Client"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Package Devices.Client.Solutions",
+            "command": "./Resources/Scripts/AWS.sh",
+            "type": "process",
+            "args": [
+                "PackageClient",
+                "Devices.Client.Solutions"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Package Install.sh",
+            "command": "./Resources/Scripts/AWS.sh",
+            "type": "process",
+            "args": [
+                "PackageInstall"
             ],
             "group": "build",
             "presentation": {
@@ -73,44 +111,6 @@
             "args": [
                 "DeployClient",
                 "Devices.Client.Solutions"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            }
-        },
-        {
-            "label": "Package Devices.Client",
-            "command": "./Resources/Scripts/Setup.sh",
-            "type": "process",
-            "args": [
-                "PackageClient",
-                "Devices.Client"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            }
-        },
-        {
-            "label": "Package Devices.Client.Solutions",
-            "command": "./Resources/Scripts/Setup.sh",
-            "type": "process",
-            "args": [
-                "PackageClient",
-                "Devices.Client.Solutions"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            }
-        },
-        {
-            "label": "Package Install.sh",
-            "command": "./Resources/Scripts/Setup.sh",
-            "type": "process",
-            "args": [
-                "PackageInstall"
             ],
             "group": "build",
             "presentation": {

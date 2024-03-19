@@ -52,12 +52,13 @@
             "name": "Client (Remote)",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "Deploy Devices.Client",
             "program": "~/.dotnet/dotnet",
             "args": [
-                "../Devices.Client/Devices.Client.dll",
+                "../Devices.Client.Debug/Devices.Client.dll",
                 "Configuration"
             ],
-            "cwd": "~/Devices.Client",
+            "cwd": "~/Devices.Client.Debug",
             "console": "integratedTerminal",
             "stopAtEntry": false,
             "pipeTransport": {
@@ -67,9 +68,6 @@
                     "HOST_SBC"
                 ],
                 "debuggerPath": "~/.vsdbg/vsdbg"
-            },
-            "env": {
-                "ENVIRONMENT": "Production"
             }
         },
         {
@@ -92,12 +90,13 @@
             "name": "Client.Solutions (Remote)",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "Deploy Devices.Client.Solutions",
             "program": "~/.dotnet/dotnet",
             "args": [
-                "../Devices.Client.Solutions/Devices.Client.Solutions.dll",
+                "../Devices.Client.Solutions.Debug/Devices.Client.Solutions.dll",
                 "Garden"
             ],
-            "cwd": "~/Devices.Client.Solutions",
+            "cwd": "~/Devices.Client.Solutions.Debug",
             "console": "integratedTerminal",
             "stopAtEntry": false,
             "pipeTransport": {
@@ -107,9 +106,6 @@
                     "HOST_SBC"
                 ],
                 "debuggerPath": "~/.vsdbg/vsdbg"
-            },
-            "env": {
-                "ENVIRONMENT": "Production"
             }
         }
     ]

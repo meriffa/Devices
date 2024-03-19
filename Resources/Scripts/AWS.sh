@@ -124,10 +124,6 @@ CreateDatabase() {
 # Configure Database
 ConfigureDatabase() {
   echo "Database 'Devices.Data' configuration started."
-  scp -q $SOLUTION_FOLDER/../Devices/Resources/Scripts/Database.sql HOST_AWS:~
-  [ $? != 0 ] && DisplayErrorAndStop "Database configuration failed (scp)."
-  ssh HOST_AWS "sudo mv ~/Database.sql / && sudo chmod a+r /Database.sql && sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -f /Database.sql -q\" && sudo rm /Database.sql"
-  [ $? != 0 ] && DisplayErrorAndStop "Database configuration failed (script)."
   scp -q $SOLUTION_FOLDER/Resources/Scripts/Database.sql HOST_AWS:~
   [ $? != 0 ] && DisplayErrorAndStop "Database configuration failed (scp)."
   ssh HOST_AWS "sudo mv ~/Database.sql / && sudo chmod a+r /Database.sql && sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -f /Database.sql -q\" && sudo rm /Database.sql"
@@ -337,17 +333,15 @@ DeployDevicesHost() {
 # Package Devices.Host project
 PackageDevicesHost() {
   echo "'Devices.Host' packaging started."
-  pushd $SOLUTION_FOLDER/../Devices/Sources/Devices.Host 1> /dev/null
+  pushd $SOLUTION_FOLDER/Sources/Devices.Host 1> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packaging failed."
   rm -rf ./Publish
   dotnet publish --configuration Release --output ./Publish --nologo --verbosity quiet
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packaging failed."
-  cp ../../../Devices.Extensions/Sources/Devices.Host/appsettings.Production.json ./Publish/
-  [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packaging failed."
   pushd Publish 1> /dev/null
   zip -rq Devices.Host.zip .
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packaging failed."
-  scp -q Devices.Host.zip HOST_AWS:~
+  scp Devices.Host.zip HOST_AWS:~
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packaging failed."
   popd 1> /dev/null
   rm -rf ./Publish
@@ -409,24 +403,22 @@ DownloadDevicesHostLogs() {
 # Package client project
 PackageClient() {
   echo "'$1' packaging started."
-  pushd $SOLUTION_FOLDER/../Devices/Sources/$1 1> /dev/null
+  pushd $SOLUTION_FOLDER/Sources/$1 1> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   rm -rf ./Publish
   dotnet publish --configuration Release --output ./Publish --nologo --verbosity quiet
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  cp ../../../Devices.Extensions/Sources/$1/appsettings.Production.json ./Publish/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  cp ../../../Devices.Extensions/Resources/Scripts/Install.sh ./Publish/
+  cp $SOLUTION_FOLDER/Resources/Scripts/Install.sh ./Publish/
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   pushd Publish 1> /dev/null
   zip -rq $1.zip .
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  mkdir -p ../../../../Devices.Configuration/Packages/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  mv $1.zip ../../../../Devices.Configuration/Packages/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  SHA256_HASH=($(sha256sum ../../../../Devices.Configuration/Packages/$1.zip))
+  SHA256_HASH=($(sha256sum $1.zip))
   echo "Hash = ${SHA256_HASH^^}"
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  mkdir -p $SOLUTION_FOLDER/../Devices.Configuration/Packages/
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  mv $1.zip $SOLUTION_FOLDER/../Devices.Configuration/Packages/
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   popd 1> /dev/null
   rm -rf ./Publish
   popd 1> /dev/null
@@ -442,28 +434,12 @@ PackageInstall() {
   SHA256_HASH=($(sha256sum Install.zip))
   echo "Hash = ${SHA256_HASH^^}"
   [ $? != 0 ] && DisplayErrorAndStop "'Install.sh' packaging failed."
-  mkdir -p ../../../Devices.Configuration/Packages/
+  mkdir -p $SOLUTION_FOLDER/../Devices.Configuration/Packages/
   [ $? != 0 ] && DisplayErrorAndStop "'Install.sh' packaging failed."
-  mv Install.zip ../../../Devices.Configuration/Packages/
+  mv Install.zip $SOLUTION_FOLDER/../Devices.Configuration/Packages/
   [ $? != 0 ] && DisplayErrorAndStop "'Install.sh' packaging failed."
   popd 1> /dev/null
   echo "'Install.sh' packaging completed."
-}
-
-# Deploy client project
-DeployClient() {
-  echo "'$1' deployment started."
-  pushd $SOLUTION_FOLDER/../Devices/Sources/$1 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
-  dotnet build --configuration Debug --nologo --verbosity quiet 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
-  cp ../../../Devices.Extensions/Sources/$1/appsettings.Production.json ./bin/Debug/net8.0/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
-  rsync -rlptzq --no-implied-dirs --progress --delete --mkpath ./bin/Debug/net8.0/ HOST_SBC:~/$1/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
-  rm ./bin/Debug/net8.0/appsettings.Production.json
-  popd 1> /dev/null
-  echo "'$1' deployment completed."
 }
 
 # Register Device
@@ -501,7 +477,6 @@ case $OPERATION in
   DownloadDevicesHostLogs) DownloadDevicesHostLogs ;;
   PackageClient) PackageClient "$2" ;;
   PackageInstall) PackageInstall ;;
-  DeployClient) DeployClient "$2" ;;
   RegisterDevice) RegisterDevice $2 "$3" "$4" "$5" "$6" ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac

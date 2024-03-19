@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SOLUTION_FOLDER=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." &> /dev/null && pwd)
+
 # Display error and stop
 DisplayErrorAndStop() {
   echo -e "${RED}$1${NC}";
@@ -80,7 +82,6 @@ CreateSolution() {
 
 # Archive solution
 ArchiveSolution() {
-  SOLUTION_FOLDER=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )/../.." &> /dev/null && pwd)
   SOLUTION_NAME="$(basename $SOLUTION_FOLDER).zip"
   TARGET_FOLDER="$HOME/Transfer"
   # Cleanup solution
@@ -160,6 +161,19 @@ InstallRSync() {
   echo "RSync install completed.";
 }
 
+# Deploy client project
+DeployClient() {
+  echo "'$1' deployment started."
+  pushd $SOLUTION_FOLDER/Sources/$1 1> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
+  dotnet build --configuration Debug --nologo --verbosity quiet 1> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
+  rsync -rlptzq --no-implied-dirs --progress --delete --mkpath ./bin/Debug/net8.0/ HOST_SBC:~/$1.Debug/
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
+  popd 1> /dev/null
+  echo "'$1' deployment completed."
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified.";
@@ -176,5 +190,6 @@ case $OPERATION in
   InstallVisualStudioCode) InstallVisualStudioCode ;;
   InstallVisualStudioDebugger) InstallRInstallVisualStudioDebugger ;;
   InstallRSync) InstallRSync ;;
+  DeployClient) DeployClient "$2" ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac
