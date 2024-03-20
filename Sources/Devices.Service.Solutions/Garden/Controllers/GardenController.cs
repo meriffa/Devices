@@ -1,5 +1,6 @@
 using Devices.Common.Solutions.Garden.Models;
 using Devices.Service.Extensions;
+using Devices.Service.Models.Identification;
 using Devices.Service.Solutions.Garden.Interfaces;
 using Devices.Service.Solutions.Garden.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -17,16 +18,55 @@ public class GardenController : ControllerBase
 
     #region Public Methods
     /// <summary>
-    /// Return device weather conditions
+    /// Return weather devices
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "GardenPolicy")]
-    public ActionResult<List<DeviceWeatherCondition>> GetDeviceWeatherConditions([FromServices] IGardenService service)
+    public ActionResult<List<Device>> GetDevices([FromServices] IGardenService service)
     {
         try
         {
-            return Ok(service.GetDeviceWeatherConditions());
+            return Ok(service.GetDevices());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return device weather conditions
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<List<DeviceWeatherCondition>> GetDeviceWeatherConditions([FromServices] IGardenService service, int? deviceId)
+    {
+        try
+        {
+            return Ok(service.GetDeviceWeatherConditions(deviceId));
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return aggregate weather conditions
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="deviceId"></param>
+    /// <param name="aggregationType"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<List<AggregateWeatherCondition>> GetAggregateWeatherConditions([FromServices] IGardenService service, int? deviceId, AggregationType aggregationType)
+    {
+        try
+        {
+            return Ok(service.GetAggregateWeatherConditions(deviceId, aggregationType));
         }
         catch (Exception ex)
         {

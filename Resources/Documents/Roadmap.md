@@ -4,8 +4,8 @@
 
 - Device Operating Systems: Raspberry Pi OS, Ubuntu Core, Jetson Linux
 - Device: Raspberry Pi 5, Nvidia Jetson Nano, Raspberry Pi Pico
-- Resilience: Random Client Request Delay (DDoS Mitigation), Server / Client Outages (store locally & retry, ignore store option, retry options (number, duration, duration increment))
 - Identity: Convert Device Token To STS Token Bearer (Token Expiration & Renewal Mechanism)
+- Resilience: Random Client Request Delay (DDoS Mitigation), Server / Client Outages (store locally & retry, ignore store option, retry options (number, duration, duration increment))
 - Messaging: Kafka
 - Programming: C/C++/Python/Java
 - Connectivity: Bluetooth, BLE, Zigbee

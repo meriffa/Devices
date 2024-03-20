@@ -23,7 +23,7 @@ Devices.Host = Devices.Host || {};
     }
 
     // Validate form
-    namespace.validateForm = function() {
+    namespace.validateForm = function () {
         if ($(".needs-validation")[0].checkValidity()) {
             $(".needs-validation").removeClass("was-validated");
             return true;
@@ -32,6 +32,11 @@ Devices.Host = Devices.Host || {};
             $(".needs-validation").addClass("was-validated");
             return false;
         }
+    }
+
+    // Display error
+    namespace.displayError = function (jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + errorThrown);
     }
 
 }(Devices.Host.Site = Devices.Host.Site || {}, jQuery));
