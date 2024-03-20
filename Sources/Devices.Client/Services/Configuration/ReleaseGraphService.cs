@@ -35,8 +35,10 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     {
         try
         {
-            AddNodeLinks(Nodes = GetNodes(configurationService.GetPendingReleases()));
-            SourceNodes = GetSourceNodes(Nodes);
+            Nodes = GetNodes(configurationService.GetPendingReleases());
+            FilterNodes();
+            AddNodeLinks();
+            SourceNodes = GetSourceNodes();
         }
         catch (Exception ex)
         {
@@ -52,10 +54,10 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     {
         try
         {
-            ValidateNodes(Nodes);
-            ValidateNodeLinks(Nodes);
-            ValidateSourceNodes(Nodes, SourceNodes);
-            ValidateNodesForCircularReferences(Nodes);
+            ValidateNodes();
+            ValidateNodeLinks();
+            ValidateSourceNodes();
+            ValidateNodesForCircularReferences();
         }
         catch (Exception ex)
         {
@@ -71,7 +73,7 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     {
         try
         {
-            var activeNodes = StartSourceNodes(SourceNodes);
+            var activeNodes = StartSourceNodes();
             var completedNodes = new List<Task<ReleaseNode>>();
             var pendingNodes = new List<ReleaseNode>();
             while (activeNodes.Count != 0)
@@ -101,51 +103,81 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     {
         Release = i,
         UpstreamNodes = [],
-        DownstreamNodes = []
+        DownstreamNodes = [],
+        Success = false
     }).ToList();
+
+    /// <summary>
+    /// Filter completed nodes
+    /// </summary>
+    private void FilterNodes()
+    {
+        var parentReleaseIds = Nodes.Where(i => i.Release.ParentReleaseIds.Length > 0).SelectMany(i => i.Release.ParentReleaseIds).Distinct();
+        var completedReleaseIds = parentReleaseIds.Except(Nodes.Select(i => i.Release.Id)).ToArray();
+        foreach (var releaseId in completedReleaseIds)
+            if (configurationService.HasReleaseSucceeded(releaseId))
+            {
+                foreach (var node in Nodes)
+                    if (node.Release.ParentReleaseIds.Contains(releaseId))
+                        node.Release.ParentReleaseIds = node.Release.ParentReleaseIds.Where(i => i != releaseId).ToArray();
+            }
+            else
+                RemoveChildNodes(releaseId);
+    }
+
+    /// <summary>
+    /// Remove child release nodes
+    /// </summary>
+    /// <param name="parentReleaseId"></param>
+    private void RemoveChildNodes(int parentReleaseId)
+    {
+        var childReleaseIds = Nodes.Where(i => i.Release.ParentReleaseIds.Contains(parentReleaseId)).Select(i => i.Release.Id).ToArray();
+        foreach (var childReleaseId in childReleaseIds)
+        {
+            RemoveChildNodes(childReleaseId);
+            var node = Nodes.FirstOrDefault(i => i.Release.Id == childReleaseId);
+            if (node != null)
+                Nodes.Remove(node);
+        }
+    }
 
     /// <summary>
     /// Add release node links
     /// </summary>
-    /// <param name="nodes"></param>
-    private static void AddNodeLinks(List<ReleaseNode> nodes)
+    private void AddNodeLinks()
     {
-        foreach (var node in nodes.Where(i => i.Release.ParentReleaseIds.Length > 0))
+        foreach (var node in Nodes.Where(i => i.Release.ParentReleaseIds.Length > 0))
             foreach (var parentReleaseId in node.Release.ParentReleaseIds)
             {
-                var source = nodes.First(i => i.Release.Id == parentReleaseId);
-                var target = node;
-                source.DownstreamNodes.Add(target);
-                target.UpstreamNodes.Add(source);
+                var parent = Nodes.First(i => i.Release.Id == parentReleaseId);
+                parent.DownstreamNodes.Add(node);
+                node.UpstreamNodes.Add(parent);
             }
     }
 
     /// <summary>
     /// Return source release nodes
     /// </summary>
-    /// <param name="nodes"></param>
     /// <returns></returns>
-    private static List<ReleaseNode> GetSourceNodes(List<ReleaseNode> nodes) => nodes.Where(node => node.UpstreamNodes.Count == 0).ToList();
+    private List<ReleaseNode> GetSourceNodes() => Nodes.Where(node => node.UpstreamNodes.Count == 0).ToList();
     #endregion
 
     #region Validate Graph
     /// <summary>
     /// Validate release nodes
     /// </summary>
-    /// <param name="nodes"></param>
-    private static void ValidateNodes(List<ReleaseNode> nodes)
+    private void ValidateNodes()
     {
-        foreach (var id in nodes.GroupBy(node => node.Release.Id).Where(i => i.Count() > 1).Select(i => i.Key))
+        foreach (var id in Nodes.GroupBy(node => node.Release.Id).Where(i => i.Count() > 1).Select(i => i.Key))
             throw new($"Duplicate release nodes specified (Release ID = {id}).");
     }
 
     /// <summary>
     /// Validate release node links
     /// </summary>
-    /// <param name="nodes"></param>
-    private static void ValidateNodeLinks(List<ReleaseNode> nodes)
+    private void ValidateNodeLinks()
     {
-        foreach (var node in nodes)
+        foreach (var node in Nodes)
         {
             foreach (var downstreamNode in node.DownstreamNodes)
                 if (node.Release.Id == downstreamNode.Release.Id)
@@ -159,21 +191,18 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     /// <summary>
     /// Validate source nodes
     /// </summary>
-    /// <param name="nodes"></param>
-    /// <param name="sourceNodes"></param>
-    private static void ValidateSourceNodes(List<ReleaseNode> nodes, List<ReleaseNode> sourceNodes)
+    private void ValidateSourceNodes()
     {
-        if (nodes.Count > 0 && sourceNodes.Count == 0)
+        if (Nodes.Count > 0 && SourceNodes.Count == 0)
             throw new("No release source nodes specified.");
     }
 
     /// <summary>
     /// Check release nodes for circular references
     /// </summary>
-    /// <param name="nodes"></param>
-    private static void ValidateNodesForCircularReferences(List<ReleaseNode> nodes)
+    private void ValidateNodesForCircularReferences()
     {
-        foreach (var node in nodes)
+        foreach (var node in Nodes)
         {
             var visited = new HashSet<int>();
             TraverseDownstreamNodes(node, visited);
@@ -204,7 +233,7 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     /// </summary>
     /// <param name="sourceNodes"></param>
     /// <returns></returns>
-    private List<Task<ReleaseNode>> StartSourceNodes(List<ReleaseNode> sourceNodes) => sourceNodes.Select(i => StartNode(i)).ToList();
+    private List<Task<ReleaseNode>> StartSourceNodes() => SourceNodes.Select(i => StartNode(i)).ToList();
 
     /// <summary>
     /// Update pending release nodes
@@ -374,5 +403,5 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
         return (process.ExitCode == 0, details.ToString());
     }
     #endregion
-    
+
 }

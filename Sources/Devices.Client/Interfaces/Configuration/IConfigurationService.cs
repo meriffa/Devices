@@ -16,6 +16,13 @@ public interface IConfigurationService
     List<Release> GetPendingReleases();
 
     /// <summary>
+    /// Check if device release has completed successfully
+    /// </summary>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    bool HasReleaseSucceeded(int releaseId);
+
+    /// <summary>
     /// Download release package
     /// </summary>
     /// <param name="releaseId"></param>

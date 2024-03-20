@@ -174,6 +174,42 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
+    /// Check if device release has completed successfully
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    public bool HasReleaseSucceeded(int deviceId, int releaseId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    dd.""Success""
+                FROM
+                    ""Release"" r JOIN
+                    ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
+                    ""DeviceApplication"" da ON da.""ApplicationID"" = app.""ApplicationID"" JOIN
+                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
+                WHERE
+                    r.""ReleaseID"" = @ReleaseID and
+                    da.""DeviceID"" = @DeviceID AND
+                    app.""ApplicationEnabled"" = TRUE AND
+                    r.""ReleaseEnabled"" = TRUE AND
+                    da.""DeviceApplicationEnabled"" = TRUE;", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
+            return (bool)cmd.ExecuteScalar()!;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Return release package
     /// </summary>
     /// <param name="deviceId"></param>

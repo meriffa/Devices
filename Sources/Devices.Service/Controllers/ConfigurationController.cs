@@ -71,6 +71,25 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
+    /// Check if device release has completed successfully
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "DevicePolicy")]
+    public ActionResult<bool> HasReleaseSucceeded([FromServices] IConfigurationService service, int releaseId)
+    {
+        try
+        {
+            return Ok(service.HasReleaseSucceeded(HttpContext.User.GetDeviceId(), releaseId));
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Return release package
     /// </summary>
     /// <param name="service"></param>

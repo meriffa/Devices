@@ -45,6 +45,26 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
+    /// Check if device release has completed successfully
+    /// </summary>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    public bool HasReleaseSucceeded(int releaseId)
+    {
+        try
+        {
+            using var response = Client.GetAsync($"/Service/Configuration/HasReleaseSucceeded?releaseId={releaseId}").Result;
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadFromJsonAsync<bool>().Result!;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Download release package
     /// </summary>
     /// <param name="releaseId"></param>
