@@ -51,7 +51,7 @@ public class Release
     /// <summary>
     /// Release parent release ids
     /// </summary>
-    public required int[] ParentReleaseIDs { get; set; }
+    public required int[] ParentReleaseIds { get; set; }
     #endregion
 
 }

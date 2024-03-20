@@ -16,6 +16,11 @@ public class ClientOptions
     /// Client options configuration folder
     /// </summary>
     public required string ConfigurationFolder { get; set; }
+
+    /// <summary>
+    /// Client options number of parallel releases
+    /// </summary>
+    public int ParallelReleases { get; set; }
     #endregion
 
 }

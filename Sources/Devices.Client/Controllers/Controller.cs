@@ -1,5 +1,5 @@
-using Devices.Client.Interfaces.Configuration;
 using Devices.Client.Interfaces.Monitoring;
+using Devices.Client.Services.Configuration;
 using Devices.Common.Interfaces.Identification;
 using Devices.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +17,7 @@ public abstract class Controller
     private DisplayService? displayService;
     private IIdentityService? identityService;
     private IMonitoringService? monitoringService;
-    private IConfigurationService? configurationService;
+    private ReleaseGraphService? releaseGraphService;
     #endregion
 
     #region Properties
@@ -37,9 +37,9 @@ public abstract class Controller
     protected IMonitoringService MonitoringService => monitoringService ??= services.GetRequiredService<IMonitoringService>();
 
     /// <summary>
-    /// Configuration service
+    /// Release graph service
     /// </summary>
-    protected IConfigurationService ConfigurationService => configurationService ??= services.GetRequiredService<IConfigurationService>();
+    protected ReleaseGraphService ReleaseGraphService => releaseGraphService ??= services.GetRequiredService<ReleaseGraphService>();
     #endregion
 
     #region Public Methods

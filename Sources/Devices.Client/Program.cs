@@ -55,6 +55,7 @@ class Program
             .ConfigureServices((context, services) =>
             {
                 services.AddDeviceServices(context.Configuration);
+                services.AddSingleton<Services.Configuration.ReleaseGraphService>();
                 services.AddSingleton<Interfaces.Monitoring.IDeviceMetricsService, Services.Monitoring.DeviceMetricsService>();
                 services.AddSingleton<Interfaces.Monitoring.IMonitoringService, Services.Monitoring.MonitoringService>();
                 services.AddSingleton<Interfaces.Configuration.IConfigurationService, Services.Configuration.ConfigurationService>();

@@ -57,7 +57,7 @@ Devices.Web = Devices.Web || {};
                 },
                 {
                     title: "Parent Release IDs",
-                    data: "parentReleaseIDs",
+                    data: "parentReleaseIds",
                     render: function (data, type) {
                         return data.join(", ");
                     }

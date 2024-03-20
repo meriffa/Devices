@@ -422,7 +422,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         Version = (string)reader["Version"],
         Action = GetAction(reader),
         Enabled = (bool)reader["ReleaseEnabled"],
-        ParentReleaseIDs = reader["ParentReleaseIDs"] is DBNull ? ([]) : Array.ConvertAll(((string)reader["ParentReleaseIDs"]).Split(','), i => Convert.ToInt32(i))
+        ParentReleaseIds = reader["ParentReleaseIDs"] is DBNull ? ([]) : Array.ConvertAll(((string)reader["ParentReleaseIDs"]).Split(','), i => Convert.ToInt32(i))
     };
 
     /// <summary>
