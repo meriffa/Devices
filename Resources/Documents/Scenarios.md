@@ -25,3 +25,10 @@
 - Increment AssemblyFileVersion in the 'AssemblyInfo.cs' file.
 - Redeploy 'Devices.Host' project (update configuration).
 - Deactivate previous 'Devices.Client' & 'Devices.Client.Solutions' releases ('Release' table).
+
+# Change Device WiFi Network
+- Connect device to portable router (Ethernet).
+- Get device IP from router.
+- Connect to device (ssh).
+- Change device WiFi network.
+- Disconnect device from router (Ethernet) & restart device.

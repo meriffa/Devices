@@ -5,7 +5,7 @@
   - Raspberry Pi Zero/1: `./DietPi.sh DownloadImagePi0`
   - Raspberry Pi 2/3/4: `./DietPi.sh DownloadImagePi4`
 - Write Image To SD Card: `./DietPi.sh WriteImage`
-- Boot Device: Insert SD card into device, power on device and wait for initial configuration to complete.
+- Boot Device: Insert SD card into device, power on device & wait for initial configuration to complete.
 - Configure Device: `./DietPi.sh SetupDevice "<HostName>"`
 - Update Device OS: `./DietPi.sh SystemUpdate`
 - Setup Firewall: `./DietPi.sh SetupFirewall`
