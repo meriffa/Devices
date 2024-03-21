@@ -15,6 +15,7 @@
 - Register Device: `./AWS.sh RegisterDevice <DeviceID> "<DeviceName>" "<DeviceToken>" "<MACAddress>" "<Location>"`
 - Deploy Devices.Client: `./DietPi.sh DownloadClient "<DeviceToken>" <ReleaseID>`
 - Update Banner: `dietpi-banner` -> Device Model = On, Uptime = On, CPU Temp = On, <Remaining> = Off
+- Change Timezone: `dietpi-config` -> Language/Regional Options -> Geographic Area = <Area>, Timezone = <Timezone>
 - Enable I2C Interface: `dietpi-config` -> Advanced Options -> I2C State = On -> Reboot
 - Setup WiFi Connection: `dietpi-config` -> Network Options: Adapters -> Onboard WiFi = On, WiFi -> Enable, <SSID> (<Password>) -> Done -> Reboot
 - Setup Scheduled Jobs: `dotnet Devices.Client.dll Configuration`

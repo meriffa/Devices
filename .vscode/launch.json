@@ -68,6 +68,9 @@
                     "HOST_SBC"
                 ],
                 "debuggerPath": "~/.vsdbg/vsdbg"
+            },
+            "env": {
+                "ENVIRONMENT": "Development",
             }
         },
         {
@@ -106,6 +109,9 @@
                     "HOST_SBC"
                 ],
                 "debuggerPath": "~/.vsdbg/vsdbg"
+            },
+            "env": {
+                "ENVIRONMENT": "Development",
             }
         }
     ]
