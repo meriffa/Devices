@@ -39,7 +39,9 @@
             "preLaunchTask": "Build Solution",
             "program": "${workspaceFolder}/Sources/Devices.Client/bin/Debug/net8.0/Devices.Client.dll",
             "args": [
-                "Configuration"
+                "execute",
+                "--tasks",
+                "Monitoring,Configuration"
             ],
             "cwd": "${workspaceFolder}/Sources/Devices.Client",
             "console": "integratedTerminal",
@@ -56,7 +58,9 @@
             "program": "~/.dotnet/dotnet",
             "args": [
                 "../Devices.Client.Debug/Devices.Client.dll",
-                "Configuration"
+                "execute",
+                "--tasks",
+                "Monitoring,Configuration"
             ],
             "cwd": "~/Devices.Client.Debug",
             "console": "integratedTerminal",
