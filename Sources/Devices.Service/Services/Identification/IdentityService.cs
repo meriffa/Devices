@@ -186,26 +186,30 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
         using var cn = GetConnection();
         using var cmd = GetCommand(
             @"WITH ""cteDeviceDeployment"" AS (
-                    SELECT
-                    ""DeviceID"",
-                    ""ReleaseID"",
-                    MAX(""DeviceDate"") ""DeviceDate""
+                SELECT
+                    dd.""DeviceID"",
+                    r.""ApplicationID"",
+                    MAX(dd.""DeviceDate"") ""DeviceDate""
                 FROM
-                    ""DeviceDeployment""
+                    ""DeviceDeployment"" dd JOIN
+                    ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID""
                 GROUP BY
-                    ""DeviceID"",
-                    ""ReleaseID"")
+                    dd.""DeviceID"",
+                    r.""ApplicationID"")
             SELECT
                 a.""ApplicationName"",
                 r.""Version"",
                 dd.""Success""
             FROM
                 ""DeviceDeployment"" dd JOIN
-                ""cteDeviceDeployment"" f ON f.""DeviceID"" = dd.""DeviceID"" AND f.""ReleaseID"" = dd.""ReleaseID"" AND f.""DeviceDate"" = dd.""DeviceDate"" JOIN
                 ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
-                ""Application"" a ON a.""ApplicationID"" = r.""ApplicationID""
+                ""Application"" a ON a.""ApplicationID"" = r.""ApplicationID"" JOIN
+                ""cteDeviceDeployment"" cdd ON cdd.""DeviceID"" = dd.""DeviceID"" AND cdd.""ApplicationID"" = a.""ApplicationID"" AND cdd.""DeviceDate"" = dd.""DeviceDate""
             WHERE
-                dd.""DeviceID"" = @DeviceID;", cn);
+                dd.""DeviceID"" = @DeviceID
+            ORDER BY
+                a.""ApplicationName"",
+                r.""Version"";", cn);
         cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
         using var r = cmd.ExecuteReader();
         while (r.Read())
