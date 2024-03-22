@@ -1,9 +1,9 @@
 using Devices.Service.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
@@ -20,11 +20,9 @@ public static class ServicesExtensions
     /// Register services
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.Configure<ServiceOptions>(configuration.GetSection(nameof(ServiceOptions)));
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<Interfaces.Security.ISecurityService, Services.Security.SecurityService>();
         services.AddScoped<Services.Security.WebAuthenticationService>();
@@ -35,12 +33,15 @@ public static class ServicesExtensions
     }
 
     /// <summary>
-    /// Register authentication & authorization
+    /// Register data protection, authentication & authorization
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="options"></param>
     /// <returns></returns>
-    public static AuthorizationBuilder AddSecurity(this IServiceCollection services)
+    public static AuthorizationBuilder AddSecurity(this IServiceCollection services, ServiceOptions options)
     {
+        services.AddDataProtection()
+            .PersistKeysToFileSystem(new(options.DataProtectionFolder));
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {

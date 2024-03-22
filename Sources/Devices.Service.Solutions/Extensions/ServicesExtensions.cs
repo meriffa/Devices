@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
@@ -18,9 +17,8 @@ public static class ServicesExtensions
     /// Register services
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddServicesSolutions(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServicesSolutions(this IServiceCollection services)
     {
         services.AddScoped<Garden.Interfaces.IGardenService, Garden.Services.GardenService>();
         return services;

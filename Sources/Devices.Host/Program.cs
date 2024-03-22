@@ -1,5 +1,7 @@
 using Devices.Service.Extensions;
+using Devices.Service.Options;
 using Devices.Service.Solutions.Extensions;
+using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 
 namespace Devices.Host;
@@ -42,9 +44,11 @@ public class Program
     /// <param name="configuration"></param>
     private static void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
     {
-        services.AddServices(configuration);
-        services.AddServicesSolutions(configuration);
-        services.AddSecurity()
+        var section = configuration.GetRequiredSection(nameof(ServiceOptions));
+        services.Configure<ServiceOptions>(section);
+        services.AddServices();
+        services.AddServicesSolutions();
+        services.AddSecurity(section.Get<ServiceOptions>()!)
             .AddPolicies()
             .AddPoliciesSolutions();
         services.AddControllers()

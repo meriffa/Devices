@@ -16,6 +16,11 @@ public class ServiceOptions
     /// Service options package folder
     /// </summary>
     public required string PackageFolder { get; set; }
+
+    /// <summary>
+    /// Service options data protection folder
+    /// </summary>
+    public required string DataProtectionFolder { get; set; }
     #endregion
 
 }
