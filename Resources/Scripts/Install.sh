@@ -83,13 +83,9 @@ SetupScheduledJobs() {
   echo "'$1' scheduled jobs setup started."
   case $1 in
     "Devices.Client")
-      SetupScheduledJob "Monitoring" "Devices.Client.dll Monitoring" "*/5 * * * * cd /root/Devices.Client && /root/.dotnet/dotnet Devices.Client.dll Monitoring >> Devices.Client.log 2>&1"
-      [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled jobs setup failed."
-      SetupScheduledJob "Configuration" "Devices.Client.dll Configuration" "*/5 * * * * cd /root/Devices.Client && /root/.dotnet/dotnet Devices.Client.dll Configuration >> Devices.Client.log 2>&1"
-      [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled jobs setup failed." ;;
+      SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /root/.dotnet/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> Devices.Client.log 2>&1" ;;
     "Devices.Client.Solutions")
-      SetupScheduledJob "Garden" "Devices.Client.Solutions.dll Garden" "*/5 * * * * cd /root/Devices.Client.Solutions && /root/.dotnet/dotnet Devices.Client.Solutions.dll Garden >> Devices.Client.Solutions.log 2>&1"
-      [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled jobs setup failed." ;;
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll" "*/5 * * * * cd /root/Devices.Client.Solutions && /root/.dotnet/dotnet Devices.Client.Solutions.dll garden >> Devices.Client.Solutions.log 2>&1" ;;
   esac
   echo "'$1' scheduled jobs setup completed."
 }
