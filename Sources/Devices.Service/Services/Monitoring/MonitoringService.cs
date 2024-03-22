@@ -45,10 +45,8 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     m.""MemoryUsed"",
                     m.""MemoryFree"",
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceLocation"",
-                    d.""DeviceEnabled""
+                    d.""DeviceLocation""
                 FROM
                     ""DeviceMetric"" m JOIN
                     ""Device"" d ON d.""DeviceID"" = m.""DeviceID"";", cn);

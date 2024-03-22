@@ -38,10 +38,8 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             using var cmd = GetCommand(
                 @"SELECT DISTINCT
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceLocation"",
-                    d.""DeviceEnabled""                    
+                    d.""DeviceLocation""
                 FROM
                     ""Garden"".""WeatherCondition"" w JOIN
                     ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
@@ -78,10 +76,8 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     w.""Pressure"",
                     w.""Illuminance"",
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceLocation"",
-                    d.""DeviceEnabled""                    
+                    d.""DeviceLocation""
                 FROM
                     ""Garden"".""WeatherCondition"" w JOIN
                     ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
@@ -136,10 +132,8 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     MAX(w.""Illuminance"") ""IlluminanceMax"",
                     AVG(w.""Illuminance"") ""IlluminanceAvg"",
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
-                    d.""DeviceLocation"",
-                    d.""DeviceEnabled""                    
+                    d.""DeviceLocation""
                 FROM
                     ""Garden"".""WeatherCondition"" w JOIN
                     ""Device"" d ON d.""DeviceID"" = w.""DeviceID""

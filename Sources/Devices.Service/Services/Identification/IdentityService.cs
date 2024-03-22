@@ -89,29 +89,41 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
-    /// Return devices
+    /// Return device statuses
     /// </summary>
     /// <returns></returns>
-    public List<Device> GetDevices()
+    public List<DeviceStatus> GetDeviceStatuses()
     {
         try
         {
-            var result = new List<Device>();
+            var result = new List<DeviceStatus>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"SELECT
-                    ""DeviceID"",
-                    ""DeviceToken"",
-                    ""DeviceName"",
-                    ""DeviceLocation"",
-                    ""DeviceEnabled""
+                @"WITH ""cteDeviceMetric"" AS (
+                    SELECT
+                        ""DeviceID"",
+                        MAX(""DeviceDate"") ""DeviceDate"",
+                        MAX(""LastReboot"") ""LastReboot""
+                    FROM
+                        ""DeviceMetric""
+                    GROUP BY
+                        ""DeviceID"")
+                SELECT
+                    d.""DeviceID"",
+                    d.""DeviceToken"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation"",
+                    d.""DeviceEnabled"",
+                    dm.""DeviceDate"",
+                    dm.""LastReboot""
                 FROM
-                    ""Device""
+                    ""Device"" d LEFT JOIN
+                    ""cteDeviceMetric"" dm ON dm.""DeviceID"" = d.""DeviceID""
                 ORDER BY
-                    ""DeviceName"";", cn);
+                    d.""DeviceName"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(GetDevice(r));
+                result.Add(GetDeviceStatus(r));
             return result;
         }
         catch (Exception ex)
@@ -131,11 +143,80 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     public static Device GetDevice(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["DeviceID"],
-        Token = (string)reader["DeviceToken"],
         Name = (string)reader["DeviceName"],
-        Location = (string)reader["DeviceLocation"],
-        Enabled = (bool)reader["DeviceEnabled"]
+        Location = (string)reader["DeviceLocation"]
     };
+
+    /// <summary>
+    /// Return device status instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    public DeviceStatus GetDeviceStatus(NpgsqlDataReader reader) => new()
+    {
+        Device = GetDevice(reader),
+        Token = (string)reader["DeviceToken"],
+        Enabled = (bool)reader["DeviceEnabled"],
+        Level = reader["DeviceDate"] is DBNull ? DeviceLevel.Red : GetDeviceLevel((DateTime)reader["DeviceDate"]),
+        DeviceDate = reader["DeviceDate"] is DBNull ? null : (DateTime)reader["DeviceDate"],
+        Uptime = reader["LastReboot"] is DBNull ? null : DateTime.UtcNow.Subtract((DateTime)reader["LastReboot"]),
+        Deployments = GetDeviceDeployments((int)reader["DeviceID"])
+    };
+
+    /// <summary>
+    /// Return device level
+    /// </summary>
+    /// <param name="deviceDate"></param>
+    /// <returns></returns>
+    private static DeviceLevel GetDeviceLevel(DateTime deviceDate) => DateTime.UtcNow.Subtract(deviceDate).TotalMinutes switch
+    {
+        <= 5 => DeviceLevel.Green,
+        <= 10 => DeviceLevel.Amber,
+        _ => DeviceLevel.Red
+    };
+
+    /// <summary>
+    /// Return device deployments
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    private List<DeviceDeployment> GetDeviceDeployments(int deviceId)
+    {
+        var result = new List<DeviceDeployment>();
+        using var cn = GetConnection();
+        using var cmd = GetCommand(
+            @"WITH ""cteDeviceDeployment"" AS (
+                    SELECT
+                    ""DeviceID"",
+                    ""ReleaseID"",
+                    MAX(""DeviceDate"") ""DeviceDate""
+                FROM
+                    ""DeviceDeployment""
+                GROUP BY
+                    ""DeviceID"",
+                    ""ReleaseID"")
+            SELECT
+                a.""ApplicationName"",
+                r.""Version"",
+                dd.""Success""
+            FROM
+                ""DeviceDeployment"" dd JOIN
+                ""cteDeviceDeployment"" f ON f.""DeviceID"" = dd.""DeviceID"" AND f.""ReleaseID"" = dd.""ReleaseID"" AND f.""DeviceDate"" = dd.""DeviceDate"" JOIN
+                ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
+                ""Application"" a ON a.""ApplicationID"" = r.""ApplicationID""
+            WHERE
+                dd.""DeviceID"" = @DeviceID;", cn);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            result.Add(new()
+            {
+                Application = (string)r["ApplicationName"],
+                Version = (string)r["Version"],
+                Success = (bool)r["Success"]
+            });
+        return result;
+    }
     #endregion
 
 }

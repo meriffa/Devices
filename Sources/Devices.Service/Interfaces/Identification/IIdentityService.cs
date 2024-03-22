@@ -25,10 +25,10 @@ public interface IIdentityService
     int? GetDeviceId(string deviceToken);
 
     /// <summary>
-    /// Return devices
+    /// Return device statuses
     /// </summary>
     /// <returns></returns>
-    List<Device> GetDevices();
+    List<DeviceStatus> GetDeviceStatuses();
     #endregion
 
 }

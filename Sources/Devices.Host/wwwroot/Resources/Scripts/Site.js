@@ -9,7 +9,7 @@ Devices.Host = Devices.Host || {};
 
     // Format date & time
     namespace.formatDateTime = function (value) {
-        return convertToLocalDateTime(new Date(value)).toISOString().slice(0, 19).replace("T", " ");
+        return value != null ? convertToLocalDateTime(new Date(value)).toISOString().slice(0, 19).replace("T", " ") : null;
     }
 
     // Format boolean

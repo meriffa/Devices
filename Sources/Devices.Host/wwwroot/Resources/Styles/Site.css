@@ -34,3 +34,18 @@ body {
 .devices-host-toolbar {
   text-align: right;
 }
+
+.green {
+  color: white;
+  background: green;
+}
+
+.amber {
+  color: white;
+  background: orange;
+}
+
+.red {
+  color: white;
+  background: red;
+}

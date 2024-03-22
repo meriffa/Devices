@@ -73,8 +73,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     FROM
                         ""ReleaseDependency""
                     GROUP BY
-                        ""ChildReleaseID""
-                )
+                        ""ChildReleaseID"")
                 SELECT
                     r.""ReleaseID"",
                     r.""ServiceDate"",
@@ -128,8 +127,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     FROM
                         ""ReleaseDependency""
                     GROUP BY
-                        ""ChildReleaseID""
-                )
+                        ""ChildReleaseID"")
                 SELECT
                     r.""ReleaseID"",
                     r.""ServiceDate"",
@@ -261,8 +259,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     FROM
                         ""ReleaseDependency""
                     GROUP BY
-                        ""ChildReleaseID""
-                )
+                        ""ChildReleaseID"")
                 SELECT
                     dd.""DeploymentID"",
                     dd.""DeviceID"",
@@ -284,10 +281,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionParameters"",
                     act.""ActionArguments"",
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
-                    d.""DeviceEnabled"",
                     rd.""ParentReleaseIDs""
                 FROM
                     ""DeviceDeployment"" dd JOIN
@@ -328,14 +323,11 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     FROM
                         ""ReleaseDependency""
                     GROUP BY
-                        ""ChildReleaseID""
-                )
+                        ""ChildReleaseID"")
                 SELECT
                     d.""DeviceID"",
-                    d.""DeviceToken"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
-                    d.""DeviceEnabled"",
                     r.""ReleaseID"",
                     r.""ServiceDate"",
                     r.""Package"",

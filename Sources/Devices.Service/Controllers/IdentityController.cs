@@ -35,16 +35,16 @@ public class IdentityController : ControllerBase
     }
 
     /// <summary>
-    /// Return devices
+    /// Return device statuses
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
     [HttpGet]
-    public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService service)
+    public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService service)
     {
         try
         {
-            return Ok(service.GetDevices());
+            return Ok(service.GetDeviceStatuses());
         }
         catch (Exception ex)
         {

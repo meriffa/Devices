@@ -6,13 +6,13 @@ Devices.Web = Devices.Web || {};
     Devices.Host.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
-                url: "/Service/Identity/GetDevices",
+                url: "/Service/Identity/GetDeviceStatuses",
                 dataSrc: ""
             },
             columns: [
                 {
                     title: "Device ID",
-                    data: "id"
+                    data: "device.id"
                 },
                 {
                     title: "Device Token",
@@ -20,17 +20,45 @@ Devices.Web = Devices.Web || {};
                 },
                 {
                     title: "Device Name",
-                    data: "name"
+                    data: "device.name"
                 },
                 {
                     title: "Device Location",
-                    data: "location"
+                    data: "device.location"
                 },
                 {
                     title: "Enabled",
                     data: "enabled",
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
+                    }
+                },
+                {
+                    title: "Last Update",
+                    data: "deviceDate",
+                    render: function (data, type, row) {
+                        var date = Devices.Host.Site.formatDateTime(data);
+                        if (type === 'display') {
+                            if (date == null)
+                                date = "N/A";
+                            return `<div class="${row.level.toLowerCase()}">${date}</div>`;
+                        }
+                        return date;
+                    }
+                },
+                {
+                    title: "Uptime",
+                    data: "uptime"
+                },
+                {
+                    title: "Applications",
+                    data: "deployments",
+                    render: function (data, type) {
+                        var deployments = "";
+                        $.each(data, function (key, deployment) {
+                            deployments += `<div class="${deployment.success ? "green" : "red"}">${deployment.application} (${deployment.version})<div>`;
+                        });
+                        return deployments;
                     }
                 }
             ],

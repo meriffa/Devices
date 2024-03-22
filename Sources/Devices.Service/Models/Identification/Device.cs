@@ -13,11 +13,6 @@ public class Device
     public required int Id { get; set; }
 
     /// <summary>
-    /// Device token
-    /// </summary>
-    public required string Token { get; set; }
-
-    /// <summary>
     /// Device name
     /// </summary>
     public required string Name { get; set; }
@@ -26,11 +21,6 @@ public class Device
     /// Device location
     /// </summary>
     public required string Location { get; set; }
-
-    /// <summary>
-    /// Device enabled flag
-    /// </summary>
-    public required bool Enabled { get; set; }
     #endregion
 
 }
