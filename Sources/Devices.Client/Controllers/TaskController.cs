@@ -1,5 +1,6 @@
 using CommandLine;
 using Devices.Client.Models;
+using System.Reflection;
 
 namespace Devices.Client.Controllers;
 
@@ -22,6 +23,12 @@ public class TaskController : Controller
     /// </summary>
     [Option('r', "refresh", Required = false, Default = false, HelpText = "Force identity refresh.")]
     public bool Refresh { get; set; }
+
+    /// <summary>
+    /// Force single application instance flag
+    /// </summary>
+    [Option('i', "instance", Required = false, Default = false, HelpText = "Force single application instance.")]
+    public bool SingleInstance { get; set; }
     #endregion
 
     #region Public Methods
@@ -30,12 +37,18 @@ public class TaskController : Controller
     /// </summary>
     protected override void Execute()
     {
-        if (Tasks.HasFlag(TaskTypes.Identity))
-            ExecuteIdentityTask();
-        if (Tasks.HasFlag(TaskTypes.Monitoring))
-            ExecuteMonitoringTask();
-        if (Tasks.HasFlag(TaskTypes.Configuration))
-            ExecuteConfigurationTask();
+        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}", out var createdNew);
+        if (!createdNew)
+            DisplayService.WriteWarning("Another application instance is already running.");
+        if (createdNew || !SingleInstance)
+        {
+            if (Tasks.HasFlag(TaskTypes.Identity))
+                ExecuteIdentityTask();
+            if (Tasks.HasFlag(TaskTypes.Monitoring))
+                ExecuteMonitoringTask();
+            if (Tasks.HasFlag(TaskTypes.Configuration))
+                ExecuteConfigurationTask();
+        }
     }
     #endregion
 
