@@ -130,7 +130,7 @@ UploadDeviceLogs() {
   done
   HOST_URL=$(cat Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
   DEVICE_TOKEN=$(cat /etc/Devices.Configuration/Devices.Common.DeviceToken)
-  curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILES -F upload=@$LOG_FILES -fks "https://$HOST_URL/Service/Monitoring/UploadDeviceLogs"
+  curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILES -F upload=@$LOG_FILES -fks "$HOST_URL/Service/Monitoring/UploadDeviceLogs"
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (curl).";
   rm $LOG_FILES
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (rm $LOG_FILES).";
