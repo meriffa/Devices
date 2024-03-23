@@ -112,6 +112,31 @@ ExecuteCommand() {
   echo "Command execution completed."
 }
 
+# Upload device logs
+UploadDeviceLogs() {
+  echo "Upload device logs started."
+  if apt-cache policy zip | grep -q "Installed: (none)" ; then
+    InstallPackage zip
+  fi
+  LOG_FILES="DeviceLogs.$(hostname).zip"
+  if [ -f $LOG_FILES ]; then
+    rm $LOG_FILES
+    [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (rm $LOG_FILES).";
+  fi
+  local folders=("/root/Devices.Client/*.log" "/root/Devices.Client/Logs/*" "/root/Devices.Client.Solutions/*.log" "/root/Devices.Client.Solutions/Logs/*")
+  for folder in "${folders[@]}"; do
+    zip -qj $LOG_FILES $folder
+    [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (zip -qj $LOG_FILES $folder).";
+  done
+  HOST_URL=$(cat Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
+  DEVICE_TOKEN=$(cat /etc/Devices.Configuration/Devices.Common.DeviceToken)
+  curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILES -F upload=@$LOG_FILES -fks "https://$HOST_URL/Service/Monitoring/UploadDeviceLogs"
+  [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (curl).";
+  rm $LOG_FILES
+  [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (rm $LOG_FILES).";
+  echo "Upload device logs completed."
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified.";
@@ -127,5 +152,6 @@ case $OPERATION in
   SynchronizeClock) SynchronizeClock ;;
   SetupScheduledJobs) SetupScheduledJobs "$2" ;;
   ExecuteCommand) ExecuteCommand "$2" ;;
+  UploadDeviceLogs) UploadDeviceLogs ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac

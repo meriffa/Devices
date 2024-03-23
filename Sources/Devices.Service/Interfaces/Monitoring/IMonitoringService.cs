@@ -1,5 +1,6 @@
 using Devices.Common.Models.Monitoring;
 using Devices.Service.Models.Monitoring;
+using Microsoft.AspNetCore.Http;
 
 namespace Devices.Service.Interfaces.Monitoring;
 
@@ -23,6 +24,12 @@ public interface IMonitoringService
     /// <param name="serviceDate"></param>
     /// <param name="metrics"></param>
     void SaveDeviceMetrics(int deviceId, DateTime serviceDate, DeviceMetrics metrics);
+
+    /// <summary>
+    /// Upload device logs
+    /// </summary>
+    /// <param name="file"></param>
+    void UploadDeviceLogs(IFormFile file);
     #endregion
 
 }

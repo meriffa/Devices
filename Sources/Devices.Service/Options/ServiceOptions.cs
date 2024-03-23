@@ -21,6 +21,11 @@ public class ServiceOptions
     /// Service options data protection folder
     /// </summary>
     public required string DataProtectionFolder { get; set; }
+
+    /// <summary>
+    /// Service options device logs folder
+    /// </summary>
+    public required string DeviceLogsFolder { get; set; }
     #endregion
 
 }

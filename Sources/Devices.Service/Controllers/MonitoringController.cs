@@ -53,6 +53,26 @@ public class MonitoringController : ControllerBase
             return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
         }
     }
+
+    /// <summary>
+    /// Upload device logs
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpPost, Authorize(Policy = "DevicePolicy")]
+    public ActionResult UploadDeviceLogs([FromServices] IMonitoringService service)
+    {
+        try
+        {
+            foreach (var file in HttpContext.Request.Form.Files)
+                service.UploadDeviceLogs(file);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
     #endregion
 
 }

@@ -3,6 +3,7 @@ using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Models.Monitoring;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -20,6 +21,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
 
     #region Private Fields
     private readonly ILogger<MonitoringService> logger = logger;
+    private readonly string deviceLogsFolder = options.Value.DeviceLogsFolder;
     #endregion
 
     #region Public Methods
@@ -114,6 +116,25 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
             logger.LogError(ex, "{Error}", ex.Message);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Upload device logs
+    /// </summary>
+    /// <param name="file"></param>
+    public void UploadDeviceLogs(IFormFile file)
+    {
+        string fileName = Path.GetFileName(file.FileName);
+        if (file.Length > 0 && fileName.EndsWith(".zip"))
+        {
+            if (!Directory.Exists(deviceLogsFolder))
+                Directory.CreateDirectory(deviceLogsFolder);
+            using var stream = File.Create(Path.Combine(deviceLogsFolder, fileName));
+            file.CopyTo(stream);
+            logger.LogInformation("Device logs uploaded (FileName = '{FileName}').", fileName);
+        }
+        else
+            logger.LogWarning("Device logs upload skipped (FileName = '{FileName}').", fileName);
     }
     #endregion
 
