@@ -138,21 +138,23 @@ INSERT INTO "Application" ("ApplicationID", "ApplicationName", "ApplicationEnabl
 INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArguments") VALUES
     (1, 1, 'Install.sh', 'InstallClient "Devices.Client"'),
     (2, 1, 'Install.sh', 'InstallClient "Devices.Client.Solutions"'),
-    (3, 1, 'Install.sh', 'SystemUpdate'),
-    (4, 1, 'Install.sh', 'SystemRestart'),
-    (5, 1, 'Install.sh', 'SynchronizeClock'),
-    (6, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client"'),
-    (7, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client.Solutions"'),
-    (8, 1, 'Install.sh', 'ExecuteCommand "ls ~"');
+    (3, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client"'),
+    (4, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client.Solutions"'),
+    (5, 1, 'Install.sh', 'SystemUpdate'),
+    (6, 1, 'Install.sh', 'SystemRestart'),
+    (7, 1, 'Install.sh', 'SynchronizeClock'),
+    (8, 1, 'Install.sh', 'ExecuteCommand "ls ~"'),
+	(9, 1, 'Install.sh', 'UploadDeviceLogs');
 INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled") VALUES
     (1, NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE),
     (2, NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE),
-    (3, NOW(), 5, 'Install.zip', NULL, '1.0.0', 3, FALSE),
-    (4, NOW(), 5, 'Install.zip', NULL, '1.0.0', 4, FALSE),
+    (3, NOW(), 3, 'Install.zip', NULL, '1.0.0', 3, TRUE),
+    (4, NOW(), 4, 'Install.zip', NULL, '1.0.0', 4, TRUE),
     (5, NOW(), 5, 'Install.zip', NULL, '1.0.0', 5, FALSE),
-    (6, NOW(), 3, 'Install.zip', NULL, '1.0.0', 6, TRUE),
-    (7, NOW(), 4, 'Install.zip', NULL, '1.0.0', 7, TRUE),
-    (8, NOW(), 5, 'Install.zip', NULL, '1.0.0', 8, FALSE);
+    (6, NOW(), 5, 'Install.zip', NULL, '1.0.0', 6, FALSE),
+    (7, NOW(), 5, 'Install.zip', NULL, '1.0.0', 7, FALSE),
+    (8, NOW(), 5, 'Install.zip', NULL, '1.0.0', 8, FALSE),
+	(9, NOW(), 5, 'Install.zip', NULL, '1.0.0', 9, FALSE);
 SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FROM "Release"), 0));
 INSERT INTO "ReleaseDependency" ("ParentReleaseID", "ChildReleaseID") VALUES
     (1, 2),

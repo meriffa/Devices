@@ -41,4 +41,5 @@
 - Deploy Nginx: `./AWS.sh DeployNginx`
 - Deploy ASP.NET Core: `./AWS.sh DeployASPNETCore`
 - Deploy Devices.Host: `./AWS.sh DeployDevicesHost`
-- Upload Devices.Host Packages: `./AWS.sh DeployDevicesHostPackages`
+- Package & Upload Devices.Host Packages: `./AWS.sh DeployDevicesHostPackages`
+- Upload Devices.Host Packages: `./AWS.sh UploadDevicesHostPackages`

@@ -384,13 +384,11 @@ DeployDevicesHostPackages() {
 # Upload Devices.Host packages
 UploadDevicesHostPackages() {
   echo "'Devices.Host' packages upload started."
-  ssh HOST_AWS "sudo mkdir -p /etc/Devices.Configuration"
+  ssh HOST_AWS "sudo mkdir -p /etc/Devices.Configuration/Packages/"
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packages upload failed."
-  ssh HOST_AWS "sudo rm -rf /etc/Devices.Configuration/Packages/" &> /dev/null
+  scp $SOLUTION_FOLDER/../Devices.Configuration/Packages/*.zip HOST_AWS:~
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packages upload failed."
-  scp $SOLUTION_FOLDER/../Devices.Configuration/Packages/*.zip HOST_AWS:~/Packages/
-  [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packages upload failed."
-  ssh HOST_AWS "sudo mv ~/Packages/ /etc/Devices.Configuration/" &> /dev/null
+  ssh HOST_AWS "sudo mv ~/*.zip /etc/Devices.Configuration/Packages/" &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packages upload failed."
   ssh HOST_AWS "sudo chown -R www-data:www-data /etc/Devices.Configuration" &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Host' packages upload failed."
@@ -402,6 +400,13 @@ DownloadDevicesHostLogs() {
   echo "'Devices.Host' log download started."
   scp -q HOST_AWS:/var/www/Devices.Host/Logs/Devices.Host-*.json .
   echo "'Devices.Host' log download completed."
+}
+
+# Get uploaded device logs
+DownloadDeviceLogs() {
+  echo "Device logs download started."
+  scp -q HOST_AWS:/etc/Devices.Configuration/DeviceLogs/*.zip .
+  echo "Device logs download completed."
 }
 
 # Package client project
@@ -453,7 +458,7 @@ RegisterDevice() {
   [ $? != 0 ] && DisplayErrorAndStop "Device registration failed (Device)."
   ssh HOST_AWS "echo \"INSERT INTO \\\"DeviceFingerprint\\\" VALUES (2, 'Ethernet:$4', $1);\" | sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -q\""
   [ $? != 0 ] && DisplayErrorAndStop "Device registration failed (DeviceFingerprint)."
-  ssh HOST_AWS "echo \"INSERT INTO \\\"DeviceApplication\\\" VALUES ($1, 1, TRUE), ($1, 2, TRUE), ($1, 3, TRUE);\" | sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -q\""
+  ssh HOST_AWS "echo \"INSERT INTO \\\"DeviceApplication\\\" VALUES ($1, 1, TRUE), ($1, 2, TRUE), ($1, 3, TRUE), ($1, 4, TRUE);\" | sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -q\""
   [ $? != 0 ] && DisplayErrorAndStop "Device registration failed (DeviceFingerprint)."
   echo "Device registration completed."
 }
@@ -478,7 +483,9 @@ case $OPERATION in
   DeployASPNETCore) DeployASPNETCore ;;
   DeployDevicesHost) DeployDevicesHost ;;
   DeployDevicesHostPackages) DeployDevicesHostPackages ;;
+  UploadDevicesHostPackages) UploadDevicesHostPackages ;;
   DownloadDevicesHostLogs) DownloadDevicesHostLogs ;;
+  DownloadDeviceLogs) DownloadDeviceLogs ;;
   PackageClient) PackageClient "$2" ;;
   PackageInstall) PackageInstall ;;
   RegisterDevice) RegisterDevice $2 "$3" "$4" "$5" "$6" ;;

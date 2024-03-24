@@ -128,7 +128,7 @@ UploadDeviceLogs() {
     zip -qj $LOG_FILES $folder
     [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (zip -qj $LOG_FILES $folder).";
   done
-  HOST_URL=$(cat Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
+  HOST_URL=$(cat /root/Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
   DEVICE_TOKEN=$(cat /etc/Devices.Configuration/Devices.Common.DeviceToken)
   curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILES -F upload=@$LOG_FILES -fks "$HOST_URL/Service/Monitoring/UploadDeviceLogs"
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (curl).";
