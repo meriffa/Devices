@@ -40,6 +40,7 @@ The framework has been tested with the following platforms:
 - Devices
   - Raspberry Pi Zero 2 W
   - Raspberry Pi 4 Model B
+  - Raspberry Pi 5
 - Device Operating Systems
   - DietPi 9.2.1 (Debian 12, Arm32, ARMv6)
   - DietPi 9.2.1 (Debian 12, Arm64, ARMv8)

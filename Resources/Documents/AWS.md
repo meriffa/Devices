@@ -18,10 +18,10 @@
 - VPC -> Security Groups -> 'Devices.Host Security Group' -> Inbound Rules -> 'Devices.Host Inbound Rule' -> Edit Inbound Rules -> Add Rule: Type = HTTPS, Source = 0.0.0.0/0, Name = 'Devices.Host Inbound Rule HTTPS' -> Save Rules
 
 ### Setup Public Domain
-- Route 53 -> Hosted Zones -> Create Hosted Zone: Domain Name = <public.domain>, Type = Public hosted zone, Name = 'Devices.Host Hosted Zone' -> Create hosted zone
-- Route 53 -> Hosted Zones -> <public.domain> -> Create Record -> Record name = <black>, Value = <Devices.Host Elastic IP Address Value> -> Create records
-- Route 53 -> Hosted Zones -> <public.domain> -> Create Record -> Record name = www, Value = <Devices.Host Elastic IP Address Value> -> Create records
-- Route 53 -> Health Checks -> Create Health Check: Name = 'Devices.Host Health Check', What to monitor = Endpoint, Specify endpoint by = Domain, Protocol = HTTPS, Domain = www.<public.domain>, Port = 443, Path = <blank> -> Next -> Create alarm = Yes, Send notifications to = Existing SNS topic (NotifyMe) -> Create health check
+- Route 53 -> Hosted Zones -> Create Hosted Zone: Domain Name = \<public.domain>, Type = Public hosted zone, Name = 'Devices.Host Hosted Zone' -> Create hosted zone
+- Route 53 -> Hosted Zones -> \<public.domain> -> Create Record -> Record name = \<blank>, Value = \<Devices.Host Elastic IP Address Value> -> Create records
+- Route 53 -> Hosted Zones -> \<public.domain> -> Create Record -> Record name = www, Value = \<Devices.Host Elastic IP Address Value> -> Create records
+- Route 53 -> Health Checks -> Create Health Check: Name = 'Devices.Host Health Check', What to monitor = Endpoint, Specify endpoint by = Domain, Protocol = HTTPS, Domain = www.\<public.domain>, Port = 443, Path = \<blank> -> Next -> Create alarm = Yes, Send notifications to = Existing SNS topic (NotifyMe) -> Create health check
 
 ### Purchase Reserved Instance
 - EC2 -> Reserved Instances -> Purchase Reserved Instances: Only show offerings that reserve capacity = On, Platform = Linux/UNIX, Availability Zone = us-east-1a, Tenancy = Default, Offering Class = Standard, Instance Type = t3.xlarge, Term = 12 months to 36 months, Payment Option = All upfront -> Search -> Add To Cart -> Order All
