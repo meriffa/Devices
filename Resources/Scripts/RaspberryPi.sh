@@ -48,7 +48,7 @@ WriteImage() {
 # Setup SSH
 SetupSSH() {
   echo "SSH setup started."
-  ssh-copy-id -f -i <PublicKey.pub> HOST_SBC
+  ssh-copy-id -f -i <PublicKey> HOST_SBC
   [ $? != 0 ] && DisplayErrorAndStop "SSH setup failed."
   ssh HOST_SBC "sudo sed -i 's/^#PasswordAuthentication yes$/PasswordAuthentication no/' /etc/ssh/sshd_config"
   [ $? != 0 ] && DisplayErrorAndStop "SSH setup failed."
