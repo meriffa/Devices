@@ -26,7 +26,7 @@ InstallPackages() {
 # Download Image
 DownloadImage() {
   echo "Image download started."
-  wget -q -O dietpi.img.xz https://dietpi.com/downloads/images/DietPi_RPi-$1-Bookworm.img.xz
+  wget -q -O dietpi.img.xz https://dietpi.com/downloads/images/$1
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed."
   sha256sum dietpi.img.xz | grep -iq $2
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed."
@@ -149,8 +149,9 @@ fi
 
 # Execute oeration
 case $OPERATION in
-  DownloadImageArm32) DownloadImage "ARMv6" "FD30B65EEDC9FD50886C41ABA4B72F0BE0F39943344981A243F0462D2296D866" ;;
-  DownloadImageArm64) DownloadImage "ARMv8" "B94792CE957B50C452C825223D545ACE8E0664B445FD4330D309181887C1B491" ;;
+  DownloadImageArm32) DownloadImage "DietPi_RPi-ARMv6-Bookworm.img.xz" "FD30B65EEDC9FD50886C41ABA4B72F0BE0F39943344981A243F0462D2296D866" ;;
+  DownloadImageArm64) DownloadImage "DietPi_RPi-ARMv8-Bookworm.img.xz" "B94792CE957B50C452C825223D545ACE8E0664B445FD4330D309181887C1B491" ;;
+  DownloadImageArm64Pi5) DownloadImage "testing/DietPi_RPi5-ARMv8-Bookworm.img.xz" "E5B11A42AD74A384A8BD0B8F2006F6AE8810A04D6FD6C3350D3BEE3B6FA61F2E" ;;
   WriteImage) WriteImage ;;
   SetupDevice) SetupDevice "$2" ;;
   SystemUpdate) SystemUpdate ;;
