@@ -17,4 +17,4 @@
 - Install .NET Runtime: `./DietPi.sh InstallNETRuntime`
 - Register Device: `./AWS.sh RegisterDevice <DeviceID> "<DeviceName>" "<DeviceToken>" "<MACAddress>" "<Location>"`
 - Deploy Devices.Client: `./DietPi.sh DownloadClient "<DeviceToken>" <ReleaseID>`
-- Setup Scheduled Jobs: `dotnet Devices.Client.dll execute --tasks Configuration`
+- Setup Scheduled Jobs: `cd ~/Devices.Client && dotnet Devices.Client.dll execute --tasks Configuration`

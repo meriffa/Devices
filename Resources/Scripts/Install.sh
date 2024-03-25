@@ -88,9 +88,9 @@ SetupScheduledJobs() {
   echo "'$1' scheduled jobs setup started."
   case $1 in
     "Devices.Client")
-      SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /root/.dotnet/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> Devices.Client.log 2>&1" ;;
+      SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /usr/bin/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> Devices.Client.log 2>&1" ;;
     "Devices.Client.Solutions")
-      SetupScheduledJob $1 "Devices.Client.Solutions.dll" "*/5 * * * * cd /root/Devices.Client.Solutions && /root/.dotnet/dotnet Devices.Client.Solutions.dll garden >> Devices.Client.Solutions.log 2>&1" ;;
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll garden >> Devices.Client.Solutions.log 2>&1" ;;
   esac
   echo "'$1' scheduled jobs setup completed."
 }

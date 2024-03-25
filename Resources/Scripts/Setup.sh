@@ -117,20 +117,6 @@ InstallDotNetSDK() {
   echo ".NET SDK install completed.";
 }
 
-# Install .NET SDK 8.0 (Manual)
-InstallDotNetSDKManual() {
-  apt-get install libicu-dev -y -qq
-  wget -q -O dotnet-sdk.tar.gz https://download.visualstudio.microsoft.com/download/pr/092bec24-9cad-421d-9b43-458b3a7549aa/84280dbd1eef750f9ed1625339235c22/dotnet-sdk-8.0.101-linux-arm64.tar.gz
-  mkdir -p $HOME/.dotnet
-  tar zxf dotnet-sdk.tar.gz -C $HOME/.dotnet
-  rm dotnet-sdk.tar.gz
-  echo "export DOTNET_ROOT=\$HOME/.dotnet" >> ~/.bashrc
-  echo "export PATH=\$PATH:\$HOME/.dotnet" >> ~/.bashrc
-  echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" >> ~/.bashrc
-  $HOME/.dotnet/dotnet --version | grep "8.0."
-  echo ".NET SDK install completed.";
-}
-
 # Install Visual Studio Code
 InstallVisualStudioCode() {
   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
@@ -186,7 +172,6 @@ case $OPERATION in
   CreateSolution) CreateSolution ;;
   ArchiveSolution) ArchiveSolution ;;
   InstallDotNetSDK) InstallDotNetSDK ;;
-  InstallDotNetSDKManual) InstallDotNetSDKManual ;;
   InstallVisualStudioCode) InstallVisualStudioCode ;;
   InstallVisualStudioDebugger) InstallRInstallVisualStudioDebugger ;;
   InstallRSync) InstallRSync ;;

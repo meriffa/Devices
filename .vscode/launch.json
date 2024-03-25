@@ -55,7 +55,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Deploy Devices.Client",
-            "program": "~/.dotnet/dotnet",
+            "program": "/usr/bin/dotnet",
             "args": [
                 "../Devices.Client.Debug/Devices.Client.dll",
                 "execute",
@@ -98,7 +98,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Deploy Devices.Client.Solutions",
-            "program": "~/.dotnet/dotnet",
+            "program": "/usr/bin/dotnet",
             "args": [
                 "../Devices.Client.Solutions.Debug/Devices.Client.Solutions.dll",
                 "garden"

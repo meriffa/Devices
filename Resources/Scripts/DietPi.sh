@@ -115,13 +115,13 @@ SetupFirewall() {
 InstallNETRuntime() {
   echo ".NET Runtime installation started."
   InstallPackages "wget" "libicu-dev"
-  ssh HOST_SBC "if ! [ -f \$HOME/.dotnet/dotnet ]; then curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --runtime dotnet --install-dir \$HOME/.dotnet --no-path; fi"
+  ssh HOST_SBC "if ! [ -f /opt/dotnet/dotnet ]; then curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --runtime dotnet --install-dir /opt/dotnet --no-path; fi"
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (dotnet-install)."
-  ssh HOST_SBC "if [[ \$(grep -L \"DOTNET_ROOT\" ~/.bashrc) ]]; then echo \"export DOTNET_ROOT=\$HOME/.dotnet\" >> ~/.bashrc; fi"
+  ssh HOST_SBC "if [[ \$(grep -L \"DOTNET_ROOT\" ~/.bashrc) ]]; then echo \"export DOTNET_ROOT=/opt/dotnet\" >> ~/.bashrc; fi"
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (DOTNET_ROOT)."
   ssh HOST_SBC "if [[ \$(grep -L \"DOTNET_CLI_TELEMETRY_OPTOUT\" ~/.bashrc) ]]; then echo \"export DOTNET_CLI_TELEMETRY_OPTOUT=1\" >> ~/.bashrc; fi"
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (DOTNET_CLI_TELEMETRY_OPTOUT)."
-  ssh HOST_SBC "if ! [ -f /usr/bin/dotnet ]; then sudo ln -s \$HOME/.dotnet/dotnet /usr/bin/dotnet; fi"
+  ssh HOST_SBC "if ! [ -f /usr/bin/dotnet ]; then sudo ln -s /opt/dotnet/dotnet /usr/bin/dotnet; fi"
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (ln)."
   ssh HOST_SBC "dotnet --list-runtimes | grep -i \"Microsoft.NETCore.App 8.0\"" &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime verification failed."
