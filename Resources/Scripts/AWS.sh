@@ -42,13 +42,17 @@ SystemUpdate() {
 
 # Install Packages
 InstallPackages() {
-  echo "Package installation started."
   local packages=("$@")
   for package in "${packages[@]}"; do
-    ssh HOST_AWS -t "sudo apt-get install \"$package\" -y"
-    [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
+    if ssh HOST_AWS "sudo apt-cache policy $package | grep -q \"Installed: (none)\"" ; then
+      echo "Package '$package' installation started."
+      ssh HOST_AWS -t "sudo apt-get install $package -y -qq"
+      [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
+      echo "Package '$package' installation completed."
+    else
+      echo "Package '$package' installation skipped."
+    fi
   done
-  echo "Package installation completed."
 }
 
 # Deploy PostgreSQL

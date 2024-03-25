@@ -69,13 +69,13 @@ WriteImage() {
 # Setup Device
 SetupDevice() {
   echo "Device setup started."
-  ssh HOST_SBC "userdel dietpi"
+  ssh HOST_SBC "if [[ \$(grep dietpi /etc/passwd) ]]; then userdel dietpi; fi"
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
-  ssh HOST_SBC "rm -rf /home/dietpi"
+  ssh HOST_SBC "if [[ -d \"/home/dietpi\" ]]; then rm -rf /home/dietpi; fi"
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
-  ssh HOST_SBC "echo \"alias ls='ls -al --color=auto --group-directories-first'\" >> ~/.bashrc"
+  ssh HOST_SBC "sed -i \"s/# alias ls='ls \\\$LS_OPTIONS'\$/alias ls='ls -al --color=auto --group-directories-first'/\" ~/.bashrc"
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
-  ssh HOST_SBC "echo 'unset HISTFILE' >> ~/.bashrc"
+  ssh HOST_SBC "if [[ \$(grep -L \"unset HISTFILE\" ~/.bashrc) ]]; then echo \"unset HISTFILE\" >> ~/.bashrc; fi"
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
   ssh HOST_SBC "/boot/dietpi/func/change_hostname \"$1\"" 1> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."

@@ -112,7 +112,7 @@ InstallDotNetSDK() {
   rm packages-microsoft-prod.deb
   sudo apt-get update -qq
   sudo apt-get install dotnet-sdk-8.0 -y -qq
-  echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" | tee -a ~/.bashrc 1> /dev/null
+  echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" >> ~/.bashrc
   dotnet --version | grep "8.0."
   echo ".NET SDK install completed.";
 }
@@ -124,9 +124,9 @@ InstallDotNetSDKManual() {
   mkdir -p $HOME/.dotnet
   tar zxf dotnet-sdk.tar.gz -C $HOME/.dotnet
   rm dotnet-sdk.tar.gz
-  echo "export DOTNET_ROOT=\$HOME/.dotnet" | tee -a ~/.bashrc 1> /dev/null
-  echo "export PATH=\$PATH:\$HOME/.dotnet" | tee -a ~/.bashrc 1> /dev/null
-  echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" | tee -a ~/.bashrc 1> /dev/null
+  echo "export DOTNET_ROOT=\$HOME/.dotnet" >> ~/.bashrc
+  echo "export PATH=\$PATH:\$HOME/.dotnet" >> ~/.bashrc
+  echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" >> ~/.bashrc
   $HOME/.dotnet/dotnet --version | grep "8.0."
   echo ".NET SDK install completed.";
 }

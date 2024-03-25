@@ -72,7 +72,7 @@ SetupDevice() {
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
   ssh HOST_SBC "if [[ \$(grep -L \"alias sudo\" ~/.bashrc) ]]; then echo \"alias sudo='sudo '\" >> ~/.bashrc; fi"
   [ $? != 0 ] && DisplayErrorAndStop ".Device setup failed."
-  ssh HOST_SBC "if [[ \$(grep -L \"unset HISTFILE\" ~/.bashrc) ]]; then echo \"unset HISTFILE\" | sudo tee -a ~/.bashrc 1> /dev/null; fi"
+  ssh HOST_SBC "if [[ \$(grep -L \"unset HISTFILE\" ~/.bashrc) ]]; then echo \"unset HISTFILE\" >> ~/.bashrc; fi"
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."
   ssh HOST_SBC "sudo raspi-config nonint do_hostname \"$1\""
   [ $? != 0 ] && DisplayErrorAndStop "Device setup failed."

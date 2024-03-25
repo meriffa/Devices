@@ -6,6 +6,21 @@ DisplayErrorAndStop() {
   exit 1;
 }
 
+# Install Packages
+InstallPackages() {
+  local packages=("$@")
+  for package in "${packages[@]}"; do
+    if apt-cache policy $package | grep -q "Installed: (none)" ; then
+      echo "Package '$package' installation started."
+      apt-get install $package -y -qq
+      [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
+      echo "Package '$package' installation completed."
+    else
+      echo "Package '$package' installation skipped."
+    fi
+  done
+}
+
 # Install client project
 InstallClient() {
   echo "'$1' installation started."
@@ -60,20 +75,10 @@ SystemRestart() {
   fi
 }
 
-# Install Package
-InstallPackage() {
-  echo "Package '$1' installation started."
-  apt-get install $1 -y -qq
-  [ $? != 0 ] && DisplayErrorAndStop "Package '$1' installation failed."
-  echo "Package '$1' installation completed."
-}
-
 # Synchronize system clock
 SynchronizeClock() {
   echo "System clock synchronization started."
-  if apt-cache policy ntpdate | grep -q "Installed: (none)" ; then
-    InstallPackage ntpdate
-  fi
+  InstallPackages ntpdate
   /usr/sbin/ntpdate -u time.nist.gov
   echo "System clock synchronization completed."
 }
@@ -95,12 +100,12 @@ SetupScheduledJob() {
   echo "'$1' scheduled job setup started."
   crontab -l > crontab.txt
   sed -i "/$2/d" crontab.txt
-  echo "$3" | tee -a crontab.txt 1> /dev/null;
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed.";
+  echo "$3" >> crontab.txt
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed."
   crontab crontab.txt
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed.";
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed."
   rm crontab.txt
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed.";
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' scheduled job setup failed."
   echo "'$1' scheduled job setup completed."
 }
 
@@ -115,9 +120,7 @@ ExecuteCommand() {
 # Upload device logs
 UploadDeviceLogs() {
   echo "Upload device logs started."
-  if apt-cache policy zip | grep -q "Installed: (none)" ; then
-    InstallPackage zip
-  fi
+  InstallPackages zip
   LOG_FILES="DeviceLogs.$(hostname).zip"
   if [ -f $LOG_FILES ]; then
     rm $LOG_FILES
