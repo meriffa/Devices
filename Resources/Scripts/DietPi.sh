@@ -21,7 +21,7 @@ DownloadImage() {
   echo "Image download started."
   wget -q -O dietpi.img.xz https://dietpi.com/downloads/images/DietPi_RPi-$1-Bookworm.img.xz
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed."
-  sha256sum dietpi.img.xz | grep -q $2
+  sha256sum dietpi.img.xz | grep -iq $2
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed."
   echo "Image download completed."
 }
@@ -168,8 +168,8 @@ fi
 
 # Execute oeration
 case $OPERATION in
-  DownloadImagePi0) DownloadImage "ARMv6" "fd30b65eedc9fd50886c41aba4b72f0be0f39943344981a243f0462d2296d866" ;;
-  DownloadImagePi4) DownloadImage "ARMv8" "b94792ce957b50c452c825223d545ace8e0664b445fd4330d309181887c1b491" ;;
+  DownloadImageArm32) DownloadImage "ARMv6" "FD30B65EEDC9FD50886C41ABA4B72F0BE0F39943344981A243F0462D2296D866" ;;
+  DownloadImageArm64) DownloadImage "ARMv8" "B94792CE957B50C452C825223D545ACE8E0664B445FD4330D309181887C1B491" ;;
   WriteImage) WriteImage ;;
   SetupDevice) SetupDevice "$2" ;;
   SystemUpdate) SystemUpdate ;;

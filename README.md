@@ -38,9 +38,11 @@ Solution consists of the following components:
 The framework has been tested with the following platforms:
 
 - Devices
-  - Raspberry Pi 4 Model B
   - Raspberry Pi Zero 2 W
+  - Raspberry Pi 4 Model B
 - Device Operating Systems
-  - DietPi 9
-- Programming
-  - .NET Core 8
+  - DietPi 9 (Debian 12, Arm32, ARMv6)
+  - DietPi 9 (Debian 12, Arm64, ARMv8)
+  - Raspberry Pi OS 2024-03-15 (Debian 12, Arm64, ARMv8)
+- Software
+  - .NET Core 8.0
