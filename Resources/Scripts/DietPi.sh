@@ -8,12 +8,19 @@ DisplayErrorAndStop() {
   exit 1
 }
 
-# Install Package
-InstallPackage() {
-  echo "Package '$1' installation started."
-  ssh HOST_SBC -t "apt-get install $1 -y -qq"
-  [ $? != 0 ] && DisplayErrorAndStop "Package '$1' installation failed."
-  echo "Package '$1' installation completed."
+# Install Packages
+InstallPackages() {
+  local packages=("$@")
+  for package in "${packages[@]}"; do
+    if ssh HOST_SBC "sudo apt-cache policy $package | grep -q \"Installed: (none)\"" ; then
+      echo "Package '$package' installation started."
+      ssh HOST_SBC -t "sudo apt-get install $package -y -qq"
+      [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
+      echo "Package '$package' installation completed."
+    else
+      echo "Package '$package' installation skipped."
+    fi
+  done
 }
 
 # Download Image
@@ -96,7 +103,7 @@ SystemUpdate() {
 # Setup Firewall
 SetupFirewall() {
   echo "Firewall setup started."
-  InstallPackage "ufw"
+  InstallPackages "ufw"
   ssh HOST_SBC "ufw allow OpenSSH"
   [ $? != 0 ] && DisplayErrorAndStop "Firewall setup failed."
   ssh HOST_SBC "ufw --force enable"
@@ -105,43 +112,17 @@ SetupFirewall() {
 }
 
 # Install .NET Runtime
-InstallNETRuntimePackage() {
+InstallNETRuntime() {
   echo ".NET Runtime installation started."
-  InstallPackage "wget"
-  ssh HOST_SBC "wget -q https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC -t "dpkg -i packages-microsoft-prod.deb"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "rm packages-microsoft-prod.deb"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "apt-get update"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC -t "apt-get install dotnet-runtime-8.0 -y"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "dotnet --list-runtimes | grep -i \"Microsoft.NETCore.App 8.0\"" &> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime verification failed."
-  echo ".NET Runtime installation completed."
-}
-
-# Install .NET Runtime
-InstallNETRuntimeManual() {
-  echo ".NET Runtime installation started."
-  InstallPackage "wget"
-  InstallPackage "libicu-dev"
-  ssh HOST_SBC "wget -q -O dotnet-runtime.tar.gz $1"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "mkdir -p \$HOME/.dotnet"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "tar zxf dotnet-runtime.tar.gz -C \$HOME/.dotnet"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "rm dotnet-runtime.tar.gz"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "echo 'export DOTNET_ROOT=\$HOME/.dotnet' >> ~/.bashrc"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "echo 'export DOTNET_CLI_TELEMETRY_OPTOUT=1' >> ~/.bashrc"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
-  ssh HOST_SBC "ln -s /root/.dotnet/dotnet /usr/bin/dotnet"
-  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed."
+  InstallPackages "wget" "libicu-dev"
+  ssh HOST_SBC "if ! [ -f \$HOME/.dotnet/dotnet ]; then curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --runtime dotnet --install-dir \$HOME/.dotnet --no-path; fi"
+  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (dotnet-install)."
+  ssh HOST_SBC "if [[ \$(grep -L \"DOTNET_ROOT\" ~/.bashrc) ]]; then echo \"export DOTNET_ROOT=\$HOME/.dotnet\" >> ~/.bashrc; fi"
+  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (DOTNET_ROOT)."
+  ssh HOST_SBC "if [[ \$(grep -L \"DOTNET_CLI_TELEMETRY_OPTOUT\" ~/.bashrc) ]]; then echo \"export DOTNET_CLI_TELEMETRY_OPTOUT=1\" >> ~/.bashrc; fi"
+  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (DOTNET_CLI_TELEMETRY_OPTOUT)."
+  ssh HOST_SBC "if ! [ -f /usr/bin/dotnet ]; then sudo ln -s \$HOME/.dotnet/dotnet /usr/bin/dotnet; fi"
+  [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime installation failed (ln)."
   ssh HOST_SBC "dotnet --list-runtimes | grep -i \"Microsoft.NETCore.App 8.0\"" &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop ".NET Runtime verification failed."
   echo ".NET Runtime installation completed."
@@ -174,8 +155,7 @@ case $OPERATION in
   SetupDevice) SetupDevice "$2" ;;
   SystemUpdate) SystemUpdate ;;
   SetupFirewall) SetupFirewall ;;
-  InstallNETRuntimeManualArm32) InstallNETRuntimeManual "https://download.visualstudio.microsoft.com/download/pr/a3caf5aa-a29a-41a2-b3db-7d68b606dc1a/478f27b65c19dafd3c3120fbdeb99295/dotnet-runtime-8.0.3-linux-arm.tar.gz" ;;
-  InstallNETRuntimeManualArm64) InstallNETRuntimeManual "https://download.visualstudio.microsoft.com/download/pr/988a1d6e-6bfb-406c-90ba-682f5c11a7fc/28208806b0a6151c4e5d9e1441b01a6f/dotnet-runtime-8.0.3-linux-arm64.tar.gz" ;;
+  InstallNETRuntime) InstallNETRuntime ;;
   DownloadClient) DownloadClient "$2" $3 ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac
