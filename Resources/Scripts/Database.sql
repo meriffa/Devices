@@ -16,6 +16,15 @@ CREATE TABLE "Application" (
 	CONSTRAINT "IX_Application_ApplicationName" UNIQUE ("ApplicationName")
 );
 
+CREATE TABLE "ApplicationDependency" (
+	"ApplicationID" int NOT NULL,
+	"RequiredApplicationID" int NOT NULL,
+	"MinimumVersion" varchar(64) NULL,
+	CONSTRAINT "PK_ApplicationDependency" PRIMARY KEY ("ApplicationID", "RequiredApplicationID"),
+	CONSTRAINT "FK_ApplicationDependency_Application_ApplicationID" FOREIGN KEY ("ApplicationID") REFERENCES "Application" ("ApplicationID"),
+	CONSTRAINT "FK_ApplicationDependency_Application_RequiredApplicationID" FOREIGN KEY ("RequiredApplicationID") REFERENCES "Application" ("ApplicationID")
+);
+
 CREATE TABLE "Action" (
 	"ActionID" int NOT NULL,
 	"ActionType" int NOT NULL,
@@ -36,14 +45,6 @@ CREATE TABLE "Release" (
 	CONSTRAINT "PK_Release" PRIMARY KEY ("ReleaseID"),
 	CONSTRAINT "FK_Release_Application" FOREIGN KEY ("ApplicationID") REFERENCES "Application" ("ApplicationID"),
 	CONSTRAINT "FK_Release_Action" FOREIGN KEY ("ActionID") REFERENCES "Action" ("ActionID")
-);
-
-CREATE TABLE "ReleaseDependency" (
-	"ParentReleaseID" int NOT NULL,
-	"ChildReleaseID" int NOT NULL,
-	CONSTRAINT "PK_ReleaseDependency" PRIMARY KEY ("ParentReleaseID", "ChildReleaseID"),
-	CONSTRAINT "FK_ReleaseDependency_Release_Parent" FOREIGN KEY ("ParentReleaseID") REFERENCES "Release" ("ReleaseID"),
-	CONSTRAINT "FK_ReleaseDependency_Release_Child" FOREIGN KEY ("ChildReleaseID") REFERENCES "Release" ("ReleaseID")
 );
 
 CREATE TABLE "Device" (
@@ -156,7 +157,7 @@ INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "
     (8, NOW(), 5, 'Install.zip', NULL, '1.0.0', 8, FALSE),
 	(9, NOW(), 5, 'Install.zip', NULL, '1.0.0', 9, FALSE);
 SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FROM "Release"), 0));
-INSERT INTO "ReleaseDependency" ("ParentReleaseID", "ChildReleaseID") VALUES
-    (1, 2),
-	(1, 6),
-	(2, 7);
+INSERT INTO "ApplicationDependency" ("ApplicationID", "RequiredApplicationID", "MinimumVersion") VALUES
+    (2, 1, '1.0.0'),
+	(3, 1, NULL),
+	(4, 2, NULL);

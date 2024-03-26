@@ -21,6 +21,11 @@ public class Application
     /// Application enabled flag
     /// </summary>
     public required bool Enabled { get; set; }
+
+    /// <summary>
+    /// Application required applications
+    /// </summary>
+    public required List<RequiredApplication> RequiredApplications { get; set; }
     #endregion
 
 }

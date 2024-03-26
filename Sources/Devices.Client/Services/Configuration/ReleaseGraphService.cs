@@ -36,7 +36,6 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
         try
         {
             Nodes = GetNodes(configurationService.GetPendingReleases());
-            FilterNodes();
             AddNodeLinks();
             SourceNodes = GetSourceNodes();
         }
@@ -99,57 +98,24 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     /// </summary>
     /// <param name="releases"></param>
     /// <returns></returns>
-    private static List<ReleaseNode> GetNodes(List<Release> releases) => releases.Select(i => new ReleaseNode()
+    private List<ReleaseNode> GetNodes(List<Release> releases) => releases.Select(i => new ReleaseNode()
     {
         Release = i,
         UpstreamNodes = [],
         DownstreamNodes = [],
+        RequiredReleases = i.Application.RequiredApplications.Count > 0 ? configurationService.GetRequiredReleases(i.Application.RequiredApplications) : [],
         Success = false
     }).ToList();
-
-    /// <summary>
-    /// Filter completed nodes
-    /// </summary>
-    private void FilterNodes()
-    {
-        var parentReleaseIds = Nodes.Where(i => i.Release.ParentReleaseIds.Length > 0).SelectMany(i => i.Release.ParentReleaseIds).Distinct();
-        var completedReleaseIds = parentReleaseIds.Except(Nodes.Select(i => i.Release.Id)).ToArray();
-        foreach (var releaseId in completedReleaseIds)
-            if (configurationService.HasReleaseSucceeded(releaseId))
-            {
-                foreach (var node in Nodes)
-                    if (node.Release.ParentReleaseIds.Contains(releaseId))
-                        node.Release.ParentReleaseIds = node.Release.ParentReleaseIds.Where(i => i != releaseId).ToArray();
-            }
-            else
-                RemoveChildNodes(releaseId);
-    }
-
-    /// <summary>
-    /// Remove child release nodes
-    /// </summary>
-    /// <param name="parentReleaseId"></param>
-    private void RemoveChildNodes(int parentReleaseId)
-    {
-        var childReleaseIds = Nodes.Where(i => i.Release.ParentReleaseIds.Contains(parentReleaseId)).Select(i => i.Release.Id).ToArray();
-        foreach (var childReleaseId in childReleaseIds)
-        {
-            RemoveChildNodes(childReleaseId);
-            var node = Nodes.FirstOrDefault(i => i.Release.Id == childReleaseId);
-            if (node != null)
-                Nodes.Remove(node);
-        }
-    }
 
     /// <summary>
     /// Add release node links
     /// </summary>
     private void AddNodeLinks()
     {
-        foreach (var node in Nodes.Where(i => i.Release.ParentReleaseIds.Length > 0))
-            foreach (var parentReleaseId in node.Release.ParentReleaseIds)
+        foreach (var node in Nodes.Where(i => i.RequiredReleases.Count > 0))
+            foreach (var requiredRelease in node.RequiredReleases)
             {
-                var parent = Nodes.First(i => i.Release.Id == parentReleaseId);
+                var parent = Nodes.FirstOrDefault(i => i.Release.Id == requiredRelease.Id) ?? throw new Exception($"Required release {requiredRelease.Id} not found.");
                 parent.DownstreamNodes.Add(node);
                 node.UpstreamNodes.Add(parent);
             }

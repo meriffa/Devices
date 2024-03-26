@@ -71,17 +71,17 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
-    /// Check if device release has completed successfully
+    /// Return required device releases
     /// </summary>
     /// <param name="service"></param>
-    /// <param name="releaseId"></param>
+    /// <param name="applications"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "DevicePolicy")]
-    public ActionResult<bool> HasReleaseSucceeded([FromServices] IConfigurationService service, int releaseId)
+    [HttpPost, Authorize(Policy = "DevicePolicy")]
+    public ActionResult<bool> GetRequiredReleases([FromServices] IConfigurationService service, List<RequiredApplication> applications)
     {
         try
         {
-            return Ok(service.HasReleaseSucceeded(HttpContext.User.GetDeviceId(), releaseId));
+            return Ok(service.GetRequiredReleases(HttpContext.User.GetDeviceId(), applications));
         }
         catch (Exception ex)
         {

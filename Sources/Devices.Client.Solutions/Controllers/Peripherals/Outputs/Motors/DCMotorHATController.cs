@@ -44,7 +44,6 @@ public class DCMotorHATController : PeripheralsController
     /// </summary>
     /// <param name="motor"></param>
     /// <param name="speed"></param>
-    /// <exception cref="Exception"></exception>
     private void SetSpeed(DCMotor motor, int speed)
     {
         if (speed > 100 || speed < -100)

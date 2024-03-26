@@ -66,15 +66,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             var result = new List<Release>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"WITH ""cteReleaseDependency"" AS (
-                    SELECT
-                        ""ChildReleaseID"",
-                        STRING_AGG(""ParentReleaseID""::text, ',' ORDER BY ""ParentReleaseID"") ""ParentReleaseIDs""
-                    FROM
-                        ""ReleaseDependency""
-                    GROUP BY
-                        ""ChildReleaseID"")
-                SELECT
+                @"SELECT
                     r.""ReleaseID"",
                     r.""ServiceDate"",
                     r.""Package"",
@@ -87,13 +79,11 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
-                    act.""ActionArguments"",
-                    rd.""ParentReleaseIDs""
+                    act.""ActionArguments""
                 FROM
                     ""Release"" r JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
-                    ""Action"" act ON act.""ActionID"" = r.""ActionID"" LEFT JOIN
-                    ""cteReleaseDependency"" rd ON rd.""ChildReleaseID"" = r.""ReleaseID""
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID""
                 ORDER BY
                     r.""ReleaseID"";", cn);
             using var r = cmd.ExecuteReader();
@@ -120,15 +110,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             var result = new List<Release>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"WITH ""cteReleaseDependency"" AS (
-                    SELECT
-                        ""ChildReleaseID"",
-                        STRING_AGG(""ParentReleaseID""::text, ',' ORDER BY ""ParentReleaseID"") ""ParentReleaseIDs""
-                    FROM
-                        ""ReleaseDependency""
-                    GROUP BY
-                        ""ChildReleaseID"")
-                SELECT
+                @"SELECT
                     r.""ReleaseID"",
                     r.""ServiceDate"",
                     r.""Package"",
@@ -141,15 +123,13 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
-                    act.""ActionArguments"",
-                    rd.""ParentReleaseIDs""
+                    act.""ActionArguments""
                 FROM
                     ""Release"" r JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" JOIN
                     ""DeviceApplication"" da ON da.""ApplicationID"" = app.""ApplicationID"" LEFT JOIN
-                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID"" LEFT JOIN
-                    ""cteReleaseDependency"" rd ON rd.""ChildReleaseID"" = r.""ReleaseID""
+                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
                 WHERE
                     da.""DeviceID"" = @DeviceID AND
                     app.""ApplicationEnabled"" = TRUE AND
@@ -172,33 +152,57 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
-    /// Check if device release has completed successfully
+    /// Return required device releases
     /// </summary>
     /// <param name="deviceId"></param>
-    /// <param name="releaseId"></param>
+    /// <param name="applications"></param>
     /// <returns></returns>
-    public bool HasReleaseSucceeded(int deviceId, int releaseId)
+    public List<Release> GetRequiredReleases(int deviceId, List<RequiredApplication> applications)
     {
         try
         {
+            var result = new List<Release>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
+                    r.""ReleaseID"",
+                    r.""ServiceDate"",
+                    r.""Package"",
+                    r.""PackageHash"",
+                    r.""Version"",
+                    r.""ReleaseEnabled"",
+                    app.""ApplicationID"",
+                    app.""ApplicationName"",
+                    app.""ApplicationEnabled"",
+                    act.""ActionID"",
+                    act.""ActionType"",
+                    act.""ActionParameters"",
+                    act.""ActionArguments"",
                     dd.""Success""
                 FROM
                     ""Release"" r JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
-                    ""DeviceApplication"" da ON da.""ApplicationID"" = app.""ApplicationID"" JOIN
-                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = da.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID"" LEFT JOIN
+                    ""DeviceDeployment"" dd ON dd.""ReleaseID"" = r.""ReleaseID"" AND dd.""DeviceID"" = @DeviceID
                 WHERE
-                    r.""ReleaseID"" = @ReleaseID and
-                    da.""DeviceID"" = @DeviceID AND
-                    app.""ApplicationEnabled"" = TRUE AND
-                    r.""ReleaseEnabled"" = TRUE AND
-                    da.""DeviceApplicationEnabled"" = TRUE;", cn);
+                    r.""ApplicationID"" = @ApplicationID AND
+                    (r.""Version"" >= @Version OR @Version IS NULL)
+                ORDER BY
+                    r.""Version"" DESC
+                LIMIT 1;", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
-            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
-            return (bool)cmd.ExecuteScalar()!;
+            cmd.Parameters.Add("@ApplicationID", NpgsqlDbType.Integer);
+            cmd.Parameters.Add("@Version", NpgsqlDbType.Varchar, 64);
+            foreach (var application in applications)
+            {
+                cmd.Parameters["@ApplicationID"].Value = application.Application.Id;
+                cmd.Parameters["@Version"].Value = (object?)application.MinimumVersion ?? DBNull.Value;
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                    if (r["Success"] is DBNull || !(bool)r["Success"])
+                        result.Add(GetRelease(r));
+            }
+            return result;
         }
         catch (Exception ex)
         {
@@ -252,15 +256,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             var result = new List<CompletedDeployment>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"WITH ""cteReleaseDependency"" AS (
-                    SELECT
-                        ""ChildReleaseID"",
-                        STRING_AGG(""ParentReleaseID""::text, ',' ORDER BY ""ParentReleaseID"") ""ParentReleaseIDs""
-                    FROM
-                        ""ReleaseDependency""
-                    GROUP BY
-                        ""ChildReleaseID"")
-                SELECT
+                @"SELECT
                     dd.""DeploymentID"",
                     dd.""DeviceID"",
                     dd.""ReleaseID"",
@@ -282,15 +278,13 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionArguments"",
                     d.""DeviceID"",
                     d.""DeviceName"",
-                    d.""DeviceLocation"",
-                    rd.""ParentReleaseIDs""
+                    d.""DeviceLocation""
                 FROM
                     ""DeviceDeployment"" dd JOIN
                     ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" JOIN
-                    ""Device"" d ON d.""DeviceID"" = dd.""DeviceID"" LEFT JOIN
-                    ""cteReleaseDependency"" rd ON rd.""ChildReleaseID"" = r.""ReleaseID""
+                    ""Device"" d ON d.""DeviceID"" = dd.""DeviceID""
                 ORDER BY
                     dd.""DeploymentID"";", cn);
             using var r = cmd.ExecuteReader();
@@ -316,15 +310,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             var result = new List<PendingDeployment>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"WITH ""cteReleaseDependency"" AS (
-                    SELECT
-                        ""ChildReleaseID"",
-                        STRING_AGG(""ParentReleaseID""::text, ',' ORDER BY ""ParentReleaseID"") ""ParentReleaseIDs""
-                    FROM
-                        ""ReleaseDependency""
-                    GROUP BY
-                        ""ChildReleaseID"")
-                SELECT
+                @"SELECT
                     d.""DeviceID"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
@@ -340,16 +326,14 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionID"",
                     act.""ActionType"",
                     act.""ActionParameters"",
-                    act.""ActionArguments"",
-                    rd.""ParentReleaseIDs""
+                    act.""ActionArguments""
                 FROM
                     ""Device"" d JOIN
                     ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" JOIN
                     ""Application"" app ON app.""ApplicationID"" = da.""ApplicationID"" JOIN
                     ""Release"" r ON r.""ApplicationID"" = app.""ApplicationID"" JOIN
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" LEFT JOIN
-                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = d.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID"" LEFT JOIN
-                    ""cteReleaseDependency"" rd ON rd.""ChildReleaseID"" = r.""ReleaseID""
+                    ""DeviceDeployment"" dd ON dd.""DeviceID"" = d.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
                 WHERE
                     d.""DeviceEnabled"" = TRUE AND
                     app.""ApplicationEnabled"" = TRUE AND
@@ -415,12 +399,46 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Application GetApplication(NpgsqlDataReader reader) => new()
+    private Application GetApplication(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["ApplicationID"],
         Name = (string)reader["ApplicationName"],
-        Enabled = (bool)reader["ApplicationEnabled"]
+        Enabled = (bool)reader["ApplicationEnabled"],
+        RequiredApplications = GetRequiredApplications((int)reader["ApplicationID"])
     };
+
+    /// <summary>
+    /// Return required applications
+    /// </summary>
+    /// <param name="applicationId"></param>
+    /// <returns></returns>
+    private List<RequiredApplication> GetRequiredApplications(int applicationId)
+    {
+        var result = new List<RequiredApplication>();
+        using var cn = GetConnection();
+        using var cmd = GetCommand(
+            @"SELECT
+                    a.""ApplicationID"",
+                    a.""ApplicationName"",
+                    a.""ApplicationEnabled"",
+                    ad.""MinimumVersion""
+                FROM
+                    ""Application"" a JOIN
+                    ""ApplicationDependency"" ad ON ad.""RequiredApplicationID"" = a.""ApplicationID""
+                WHERE
+                    ad.""ApplicationID"" = @ApplicationID
+                ORDER BY
+                    a.""ApplicationID"";", cn);
+        cmd.Parameters.Add("@ApplicationID", NpgsqlDbType.Integer).Value = applicationId;
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            result.Add(new()
+            {
+                Application = GetApplication(r),
+                MinimumVersion = r["MinimumVersion"] is DBNull ? null : (string)r["MinimumVersion"]
+            });
+        return result;
+    }
 
     /// <summary>
     /// Return action instance
@@ -440,7 +458,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Release GetRelease(NpgsqlDataReader reader) => new()
+    private Release GetRelease(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["ReleaseID"],
         ServiceDate = (DateTime)reader["ServiceDate"],
@@ -449,8 +467,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         PackageHash = reader["PackageHash"] is DBNull ? null : (string?)reader["PackageHash"],
         Version = (string)reader["Version"],
         Action = GetAction(reader),
-        Enabled = (bool)reader["ReleaseEnabled"],
-        ParentReleaseIds = reader["ParentReleaseIDs"] is DBNull ? ([]) : Array.ConvertAll(((string)reader["ParentReleaseIDs"]).Split(','), i => Convert.ToInt32(i))
+        Enabled = (bool)reader["ReleaseEnabled"]
     };
 
     /// <summary>
@@ -458,7 +475,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static PendingDeployment GetPendingDeployment(NpgsqlDataReader reader) => new()
+    private PendingDeployment GetPendingDeployment(NpgsqlDataReader reader) => new()
     {
         Device = IdentityService.GetDevice(reader),
         Release = GetRelease(reader)
@@ -469,7 +486,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static CompletedDeployment GetCompletedDeployment(NpgsqlDataReader reader) => new()
+    private CompletedDeployment GetCompletedDeployment(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["DeploymentID"],
         Device = IdentityService.GetDevice(reader),

@@ -30,12 +30,12 @@ public interface IConfigurationService
     List<Release> GetPendingReleases(int deviceId);
 
     /// <summary>
-    /// Check if device release has completed successfully
+    /// Return required device releases
     /// </summary>
     /// <param name="deviceId"></param>
-    /// <param name="releaseId"></param>
+    /// <param name="applications"></param>
     /// <returns></returns>
-    bool HasReleaseSucceeded(int deviceId, int releaseId);
+    List<Release> GetRequiredReleases(int deviceId, List<RequiredApplication> applications);
 
     /// <summary>
     /// Return release package

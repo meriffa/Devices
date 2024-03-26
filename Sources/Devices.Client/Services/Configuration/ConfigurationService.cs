@@ -45,17 +45,18 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
-    /// Check if device release has completed successfully
+    /// Return required device releases
     /// </summary>
-    /// <param name="releaseId"></param>
+    /// <param name="applications"></param>
     /// <returns></returns>
-    public bool HasReleaseSucceeded(int releaseId)
+    public List<Release> GetRequiredReleases(List<RequiredApplication> applications)
     {
         try
         {
-            using var response = Client.GetAsync($"/Service/Configuration/HasReleaseSucceeded?releaseId={releaseId}").Result;
+            var content = new StringContent(JsonSerializer.Serialize(applications), Encoding.UTF8, "application/json");
+            using var response = Client.PostAsync("/Service/Configuration/GetRequiredReleases", content).Result;
             response.EnsureSuccessStatusCode();
-            return response.Content.ReadFromJsonAsync<bool>().Result!;
+            return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
         }
         catch (Exception ex)
         {

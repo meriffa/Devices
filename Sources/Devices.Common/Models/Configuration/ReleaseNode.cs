@@ -22,6 +22,11 @@ public class ReleaseNode
     public required List<ReleaseNode> DownstreamNodes { get; set; }
 
     /// <summary>
+    /// Release node required releases
+    /// </summary>
+    public required List<Release> RequiredReleases { get; set; }
+
+    /// <summary>
     /// Release node success flag
     /// </summary>
     public bool Success { get; set; }

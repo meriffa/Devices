@@ -24,6 +24,18 @@ Devices.Web = Devices.Web || {};
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
                     }
+                },
+                {
+                    title: "Required Applications",
+                    data: "requiredApplications",
+                    render: function (data, type) {
+                        return data.map(function (application) {
+                            if (application.minimumVersion == null)
+                                return application.application.name;
+                            else
+                                return `${application.application.name} (${application.minimumVersion})`;
+                        }).join(", ");
+                    }
                 }
             ],
             order: [[0, "asc"]]
