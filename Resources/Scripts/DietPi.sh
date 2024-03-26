@@ -140,6 +140,23 @@ DownloadClient() {
   echo "'Devices.Client' download completed."
 }
 
+# Configuration
+Configuration() {
+  # # Enable Camera
+  # dietpi-config 1 -> RPi Camera = On -> Reboot
+  # ls /dev/video*
+  # # Enable I2C
+  # dietpi-config 3 -> I2C State = On, I2C Frequency = 100kHz -> Reboot
+  # i2cdetect -y 1
+  # # Enable SPI
+  # dietpi-config 3 -> SPI State = On -> Reboot
+  # ls /sys/dev/spi*
+  # # Enable 1-Wire
+  # echo "dtoverlay=w1-gpio,gpiopin=4" >> /boot/config.txt
+  # reboot now
+  # ls /sys/bus/w1/devices/
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified."

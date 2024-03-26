@@ -93,7 +93,7 @@
         },
         {
             "label": "Deploy Devices.Client",
-            "command": "./Resources/Scripts/Setup.sh",
+            "command": "./Resources/Scripts/Development.sh",
             "type": "process",
             "args": [
                 "DeployClient",
@@ -106,7 +106,7 @@
         },
         {
             "label": "Deploy Devices.Client.Solutions",
-            "command": "./Resources/Scripts/Setup.sh",
+            "command": "./Resources/Scripts/Development.sh",
             "type": "process",
             "args": [
                 "DeployClient",

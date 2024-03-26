@@ -157,6 +157,13 @@ DownloadClient() {
   echo "'Devices.Client' download completed."
 }
 
+# Configuration
+Configuration() {
+  # Detect I2C devices
+  sudo apt-get install i2c-tools -y
+  i2cdetect -y 1
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified."
