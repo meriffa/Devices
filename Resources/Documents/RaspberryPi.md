@@ -15,3 +15,8 @@
 - Register Device: `./AWS.sh RegisterDevice <DeviceID> "<DeviceName>" "<DeviceToken>" "<MACAddress>" "<Location>"`
 - Deploy Devices.Client: `./RaspberryPi.sh DownloadClient "<DeviceToken>" <ReleaseID>`
 - Setup Scheduled Jobs: `sudo su - root -c "cd ~/Devices.Client && dotnet Devices.Client.dll execute --tasks Configuration"`
+
+### References
+- [Camera Modules](https://www.raspberrypi.com/documentation/accessories/camera.html) 
+- [Camera Software](https://www.raspberrypi.com/documentation/computers/camera_software.html)
+- [Picamera2 Library](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)

@@ -164,6 +164,36 @@ Configuration() {
   i2cdetect -y 1
 }
 
+# Camera Setup
+CameraSetup() {
+  # Enable camera auto-detect
+  sudo nano /boot/firmware/config.txt
+  camera_auto_detect=1
+  # List video devices
+  ls /dev/video*
+  # List available cameras
+  rpicam-hello --list-cameras
+  # Test camera
+  rpicam-hello -n --camera 0
+  # Capture image (JPEG)
+  rpicam-jpeg -n --camera 0 -t 1 -o Image.jpg --width 1024 --height 768
+  # Capture image (PNG)
+  rpicam-still -n --camera 0 -t 1 -o Image.png --width 1024 --height 768 -e png
+  # Capture video (H264)
+  rpicam-vid -n --camera 0 -t 3000 --codec h264 -o Video.h264
+  # Capture video (MJPEG)
+  rpicam-vid -n --camera 0 -t 3000 --codec mjpeg -o Video.mjpeg
+  # Stream video
+  sudo ufw allow 8888
+  rpicam-vid -n --camera 0 -t 0 --codec h264 --inline --listen -o tcp://0.0.0.0:8888 --mode 2028:1520 --framerate 40 --hdr
+  rpicam-vid -n --camera 0 -t 0 --codec mjpeg --inline --listen -o tcp://0.0.0.0:8888 --mode 2028:1520 --framerate 40 --hdr
+  rpicam-vid -n --camera 0 -t 0 --codec libav --libav-format h264 --inline --listen -o tcp://0.0.0.0:8888 --mode 2028:1520 --framerate 40 --hdr
+  rpicam-vid -n --camera 0 -t 0 --codec libav --libav-format mpegts --inline --listen -o tcp://0.0.0.0:8888 --mode 2028:1520 --framerate 40 --hdr
+  # Play video stream
+  ffplay tcp://HOST_SBC:8888
+  ffplay tcp://HOST_SBC:8888 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified."
