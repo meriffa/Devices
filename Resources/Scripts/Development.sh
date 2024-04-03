@@ -111,7 +111,7 @@ InstallDotNetSDK() {
   sudo dpkg -i packages-microsoft-prod.deb
   rm packages-microsoft-prod.deb
   sudo apt-get update -qq
-  sudo apt-get install dotnet-sdk-8.0 -y -qq
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install dotnet-sdk-8.0 -y -qq
   echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" >> ~/.bashrc
   dotnet --version | grep "8.0."
   echo ".NET SDK install completed.";
@@ -123,9 +123,9 @@ InstallVisualStudioCode() {
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
   sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
   rm -f packages.microsoft.gpg
-  sudo apt-get install apt-transport-https -y -qq
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install apt-transport-https -y -qq
   sudo apt-get update -qq
-  sudo apt-get install code -y -qq
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install code -y -qq
   code --version | grep "x64"
   extensions=("alefragnani.Bookmarks" "ms-dotnettools.csharp" "streetsidesoftware.code-spell-checker" "hediet.vscode-drawio")
   for extension in "${extensions[@]}"
@@ -143,7 +143,7 @@ InstallVisualStudioDebugger() {
 
 # Install RSync
 InstallRSync() {
-  sudo apt-get install rsync -y
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install rsync -y -qq
   echo "RSync install completed.";
 }
 

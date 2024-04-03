@@ -8,22 +8,22 @@ DisplayErrorAndStop() {
   exit 1
 }
 
-# Install Packages
+# Install packages
 InstallPackages() {
   local packages=("$@")
   for package in "${packages[@]}"; do
-    if ssh HOST_SBC "sudo apt-cache policy $package | grep -q \"Installed: (none)\"" ; then
+    ssh HOST_SBC "sudo apt-cache policy $package | grep -q \"Installed:\""
+    [ $? != 0 ] && DisplayErrorAndStop "Package '$package' not found."
+    if ssh HOST_SBC "sudo apt-cache policy $package | grep -q \"Installed: (none)\""; then
       echo "Package '$package' installation started."
-      ssh HOST_SBC -t "sudo apt-get install $package -y -qq"
+      ssh HOST_SBC -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install $package -y -qq"
       [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
       echo "Package '$package' installation completed."
-    else
-      echo "Package '$package' installation skipped."
     fi
   done
 }
 
-# Download Image
+# Download image
 DownloadImage() {
   echo "Image download started."
   wget -q -O raspios.img.xz https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64-lite.img.xz
@@ -33,7 +33,7 @@ DownloadImage() {
   echo "Image download completed."
 }
 
-# Write Image
+# Write image
 WriteImage() {
   echo "Image write started."
   sudo umount /dev/sda2 && sudo umount /dev/sda1
@@ -65,7 +65,7 @@ SetupSSH() {
   echo "SSH setup completed."
 }
 
-# Setup Device
+# Setup device
 SetupDevice() {
   echo "Device setup started."
   ssh HOST_SBC "sed -i \"s/alias ls='ls --color=auto'\$/alias ls='ls -al --color=auto --group-directories-first'/\" ~/.bashrc"
@@ -95,7 +95,7 @@ SetupDevice() {
   echo "Device setup completed."
 }
 
-# System Update
+# System update
 SystemUpdate() {
   echo "System update started."
   ssh HOST_SBC "sudo apt-get clean -qq"
@@ -113,7 +113,7 @@ SystemUpdate() {
   echo "System update completed."
 }
 
-# Setup Firewall
+# Setup firewall
 SetupFirewall() {
   echo "Firewall setup started."
   InstallPackages "ufw"
@@ -160,17 +160,17 @@ DownloadClient() {
 # Configuration
 Configuration() {
   # Detect I2C devices
-  sudo apt-get install i2c-tools -y
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install i2c-tools -y -qq
   i2cdetect -y 1
 }
 
-# Camera Setup
+# Camera setup
 CameraSetup() {
   # Enable camera auto-detect
   sudo nano /boot/firmware/config.txt
   camera_auto_detect=1
   # Enable H264 software encoding (Raspberry Pi OS Lite)
-  sudo apt-get install rpicam-apps -y
+  DEBIAN_FRONTEND=noninteractive sudo apt-get install rpicam-apps -y -qq
   # List video devices
   ls /dev/video*
   # List available cameras

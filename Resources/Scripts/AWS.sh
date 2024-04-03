@@ -8,7 +8,7 @@ DisplayErrorAndStop() {
   exit 1
 }
 
-# Configure Shell
+# Configure shell
 ConfigureShell() {
   echo "Shell configuration started."
   ssh HOST_AWS "sed -i \"s/alias ls='ls --color=auto'$/alias ls='ls -al --color=auto --group-directories-first'/\" ~/.bashrc"
@@ -22,7 +22,7 @@ ConfigureShell() {
   echo "Shell configuration completed."
 }
 
-# System Update
+# System update
 SystemUpdate() {
   echo "System update started."
   ssh HOST_AWS "sudo apt-get clean"
@@ -40,17 +40,17 @@ SystemUpdate() {
   echo "System update completed."
 }
 
-# Install Packages
+# Install packages
 InstallPackages() {
   local packages=("$@")
   for package in "${packages[@]}"; do
-    if ssh HOST_AWS "sudo apt-cache policy $package | grep -q \"Installed: (none)\"" ; then
+    ssh HOST_AWS "sudo apt-cache policy $package | grep -q \"Installed:\""
+    [ $? != 0 ] && DisplayErrorAndStop "Package '$package' not found."
+    if ssh HOST_AWS "sudo apt-cache policy $package | grep -q \"Installed: (none)\""; then
       echo "Package '$package' installation started."
-      ssh HOST_AWS -t "sudo apt-get install $package -y -qq"
+      ssh HOST_AWS -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install $package -y -qq"
       [ $? != 0 ] && DisplayErrorAndStop "Package '$package' installation failed."
       echo "Package '$package' installation completed."
-    else
-      echo "Package '$package' installation skipped."
     fi
   done
 }
@@ -71,7 +71,7 @@ InstallPostgreSQL() {
   [ $? != 0 ] && DisplayErrorAndStop "PostgreSQL installation failed."
   ssh HOST_AWS "sudo apt-get update"
   [ $? != 0 ] && DisplayErrorAndStop "PostgreSQL installation failed."
-  ssh HOST_AWS -t "sudo apt-get install postgresql-16 -y"
+  ssh HOST_AWS -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install postgresql-16 -y -qq"
   [ $? != 0 ] && DisplayErrorAndStop "PostgreSQL installation failed."
   ssh HOST_AWS "sudo systemctl status postgresql --no-pager --no-legend --lines 0 | grep -i \"Active: active (exited)\""
   [ $? != 0 ] && DisplayErrorAndStop "PostgreSQL installation failed."
@@ -107,13 +107,13 @@ ConfigurePostgreSQL() {
   echo "PostgreSQL configuration completed."
 }
 
-# Deploy Database
+# Deploy database
 DeployDatabase() {
   CreateDatabase
   ConfigureDatabase
 }
 
-# Create Database
+# Create database
 CreateDatabase() {
   echo "Database 'Devices.Data' creation started."
   ssh HOST_AWS "sudo su - postgres -c \"psql -c 'CREATE ROLE \\\"DevicesUser\\\" WITH LOGIN SUPERUSER ENCRYPTED PASSWORD \\\$\\\$<PasswordPlaceholder>\\\$\\\$;' -q\""
@@ -125,7 +125,7 @@ CreateDatabase() {
   echo "Database 'Devices.Data' creation completed."
 }
 
-# Configure Database
+# Configure database
 ConfigureDatabase() {
   echo "Database 'Devices.Data' configuration started."
   scp -q $SOLUTION_FOLDER/Resources/Scripts/Database.sql HOST_AWS:~
@@ -135,7 +135,7 @@ ConfigureDatabase() {
   echo "Database 'Devices.Data' configuration completed."
 }
 
-# Backup Database
+# Backup database
 BackupDatabase() {
   echo "Database 'Devices.Data' backup started."
   ssh HOST_AWS "sudo su - postgres -c \"pg_dump -Fc \\\"Devices.Data\\\" -f Devices.Data.bak\""
@@ -147,7 +147,7 @@ BackupDatabase() {
   echo "Database 'Devices.Data' backup completed."
 }
 
-# Restore Database
+# Restore database
 RestoreDatabase() {
   echo "Database 'Devices.Data' restore started."
   ssh HOST_AWS "sudo su - postgres -c \"psql -c 'DROP DATABASE IF EXISTS \\\"Devices.Data\\\" WITH (FORCE);' -q\""
@@ -168,7 +168,7 @@ RestoreDatabase() {
   echo "Database 'Devices.Data' restore completed."
 }
 
-# Change Database User Password
+# Change database user password
 ChangeDatabaseUserPassword() {
   echo "Database user 'DevicesUser' password change started."
   NEW_PASSWORD=$(pwgen -1 -s 32 1)
@@ -186,7 +186,7 @@ DeployNginx() {
 # Install Nginx
 InstallNginx() {
   echo "Nginx installation started."
-  ssh HOST_AWS -t "sudo apt-get install nginx -y"
+  ssh HOST_AWS -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install nginx -y -qq"
   [ $? != 0 ] && DisplayErrorAndStop "Nginx installation failed."
   echo "Nginx installation completed."
 }
@@ -295,7 +295,7 @@ InstallASPNETCore() {
   [ $? != 0 ] && DisplayErrorAndStop "ASP.NET Core installation failed."
   ssh HOST_AWS "sudo apt-get update"
   [ $? != 0 ] && DisplayErrorAndStop "ASP.NET Core installation failed."
-  ssh HOST_AWS -t "sudo apt-get install aspnetcore-runtime-8.0 -y"
+  ssh HOST_AWS -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install aspnetcore-runtime-8.0 -y -qq"
   [ $? != 0 ] && DisplayErrorAndStop "ASP.NET Core installation failed."
   ssh HOST_AWS "dotnet --list-runtimes | grep -i \"Microsoft.AspNetCore.App 8.0\"" &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "ASP.NET Core verification failed."
@@ -308,6 +308,7 @@ ConfigureASPNETCore() {
   ssh HOST_AWS "sudo tee /etc/systemd/system/devices-host.service 1> /dev/null << END
 [Unit]
 Description=Devices.Host Application
+
 [Service]
 WorkingDirectory=/var/www/Devices.Host
 ExecStart=/usr/bin/dotnet /var/www/Devices.Host/Devices.Host.dll
@@ -319,6 +320,7 @@ SyslogIdentifier=devices-host
 User=www-data
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
 [Install]
 WantedBy=multi-user.target
 END"
@@ -381,6 +383,7 @@ ExtractDevicesHost() {
 DeployDevicesHostPackages() {
   PackageClient "Devices.Client"
   PackageClient "Devices.Client.Solutions"
+  PackageClientPython "Devices.Client.Solutions.Python"
   PackageInstall
   UploadDevicesHostPackages
 }
@@ -425,15 +428,37 @@ PackageClient() {
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   pushd Publish 1> /dev/null
   zip -rq $1.zip .
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   SHA256_HASH=($(sha256sum $1.zip))
   echo "Hash = ${SHA256_HASH^^}"
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   mkdir -p $SOLUTION_FOLDER/../Devices.Configuration/Packages/
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   mv $1.zip $SOLUTION_FOLDER/../Devices.Configuration/Packages/
   [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
   popd 1> /dev/null
   rm -rf ./Publish
+  popd 1> /dev/null
+  echo "'$1' packaging completed."
+}
+
+# Package Python client project
+PackageClientPython() {
+  echo "'$1' packaging started."
+  pushd $SOLUTION_FOLDER/Sources/$1 1> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  rm -rf $1.zip
+  rm -rf Install.sh
+  cp $SOLUTION_FOLDER/Resources/Scripts/Install.sh .
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  zip -rq $1.zip .
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  SHA256_HASH=($(sha256sum $1.zip))
+  echo "Hash = ${SHA256_HASH^^}"
+  mkdir -p $SOLUTION_FOLDER/../Devices.Configuration/Packages/
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  mv $1.zip $SOLUTION_FOLDER/../Devices.Configuration/Packages/
+  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
+  rm Install.sh
   popd 1> /dev/null
   echo "'$1' packaging completed."
 }
@@ -455,7 +480,7 @@ PackageInstall() {
   echo "'Install.sh' packaging completed."
 }
 
-# Register Device
+# Register device
 RegisterDevice() {
   echo "Device registration started."
   ssh HOST_AWS "echo \"INSERT INTO \\\"Device\\\" VALUES ($1, '$3', '$2', '$5', TRUE);\" | sudo su - postgres -c \"psql -d \\\"Devices.Data\\\" -q\""
@@ -491,6 +516,7 @@ case $OPERATION in
   DownloadDevicesHostLogs) DownloadDevicesHostLogs ;;
   DownloadDeviceLogs) DownloadDeviceLogs ;;
   PackageClient) PackageClient "$2" ;;
+  PackageClientPython) PackageClientPython "$2" ;;
   PackageInstall) PackageInstall ;;
   RegisterDevice) RegisterDevice $2 "$3" "$4" "$5" "$6" ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
