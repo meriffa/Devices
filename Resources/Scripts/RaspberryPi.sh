@@ -169,6 +169,8 @@ CameraSetup() {
   # Enable camera auto-detect
   sudo nano /boot/firmware/config.txt
   camera_auto_detect=1
+  # Enable H264 software encoding (Raspberry Pi OS Lite)
+  sudo apt-get install rpicam-apps -y
   # List video devices
   ls /dev/video*
   # List available cameras
