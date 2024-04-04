@@ -71,12 +71,16 @@ CREATE TABLE "DeviceMetric" (
 	"ServiceDate" timestamp with time zone NOT NULL,
 	"DeviceDate" timestamp with time zone NOT NULL,
 	"LastReboot" timestamp with time zone NOT NULL,
+	"KernelVersion" varchar(1024) NOT NULL,
 	"CpuUser" real NOT NULL,
 	"CpuSystem" real NOT NULL,
 	"CpuIdle" real NOT NULL,
 	"MemoryTotal" int NOT NULL,
 	"MemoryUsed" int NOT NULL,
 	"MemoryFree" int NOT NULL,
+	"DiskTotal" int NOT NULL,
+	"DiskUsed" int NOT NULL,
+	"DiskFree" int NOT NULL,
 	CONSTRAINT "PK_DeviceMetric" PRIMARY KEY ("DeviceID", "ServiceDate"),
 	CONSTRAINT "FK_DeviceMetric_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID") ON UPDATE CASCADE
 );

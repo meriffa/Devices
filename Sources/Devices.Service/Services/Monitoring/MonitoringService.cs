@@ -40,12 +40,16 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     m.""ServiceDate"",
                     m.""DeviceDate"",
                     m.""LastReboot"",
+                    m.""KernelVersion"",
                     m.""CpuUser"",
                     m.""CpuSystem"",
                     m.""CpuIdle"",
                     m.""MemoryTotal"",
                     m.""MemoryUsed"",
                     m.""MemoryFree"",
+                    m.""DiskTotal"",
+                    m.""DiskUsed"",
+                    m.""DiskFree"",
                     d.""DeviceID"",
                     d.""DeviceName"",
                     d.""DeviceLocation""
@@ -82,33 +86,45 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     ""ServiceDate"",
                     ""DeviceDate"",
                     ""LastReboot"",
+                    ""KernelVersion"",
                     ""CpuUser"",
                     ""CpuSystem"",
                     ""CpuIdle"",
                     ""MemoryTotal"",
                     ""MemoryUsed"",
-                    ""MemoryFree"")
+                    ""MemoryFree"",
+                    ""DiskTotal"",
+                    ""DiskUsed"",
+                    ""DiskFree"")
                 VALUES
                     (@DeviceID,
                     @ServiceDate,
                     @DeviceDate,
                     @LastReboot,
+                    @KernelVersion,
                     @CpuUser,
                     @CpuSystem,
                     @CpuIdle,
                     @MemoryTotal,
                     @MemoryUsed,
-                    @MemoryFree);", cn);
+                    @MemoryFree,
+                    @DiskTotal,
+                    @DiskUsed,
+                    @DiskFree);", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = serviceDate;
             cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = metrics.DeviceDate;
             cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.LastRebootDate;
+            cmd.Parameters.Add("@KernelVersion", NpgsqlDbType.Varchar, 1024).Value = metrics.KernelVersion;
             cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Cpu.User;
             cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.Cpu.System;
             cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.Cpu.Idle;
             cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.Memory.Total;
             cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.Memory.Used;
             cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.Memory.Free;
+            cmd.Parameters.Add("@DiskTotal", NpgsqlDbType.Integer).Value = metrics.Disk.Total;
+            cmd.Parameters.Add("@DiskUsed", NpgsqlDbType.Integer).Value = metrics.Disk.Used;
+            cmd.Parameters.Add("@DiskFree", NpgsqlDbType.Integer).Value = metrics.Disk.Free;
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -153,6 +169,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
         {
             DeviceDate = (DateTime)reader["DeviceDate"],
             LastRebootDate = (DateTime)reader["LastReboot"],
+            KernelVersion = (string)reader["KernelVersion"],
             Cpu = new()
             {
                 User = (float)reader["CpuUser"],
@@ -164,6 +181,12 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                 Total = (int)reader["MemoryTotal"],
                 Used = (int)reader["MemoryUsed"],
                 Free = (int)reader["MemoryFree"]
+            },
+            Disk = new()
+            {
+                Total = (int)reader["DiskTotal"],
+                Used = (int)reader["DiskUsed"],
+                Free = (int)reader["DiskFree"]
             }
         }
     };

@@ -21,14 +21,18 @@ public class DeviceMetricsService : IDeviceMetricsService
         if (OperatingSystem.IsLinux())
         {
             var lastRebootDate = GetLinuxLastRebootDate();
+            var kernelVersion = GetLinuxKernelVersion();
             var cpu = GetLinuxCpuMetrics();
             var memory = GetLinuxMemoryMetrics();
+            var disk = GetLinuxDiskMetrics();
             return new()
             {
                 DeviceDate = DateTime.UtcNow,
                 LastRebootDate = lastRebootDate,
+                KernelVersion = kernelVersion,
                 Cpu = cpu,
-                Memory = memory
+                Memory = memory,
+                Disk = disk
             };
         }
         throw new("Device metrics not supported on current platform.");
@@ -43,8 +47,20 @@ public class DeviceMetricsService : IDeviceMetricsService
     private static DateTime GetLinuxLastRebootDate()
     {
         using var process = Process.Start(new ProcessStartInfo("uptime") { Arguments = "-s", RedirectStandardOutput = true });
-        var output = process!.StandardOutput.ReadToEnd().Trim();
+        process!.WaitForExit();
+        var output = process.StandardOutput.ReadToEnd().Trim();
         return DateTime.ParseExact(output, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture).ToUniversalTime();
+    }
+
+    /// <summary>
+    /// Return Linux kernel version
+    /// </summary>
+    /// <returns></returns>
+    private static string GetLinuxKernelVersion()
+    {
+        using var process = Process.Start(new ProcessStartInfo("uname") { Arguments = "-a", RedirectStandardOutput = true });
+        process!.WaitForExit();
+        return process.StandardOutput.ReadToEnd().Trim();
     }
 
     /// <summary>
@@ -54,7 +70,8 @@ public class DeviceMetricsService : IDeviceMetricsService
     private static CpuMetrics GetLinuxCpuMetrics()
     {
         using var process = Process.Start(new ProcessStartInfo("top") { Arguments = "-bn2", RedirectStandardOutput = true });
-        var lines = process!.StandardOutput.ReadToEnd().Split("\n");
+        process!.WaitForExit();
+        var lines = process.StandardOutput.ReadToEnd().Split("\n");
         var cpu = lines[2][(lines[2].IndexOf(':') + 1)..].Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return new()
         {
@@ -71,13 +88,32 @@ public class DeviceMetricsService : IDeviceMetricsService
     private static MemoryMetrics GetLinuxMemoryMetrics()
     {
         using var process = Process.Start(new ProcessStartInfo("free") { Arguments = "-m", RedirectStandardOutput = true });
-        var lines = process!.StandardOutput.ReadToEnd().Split("\n");
+        process!.WaitForExit();
+        var lines = process.StandardOutput.ReadToEnd().Split("\n");
         var memory = lines[1].Split(" ", StringSplitOptions.RemoveEmptyEntries);
         return new()
         {
             Total = Convert.ToInt32(memory[1]),
             Used = Convert.ToInt32(memory[2]),
             Free = Convert.ToInt32(memory[3])
+        };
+    }
+
+    /// <summary>
+    /// Return Linux disk metrics
+    /// </summary>
+    /// <returns></returns>
+    private static DiskMetrics GetLinuxDiskMetrics()
+    {
+        using var process = Process.Start(new ProcessStartInfo("df") { Arguments = "-BM --output=size,used,avail .", RedirectStandardOutput = true });
+        process!.WaitForExit();
+        var lines = process.StandardOutput.ReadToEnd().Split("\n");
+        var disk = lines[1].Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        return new()
+        {
+            Total = Convert.ToInt32(disk[0][..^1]),
+            Used = Convert.ToInt32(disk[1][..^1]),
+            Free = Convert.ToInt32(disk[2][..^1])
         };
     }
     #endregion

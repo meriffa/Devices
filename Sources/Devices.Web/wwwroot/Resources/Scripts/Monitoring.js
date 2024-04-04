@@ -43,24 +43,22 @@ Devices.Web = Devices.Web || {};
                     render: DataTable.render.number(",", ".", 1, "", "")
                 },
                 {
-                    title: "CPU Idle [%]",
-                    data: "deviceMetrics.cpu.idle",
-                    render: DataTable.render.number(",", ".", 1, "", "")
+                    title: "RAM Usage [%]",
+                    data: "deviceMetrics.memory",
+                    render: function (data, type) {
+                        return Devices.Host.Site.formatNumber(100 * data.used / data.total, 2);
+                    }
                 },
                 {
-                    title: "Total [MB]",
-                    data: "deviceMetrics.memory.total",
-                    render: DataTable.render.number(",", ".", 0, "", "")
+                    title: "Disk Usage [%]",
+                    data: "deviceMetrics.disk",
+                    render: function (data, type) {
+                        return Devices.Host.Site.formatNumber(100 * data.used / data.total, 2);
+                    }
                 },
                 {
-                    title: "Used [MB]",
-                    data: "deviceMetrics.memory.used",
-                    render: DataTable.render.number(",", ".", 0, "", "")
-                },
-                {
-                    title: "Free [MB]",
-                    data: "deviceMetrics.memory.free",
-                    render: DataTable.render.number(",", ".", 0, "", "")
+                    title: "Kernel",
+                    data: "deviceMetrics.kernelVersion"
                 }
             ],
             order: [[1, "desc"]]
