@@ -54,9 +54,9 @@ SetupScheduledJobs() {
   echo "'$1' scheduled jobs setup started."
   case $1 in
     "Devices.Client")
-      SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /usr/bin/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> Devices.Client.log 2>&1" ;;
+      SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /usr/bin/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> /var/log/Devices.Client.log 2>&1" ;;
     "Devices.Client.Solutions")
-      SetupScheduledJob $1 "Devices.Client.Solutions.dll" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll garden >> Devices.Client.Solutions.log 2>&1" ;;
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll garden >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
   esac
   echo "'$1' scheduled jobs setup completed."
 }
@@ -189,23 +189,23 @@ ExecuteCommand() {
 UploadDeviceLogs() {
   echo "Upload device logs started."
   InstallPackages zip
-  LOG_FILES="DeviceLogs.$(hostname).zip"
-  if [ -f $LOG_FILES ]; then
-    rm $LOG_FILES
+  LOG_FILE="DeviceLogs.$(hostname).zip"
+  if [ -f $LOG_FILE ]; then
+    rm $LOG_FILE
     [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (1).";
   fi
-  local folders=("/root/Devices.Client/*.log" "/root/Devices.Client/Logs/*" "/root/Devices.Client.Solutions/*.log" "/root/Devices.Client.Solutions/Logs/*")
+  local folders=("/var/log/Devices.*")
   for folder in "${folders[@]}"; do
-    zip -qj $LOG_FILES $folder
+    zip -qj $LOG_FILE $folder
     [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (2).";
   done
   HOST_URL=$(cat /root/Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
   DEVICE_TOKEN=$(cat /etc/Devices.Configuration/Devices.Common.DeviceToken)
-  curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILES -F upload=@$LOG_FILES -fks "$HOST_URL/Service/Monitoring/UploadDeviceLogs"
+  curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILE -F upload=@$LOG_FILE -fks "$HOST_URL/Service/Monitoring/UploadDeviceLogs"
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (3).";
-  rm $LOG_FILES
+  rm $LOG_FILE
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (4).";
-  echo "Upload device logs completed."
+  echo "Upload device logs completed (File = '$LOG_FILE')."
 }
 
 # Get specified operation

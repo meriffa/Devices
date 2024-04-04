@@ -218,6 +218,10 @@ ConfigureNginx() {
   [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
   ssh HOST_AWS "sudo chown -R www-data:www-data /var/www/Devices.Host.Keys"
   [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_AWS "sudo mkdir -p /var/log/Devices.Host"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_AWS "sudo chown -R www-data:www-data /var/log/Devices.Host"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
   ssh HOST_AWS "sudo tee /etc/nginx/sites-available/Devices.Host 1> /dev/null << END
 server {
         listen 80 default_server;
@@ -405,7 +409,7 @@ UploadDevicesHostPackages() {
 # Get Devices.Host logs
 DownloadDevicesHostLogs() {
   echo "'Devices.Host' log download started."
-  scp -q HOST_AWS:/var/www/Devices.Host/Logs/Devices.Host-*.json .
+  scp -q HOST_AWS:/var/log/Devices.Host/*.json .
   echo "'Devices.Host' log download completed."
 }
 
