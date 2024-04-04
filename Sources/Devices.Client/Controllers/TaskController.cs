@@ -42,6 +42,8 @@ public class TaskController : Controller
             DisplayService.WriteWarning("Another application instance is already running.");
         if (createdNew || !SingleInstance)
         {
+            if (Tasks.HasFlag(TaskTypes.Monitoring) || Tasks.HasFlag(TaskTypes.Configuration))
+                Common.Services.DisplayService.WriteTitle();
             if (Tasks.HasFlag(TaskTypes.Identity))
                 ExecuteIdentityTask();
             if (Tasks.HasFlag(TaskTypes.Monitoring))
@@ -58,9 +60,7 @@ public class TaskController : Controller
     /// </summary>
     private void ExecuteIdentityTask()
     {
-        DisplayService.WriteInformation("Identity task started.");
-        DisplayService.WriteInformation($"Device Token = {IdentityService.GetDeviceToken(Refresh)}");
-        DisplayService.WriteInformation("Identity task completed.");
+        Console.WriteLine(IdentityService.GetDeviceToken(Refresh));
     }
 
     /// <summary>

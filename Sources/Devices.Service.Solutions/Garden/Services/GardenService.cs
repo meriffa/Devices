@@ -58,7 +58,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     }
 
     /// <summary>
-    /// Return weather conditions
+    /// Return device weather conditions
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
@@ -86,15 +86,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(new()
-                {
-                    Device = IdentityService.GetDevice(r),
-                    DeviceDate = (DateTime)r["DeviceDate"],
-                    Temperature = (double)(decimal)r["Temperature"],
-                    Humidity = (double)(decimal)r["Humidity"],
-                    Pressure = (double)(decimal)r["Pressure"],
-                    Illuminance = (double)(decimal)r["Illuminance"]
-                });
+                result.Add(GetDeviceWeatherCondition(r));
             return result;
         }
         catch (Exception ex)
@@ -150,15 +142,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             cmd.Parameters.Add("@AggregationType", NpgsqlDbType.Text).Value = GetAggregationTypeValue(aggregationType);
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                result.Add(new()
-                {
-                    Device = IdentityService.GetDevice(r),
-                    DeviceDate = (DateTime)r["DeviceDate"],
-                    Temperature = GetAggregateMeasurement(r, "Temperature"),
-                    Humidity = GetAggregateMeasurement(r, "Humidity"),
-                    Pressure = GetAggregateMeasurement(r, "Pressure"),
-                    Illuminance = GetAggregateMeasurement(r, "Illuminance")
-                });
+                result.Add(GetAggregateWeatherCondition(r));
             return result;
         }
         catch (Exception ex)
@@ -207,9 +191,120 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             throw;
         }
     }
+
+    /// <summary>
+    /// Return device camera notifications
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public List<DeviceCameraNotification> GetDeviceCameraNotifications(int? deviceId)
+    {
+        try
+        {
+            var result = new List<DeviceCameraNotification>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    c.""DeviceDate"",
+                    c.""FaceCount"",
+                    c.""MotionRegionCount"",
+                    c.""VideoFileName"",
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
+                FROM
+                    ""Garden"".""CameraNotification"" c JOIN
+                    ""Device"" d ON d.""DeviceID"" = c.""DeviceID""
+                WHERE
+                    (d.""DeviceID"" = @DeviceID OR @DeviceID IS NULL);", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(GetDeviceCameraNotification(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Save camera notification
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <param name="cameraNotification"></param>
+    public void SaveCameraNotification(int deviceId, CameraNotification cameraNotification)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"INSERT INTO ""Garden"".""CameraNotification""
+                    (""DeviceID"",
+                    ""DeviceDate"",
+                    ""FaceCount"",
+                    ""MotionRegionCount"",
+                    ""VideoFileName"")
+                VALUES
+                    (@DeviceID,
+                    @DeviceDate,
+                    @FaceCount,
+                    @MotionRegionCount,
+                    @VideoFileName);", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = cameraNotification.DeviceDate;
+            cmd.Parameters.Add("@FaceCount", NpgsqlDbType.Integer).Value = cameraNotification.FaceCount;
+            cmd.Parameters.Add("@MotionRegionCount", NpgsqlDbType.Integer).Value = cameraNotification.MotionRegionCount;
+            cmd.Parameters.Add("@VideoFileName", NpgsqlDbType.Varchar, 1024).Value = cameraNotification.VideoFileName;
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// Return weather condition instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static DeviceWeatherCondition GetDeviceWeatherCondition(NpgsqlDataReader reader)
+    {
+        return new()
+        {
+            Device = IdentityService.GetDevice(reader),
+            DeviceDate = (DateTime)reader["DeviceDate"],
+            Temperature = (double)(decimal)reader["Temperature"],
+            Humidity = (double)(decimal)reader["Humidity"],
+            Pressure = (double)(decimal)reader["Pressure"],
+            Illuminance = (double)(decimal)reader["Illuminance"]
+        };
+    }
+
+    /// <summary>
+    /// Return aggregate weather condition instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static AggregateWeatherCondition GetAggregateWeatherCondition(NpgsqlDataReader reader)
+    {
+        return new()
+        {
+            Device = IdentityService.GetDevice(reader),
+            DeviceDate = (DateTime)reader["DeviceDate"],
+            Temperature = GetAggregateMeasurement(reader, "Temperature"),
+            Humidity = GetAggregateMeasurement(reader, "Humidity"),
+            Pressure = GetAggregateMeasurement(reader, "Pressure"),
+            Illuminance = GetAggregateMeasurement(reader, "Illuminance")
+        };
+    }
+
     /// <summary>
     /// Return aggregate measurement instance
     /// </summary>
@@ -236,6 +331,23 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
         AggregationType.Monthly => "month",
         _ => throw new($"Aggregation type '{aggregationType}' is not supported.")
     };
+
+    /// <summary>
+    /// Return device camera notification instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static DeviceCameraNotification GetDeviceCameraNotification(NpgsqlDataReader reader)
+    {
+        return new()
+        {
+            Device = IdentityService.GetDevice(reader),
+            DeviceDate = (DateTime)reader["DeviceDate"],
+            FaceCount = (int)reader["FaceCount"],
+            MotionRegionCount = (int)reader["MotionRegionCount"],
+            VideoFileName = (string)reader["VideoFileName"]
+        };
+    }
     #endregion
 
 }

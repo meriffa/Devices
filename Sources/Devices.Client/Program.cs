@@ -26,7 +26,6 @@ class Program
         var host = CreateApplicationHost(args);
         try
         {
-            DisplayService.WriteTitle();
             Parser.Default
                 .ParseArguments(args, Assembly.GetExecutingAssembly()
                 .GetTypes()

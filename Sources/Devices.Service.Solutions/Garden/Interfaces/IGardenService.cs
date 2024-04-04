@@ -38,6 +38,20 @@ public interface IGardenService
     /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
     void SaveWeatherCondition(int deviceId, WeatherCondition weatherCondition);
+
+    /// <summary>
+    /// Return device camera notifications
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    List<DeviceCameraNotification> GetDeviceCameraNotifications(int? deviceId);
+
+    /// <summary>
+    /// Save camera notification
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <param name="cameraNotification"></param>
+    void SaveCameraNotification(int deviceId, CameraNotification cameraNotification);
     #endregion
 
 }

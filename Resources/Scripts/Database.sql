@@ -130,6 +130,16 @@ CREATE TABLE "Garden"."WeatherCondition" (
 	CONSTRAINT "FK_WeatherCondition_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID") ON UPDATE CASCADE
 );
 
+CREATE TABLE "Garden"."CameraNotification" (
+	"DeviceID" int NOT NULL,
+	"DeviceDate" timestamp with time zone NOT NULL,
+	"FaceCount" int NOT NULL,
+	"MotionRegionCount" int NOT NULL,
+	"VideoFileName" varchar(1024) NOT NULL,
+	CONSTRAINT "PK_CameraNotification" PRIMARY KEY ("DeviceID", "DeviceDate"),
+	CONSTRAINT "FK_CameraNotification_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID") ON UPDATE CASCADE
+);
+
 --
 -- Static Data
 --
