@@ -2,6 +2,8 @@
 
 import cv2
 import datetime
+import logging
+import logging.config
 from ApplicationArguments import ApplicationArguments
 from Camera import Camera
 from CameraFPS import CameraFPS
@@ -14,6 +16,7 @@ from VideoStreamer import VideoStreamer
 # Initialization
 def Initialize():
   global arguments, camera, cameraFPS, faceDetector, motionDetector, videoStreamer, videoRecorder
+  logging.config.fileConfig(f"{__file__[:-3]}.conf")
   arguments = ApplicationArguments().Parse()
   camera = Camera(arguments.width, arguments.height, arguments.widthLR, arguments.heightLR, arguments.fps, UpdateFrame)
   cameraFPS = CameraFPS(arguments.displayFPS)
@@ -33,9 +36,9 @@ def Main():
       frame = camera.GetFrame("main")
       frameLowResolution = cv2.cvtColor(camera.GetFrame("lores"), cv2.COLOR_YUV2GRAY_420)
       if faces := faceDetector.Detect(frameLowResolution):
-        print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}] Faces detected (Count = {faces}).', flush = True)
+        logging.info(f'Faces detected (Count = {faces}).')
       if regions := motionDetector.Detect(frameLowResolution):
-        print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}] Movement regions detected (Count = {regions}).', flush = True)
+        logging.info(f'Movement regions detected (Count = {regions}).')
       if faces or regions:
         videoRecorder.Start()
       videoRecorder.StopWhenCompleted()
@@ -47,7 +50,7 @@ def Main():
           break
       cameraFPS.Stop()
   except KeyboardInterrupt:
-    print("Program stopped.", flush = True)
+    logging.warning("Program stopped.")
   finally:
     Finalize()
 

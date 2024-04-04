@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import libcamera
+import logging
 import picamera2
 import picamera2.encoders
 
@@ -22,21 +23,21 @@ class Camera:
     self.__updateFrame = updateFrame
     self.__camera.post_callback = self.UpdateFrame
     self.__output = []
-    print(f"Camera configured (Display: {width}x{height}, Detection: {widthLowResolution}x{heightLowResolution}, FPS: {fps}).", flush = True)
+    logging.info(f"Camera configured (Display: {width}x{height}, Detection: {widthLowResolution}x{heightLowResolution}, FPS: {fps}).")
 
   # Start camera
   def Start(self):
     self.__camera.start(show_preview = False)
-    print("Camera started.", flush = True)
+    logging.info("Camera started.")
     self.__camera.start_encoder(self.__encoder)
-    print("Camera encoder started.", flush = True)
+    logging.info("Camera encoder started.")
 
   # Stop camera
   def Stop(self):
     self.__camera.stop_encoder(self.__encoder)
-    print("Camera encoder stopped.", flush = True)    
+    logging.info("Camera encoder stopped.")    
     self.__camera.stop()
-    print("Camera stopped.", flush = True)
+    logging.info("Camera stopped.")
 
   # Return frame
   def GetFrame(self, stream):

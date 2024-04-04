@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import datetime
+import logging
 import pathlib
 import picamera2.outputs
 import shutil
@@ -33,8 +34,8 @@ class VideoRecorder:
         if free / total > 0.1:
           self.__output.start()
         else:
-          print(f"Insufficient disk space (Used = {used / total:.2%}, Free = {free / total:.2%}).", flush = True)
-        print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}] Recording started (File: \'{filename}\').', flush = True)
+          logging.warning(f"Insufficient disk space (Used = {used / total:.2%}, Free = {free / total:.2%}).")
+        logging.info(f'Recording started (File: \'{filename}\').')
 
   # Stop recording when completed
   def StopWhenCompleted(self):
@@ -44,4 +45,4 @@ class VideoRecorder:
         self.__output.stop()
         self.__recordingStart = None
         self.__recordingEnd = now
-        print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}] Recording stopped.', flush = True)
+        logging.info("Recording stopped.")

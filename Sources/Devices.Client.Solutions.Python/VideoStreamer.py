@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import logging
 import picamera2.outputs
 import socket
 import threading
@@ -25,10 +26,10 @@ class VideoStreamer:
       endpoint.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       endpoint.bind(("0.0.0.0", self.__port))
       endpoint.listen()
-      print(f"Streaming started (IP: 0.0.0.0:{self.__port}).", flush = True)
+      logging.info(f"Streaming started (IP: 0.0.0.0:{self.__port}).")
       while True:
         clientConnection, clientAddress = endpoint.accept()
-        print(f"Streaming client connected (IP: {clientAddress[0]}:{clientAddress[1]}).", flush = True)
+        logging.info(f"Streaming client connected (IP: {clientAddress[0]}:{clientAddress[1]}).")
         event = threading.Event()
         stream = clientConnection.makefile("wb")
         output = picamera2.outputs.FileOutput(stream)
