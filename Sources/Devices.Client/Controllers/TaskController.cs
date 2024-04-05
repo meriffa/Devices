@@ -74,6 +74,7 @@ public class TaskController : Controller
         DisplayService.WriteInformation($"CPU User Time = {metrics.Cpu.User:F1} %");
         DisplayService.WriteInformation($"CPU System Time = {metrics.Cpu.System:F1} %");
         DisplayService.WriteInformation($"CPU Idle Time = {metrics.Cpu.Idle:F1} %");
+        DisplayService.WriteInformation($"CPU Temperature = {metrics.Cpu.Temperature:F1} ℃");
         DisplayService.WriteInformation($"Total Memory = {metrics.Memory.Total:N0} MB");
         DisplayService.WriteInformation($"Used Memory = {metrics.Memory.Used:N0} MB");
         DisplayService.WriteInformation($"Free Memory = {metrics.Memory.Free:N0} MB");

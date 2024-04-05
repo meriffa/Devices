@@ -44,6 +44,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     m.""CpuUser"",
                     m.""CpuSystem"",
                     m.""CpuIdle"",
+                    m.""CpuTemperature"",
                     m.""MemoryTotal"",
                     m.""MemoryUsed"",
                     m.""MemoryFree"",
@@ -90,6 +91,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     ""CpuUser"",
                     ""CpuSystem"",
                     ""CpuIdle"",
+                    ""CpuTemperature"",
                     ""MemoryTotal"",
                     ""MemoryUsed"",
                     ""MemoryFree"",
@@ -105,6 +107,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     @CpuUser,
                     @CpuSystem,
                     @CpuIdle,
+                    @CpuTemperature,
                     @MemoryTotal,
                     @MemoryUsed,
                     @MemoryFree,
@@ -116,9 +119,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
             cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = metrics.DeviceDate;
             cmd.Parameters.Add("@LastReboot", NpgsqlDbType.TimestampTz).Value = metrics.LastRebootDate;
             cmd.Parameters.Add("@KernelVersion", NpgsqlDbType.Varchar, 1024).Value = metrics.KernelVersion;
-            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Real).Value = metrics.Cpu.User;
-            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Real).Value = metrics.Cpu.System;
-            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Real).Value = metrics.Cpu.Idle;
+            cmd.Parameters.Add("@CpuUser", NpgsqlDbType.Numeric).Value = metrics.Cpu.User;
+            cmd.Parameters.Add("@CpuSystem", NpgsqlDbType.Numeric).Value = metrics.Cpu.System;
+            cmd.Parameters.Add("@CpuIdle", NpgsqlDbType.Numeric).Value = metrics.Cpu.Idle;
+            cmd.Parameters.Add("@CpuTemperature", NpgsqlDbType.Numeric).Value = metrics.Cpu.Temperature;
             cmd.Parameters.Add("@MemoryTotal", NpgsqlDbType.Integer).Value = metrics.Memory.Total;
             cmd.Parameters.Add("@MemoryUsed", NpgsqlDbType.Integer).Value = metrics.Memory.Used;
             cmd.Parameters.Add("@MemoryFree", NpgsqlDbType.Integer).Value = metrics.Memory.Free;
@@ -172,9 +176,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
             KernelVersion = (string)reader["KernelVersion"],
             Cpu = new()
             {
-                User = (float)reader["CpuUser"],
-                System = (float)reader["CpuSystem"],
-                Idle = (float)reader["CpuIdle"]
+                User = (double)(decimal)reader["CpuUser"],
+                System = (double)(decimal)reader["CpuSystem"],
+                Idle = (double)(decimal)reader["CpuIdle"],
+                Temperature = (double)(decimal)reader["CpuTemperature"]
             },
             Memory = new()
             {

@@ -75,10 +75,29 @@ public class DeviceMetricsService : IDeviceMetricsService
         var cpu = lines[2][(lines[2].IndexOf(':') + 1)..].Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return new()
         {
-            User = Convert.ToSingle(cpu[0][..cpu[0].IndexOf(' ')]) + Convert.ToSingle(cpu[2][..cpu[2].IndexOf(' ')]),
-            System = Convert.ToSingle(cpu[1][..cpu[1].IndexOf(' ')]),
-            Idle = Convert.ToSingle(cpu[3][..cpu[3].IndexOf(' ')])
+            User = Convert.ToDouble(cpu[0][..cpu[0].IndexOf(' ')]) + Convert.ToDouble(cpu[2][..cpu[2].IndexOf(' ')]),
+            System = Convert.ToDouble(cpu[1][..cpu[1].IndexOf(' ')]),
+            Idle = Convert.ToDouble(cpu[3][..cpu[3].IndexOf(' ')]),
+            Temperature = GetLinuxCpuTemperature()
         };
+    }
+
+    /// <summary>
+    /// Return Linux CPU temperature
+    /// </summary>
+    /// <returns></returns>
+    private static double GetLinuxCpuTemperature()
+    {
+        using var process = Process.Start(new ProcessStartInfo("cat") { Arguments = "/sys/class/thermal/thermal_zone0/temp", RedirectStandardOutput = true });
+        process!.WaitForExit();
+        try
+        {
+            return Convert.ToDouble(process.StandardOutput.ReadToEnd().Split("\n")[0]) / 1000.0d;
+        }
+        catch
+        {
+            return 0.0d;
+        }
     }
 
     /// <summary>

@@ -10,17 +10,22 @@ public class CpuMetrics
     /// <summary>
     /// CPU metrics user time [%]
     /// </summary>
-    public required float User { get; set; }
+    public required double User { get; set; }
 
     /// <summary>
     /// CPU metrics system time [%]
     /// </summary>
-    public required float System { get; set; }
+    public required double System { get; set; }
 
     /// <summary>
     /// CPU metrics idle time [%]
     /// </summary>
-    public required float Idle { get; set; }
+    public required double Idle { get; set; }
+
+    /// <summary>
+    /// CPU metrics temperature [C]
+    /// </summary>
+    public required double Temperature { get; set; }
     #endregion
 
 }

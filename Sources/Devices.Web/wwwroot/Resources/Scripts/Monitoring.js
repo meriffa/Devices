@@ -43,6 +43,11 @@ Devices.Web = Devices.Web || {};
                     render: DataTable.render.number(",", ".", 1, "", "")
                 },
                 {
+                    title: "CPU Temperature [℃]",
+                    data: "deviceMetrics.cpu.temperature",
+                    render: DataTable.render.number(",", ".", 1, "", "")
+                },
+                {
                     title: "RAM Usage [%]",
                     data: "deviceMetrics.memory",
                     render: function (data, type) {
