@@ -38,8 +38,6 @@ public class TaskController : Controller
     protected override void Execute()
     {
         using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}", out var createdNew);
-        if (!createdNew)
-            DisplayService.WriteWarning("Another application instance is already running.");
         if (createdNew || !SingleInstance)
         {
             if (Tasks.HasFlag(TaskTypes.Monitoring) || Tasks.HasFlag(TaskTypes.Configuration))
@@ -49,7 +47,11 @@ public class TaskController : Controller
             if (Tasks.HasFlag(TaskTypes.Monitoring))
                 ExecuteMonitoringTask();
             if (Tasks.HasFlag(TaskTypes.Configuration))
+            {
+                if (!createdNew)
+                    DisplayService.WriteWarning("Another application instance is already running.");
                 ExecuteConfigurationTask();
+            }
         }
     }
     #endregion
