@@ -33,9 +33,11 @@ class VideoRecorder:
         total, used, free = shutil.disk_usage(self.__videoFolder)
         if free / total > 0.1:
           self.__output.start()
+          logging.info(f'Recording started (File: \'{filename}\').')
+          return filename
         else:
           logging.warning(f"Insufficient disk space (Used = {used / total:.2%}, Free = {free / total:.2%}).")
-        logging.info(f'Recording started (File: \'{filename}\').')
+          return None
 
   # Stop recording when completed
   def StopWhenCompleted(self):
