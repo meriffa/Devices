@@ -200,7 +200,7 @@ UploadDeviceLogs() {
     [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (2).";
   done
   HOST_URL=$(cat /root/Devices.Client/appsettings.Production.json | grep -oP '(?<="Host": ")[^"]*')
-  DEVICE_TOKEN=$(cat /etc/Devices.Configuration/Devices.Common.DeviceToken)
+  DEVICE_TOKEN=$(dotnet /root/Devices.Client/Devices.Client.dll execute --tasks Identity)
   curl -H "deviceToken: $DEVICE_TOKEN" -F filename=$LOG_FILE -F upload=@$LOG_FILE -fks "$HOST_URL/Service/Monitoring/UploadDeviceLogs"
   [ $? != 0 ] && DisplayErrorAndStop "Upload device logs failed (3).";
   rm $LOG_FILE

@@ -18,12 +18,10 @@ class GardenService:
   # Save camera notification
   def SaveCameraNotification(self, faces, regions, videoFile):
     if videoFile is not None:
-      url = f"{self.__hostUrl}/Service/Solutions/Garden/SaveCameraNotification"
-      deviceToken = self.GetDeviceToken()
       deviceDate = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
       data = {"deviceDate": f"{deviceDate}", "faceCount": faces, "motionRegionCount": regions, "videoFileName": f"{videoFile}" }
-      headers = {"Content-type": "application/json", "deviceToken": f"{deviceToken}"}
-      r = requests.post(url, headers = headers, json = data, verify = False)
+      headers = {"Content-type": "application/json", "deviceToken": f"{self.GetDeviceToken()}"}
+      r = requests.post(f"{self.__hostUrl}/Service/Solutions/Garden/SaveCameraNotification", headers = headers, json = data, verify = False)
       if r.status_code == 200:
         logging.info("Camera notification created.")
       else:
