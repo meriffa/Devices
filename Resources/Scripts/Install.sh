@@ -158,7 +158,8 @@ SystemRestart() {
     echo "System restart started."
     touch /etc/Devices.Configuration/Restart
     [ $? != 0 ] && DisplayErrorAndStop "System restart failed (1).";
-    shutdown -r now "System restart (Install.sh)"
+    /usr/sbin/shutdown -r now "System restart (Install.sh)"
+    #systemctl reboot --force --force
     [ $? != 0 ] && DisplayErrorAndStop "System restart failed (2).";
     sleep 300
   else
