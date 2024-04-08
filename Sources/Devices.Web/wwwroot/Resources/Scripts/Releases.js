@@ -54,6 +54,13 @@ Devices.Web = Devices.Web || {};
                     render: function (data, type) {
                         return Devices.Host.Site.formatBoolean(data);
                     }
+                },
+                {
+                    title: "Concurrency",
+                    data: "allowConcurrency",
+                    render: function (data, type) {
+                        return Devices.Host.Site.formatBoolean(data);
+                    }
                 }
             ],
             order: [[0, "asc"]]

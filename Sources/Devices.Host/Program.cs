@@ -1,7 +1,6 @@
 using Devices.Service.Extensions;
 using Devices.Service.Options;
 using Devices.Service.Solutions.Extensions;
-using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 
 namespace Devices.Host;

@@ -8,5 +8,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("™ 2024 - 2024. Marian Todorov")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyFileVersion("1.2024.04.05")]
+[assembly: AssemblyFileVersion("1.2024.04.08")]
 [assembly: AssemblyInformationalVersion("2024.04")]

@@ -73,6 +73,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""PackageHash"",
                     r.""Version"",
                     r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationEnabled"",
@@ -117,6 +118,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""PackageHash"",
                     r.""Version"",
                     r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationEnabled"",
@@ -171,6 +173,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""PackageHash"",
                     r.""Version"",
                     r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationEnabled"",
@@ -269,6 +272,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""PackageHash"",
                     r.""Version"",
                     r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationEnabled"",
@@ -320,6 +324,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     r.""PackageHash"",
                     r.""Version"",
                     r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
                     app.""ApplicationID"",
                     app.""ApplicationName"",
                     app.""ApplicationEnabled"",
@@ -467,7 +472,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         PackageHash = reader["PackageHash"] is DBNull ? null : (string?)reader["PackageHash"],
         Version = (string)reader["Version"],
         Action = GetAction(reader),
-        Enabled = (bool)reader["ReleaseEnabled"]
+        Enabled = (bool)reader["ReleaseEnabled"],
+        AllowConcurrency = (bool)reader["AllowConcurrency"]
     };
 
     /// <summary>

@@ -46,6 +46,11 @@ public class Release
     /// Release enabled flag
     /// </summary>
     public required bool Enabled { get; set; }
+
+    /// <summary>
+    /// Release allow concurrency flag
+    /// </summary>
+    public required bool AllowConcurrency { get; set; }
     #endregion
 
 }

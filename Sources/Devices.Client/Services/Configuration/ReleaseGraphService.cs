@@ -31,13 +31,15 @@ public class ReleaseGraphService(ILogger<ReleaseGraphService> logger, IOptions<C
     /// <summary>
     /// Build release graph
     /// </summary>
-    public void Build()
+    /// <returns></returns>
+    public bool Build()
     {
         try
         {
             Nodes = GetNodes(configurationService.GetPendingReleases());
             AddNodeLinks();
             SourceNodes = GetSourceNodes();
+            return SourceNodes.Exists(i => i.Release.AllowConcurrency);
         }
         catch (Exception ex)
         {

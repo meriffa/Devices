@@ -23,12 +23,6 @@ public class TaskController : Controller
     /// </summary>
     [Option('r', "refresh", Required = false, Default = false, HelpText = "Force identity refresh.")]
     public bool Refresh { get; set; }
-
-    /// <summary>
-    /// Force single application instance flag
-    /// </summary>
-    [Option('i', "instance", Required = false, Default = false, HelpText = "Force single application instance.")]
-    public bool SingleInstance { get; set; }
     #endregion
 
     #region Public Methods
@@ -37,22 +31,15 @@ public class TaskController : Controller
     /// </summary>
     protected override void Execute()
     {
-        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}", out var createdNew);
-        if (createdNew || !SingleInstance)
-        {
-            if (Tasks.HasFlag(TaskTypes.Monitoring) || Tasks.HasFlag(TaskTypes.Configuration))
-                Common.Services.DisplayService.WriteTitle();
-            if (Tasks.HasFlag(TaskTypes.Identity))
-                ExecuteIdentityTask();
-            if (Tasks.HasFlag(TaskTypes.Monitoring))
-                ExecuteMonitoringTask();
-            if (Tasks.HasFlag(TaskTypes.Configuration))
-            {
-                if (!createdNew)
-                    DisplayService.WriteWarning("Another application instance is already running.");
-                ExecuteConfigurationTask();
-            }
-        }
+        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}", out var singleInstance);
+        if (Tasks.HasFlag(TaskTypes.Monitoring) || Tasks.HasFlag(TaskTypes.Configuration))
+            Common.Services.DisplayService.WriteTitle();
+        if (Tasks.HasFlag(TaskTypes.Identity))
+            ExecuteIdentityTask();
+        if (Tasks.HasFlag(TaskTypes.Monitoring))
+            ExecuteMonitoringTask();
+        if (Tasks.HasFlag(TaskTypes.Configuration))
+            ExecuteConfigurationTask(singleInstance);
     }
     #endregion
 
@@ -86,13 +73,19 @@ public class TaskController : Controller
     /// <summary>
     /// Execute configuration task
     /// </summary>
-    private void ExecuteConfigurationTask()
+    /// <param name="singleInstance"></param>
+    private void ExecuteConfigurationTask(bool singleInstance)
     {
         DisplayService.WriteInformation("Configuration task started.");
-        ReleaseGraphService.Build();
-        ReleaseGraphService.Validate();
-        ReleaseGraphService.Execute();
-        DisplayService.WriteInformation("Configuration task completed.");
+        var allowConcurrency = ReleaseGraphService.Build();
+        if (singleInstance || allowConcurrency)
+        {
+            ReleaseGraphService.Validate();
+            ReleaseGraphService.Execute();
+            DisplayService.WriteInformation("Configuration task completed.");
+        }
+        else
+            DisplayService.WriteWarning("Configuration task skipped. Another application instance is already running.");
     }
     #endregion
 

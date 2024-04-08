@@ -42,6 +42,7 @@ CREATE TABLE "Release" (
 	"Version" varchar(64) NOT NULL,
 	"ActionID" int NOT NULL,
 	"ReleaseEnabled" boolean NOT NULL,
+	"AllowConcurrency" boolean NOT NULL,
 	CONSTRAINT "PK_Release" PRIMARY KEY ("ReleaseID"),
 	CONSTRAINT "FK_Release_Application" FOREIGN KEY ("ApplicationID") REFERENCES "Application" ("ApplicationID") ON UPDATE CASCADE,
 	CONSTRAINT "FK_Release_Action" FOREIGN KEY ("ActionID") REFERENCES "Action" ("ActionID") ON UPDATE CASCADE
@@ -163,17 +164,17 @@ INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArgum
     (8, 1, 'Install.sh', 'SynchronizeClock'),
     (9, 1, 'Install.sh', 'ExecuteCommand "ls ~"'),
 	(10, 1, 'Install.sh', 'UploadDeviceLogs');
-INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled") VALUES
-    (1, NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE),
-    (2, NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE),
-    (3, NOW(), 3, 'Install.zip', NULL, '1.0.0', 3, TRUE),
-    (4, NOW(), 4, 'Install.zip', NULL, '1.0.0', 4, TRUE),
-	(5, NOW(), 5, 'Devices.Client.Solutions.Python.zip', NULL, '1.0.0', 5, TRUE),
-    (6, NOW(), 6, 'Install.zip', NULL, '1.0.0', 6, FALSE),
-    (7, NOW(), 6, 'Install.zip', NULL, '1.0.0', 7, FALSE),
-    (8, NOW(), 6, 'Install.zip', NULL, '1.0.0', 8, FALSE),
-    (9, NOW(), 6, 'Install.zip', NULL, '1.0.0', 9, FALSE),
-	(10, NOW(), 6, 'Install.zip', NULL, '1.0.0', 10, FALSE);
+INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled", "AllowConcurrency") VALUES
+    (1, NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE, FALSE),
+    (2, NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE, FALSE),
+    (3, NOW(), 3, 'Install.zip', NULL, '1.0.0', 3, TRUE, FALSE),
+    (4, NOW(), 4, 'Install.zip', NULL, '1.0.0', 4, TRUE, FALSE),
+	(5, NOW(), 5, 'Devices.Client.Solutions.Python.zip', NULL, '1.0.0', 5, TRUE, FALSE),
+    (6, NOW(), 6, 'Install.zip', NULL, '1.0.0', 6, FALSE, FALSE),
+    (7, NOW(), 6, 'Install.zip', NULL, '1.0.0', 7, FALSE, FALSE),
+    (8, NOW(), 6, 'Install.zip', NULL, '1.0.0', 8, FALSE, FALSE),
+    (9, NOW(), 6, 'Install.zip', NULL, '1.0.0', 9, FALSE, FALSE),
+	(10, NOW(), 6, 'Install.zip', NULL, '1.0.0', 10, FALSE, FALSE);
 SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FROM "Release"), 0));
 INSERT INTO "ApplicationDependency" ("ApplicationID", "RequiredApplicationID", "MinimumVersion") VALUES
     (2, 1, '1.0.0'),
