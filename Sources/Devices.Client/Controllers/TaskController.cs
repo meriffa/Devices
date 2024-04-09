@@ -49,7 +49,7 @@ public class TaskController : Controller
     /// </summary>
     private void ExecuteIdentityTask()
     {
-        Console.WriteLine(IdentityService.GetDeviceToken(Refresh));
+        Console.WriteLine(IdentityService.GetDeviceBearerToken(Refresh));
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class TaskController : Controller
     private void ExecuteMonitoringTask()
     {
         DisplayService.WriteInformation("Monitoring task started.");
-        var metrics = MonitoringService.GetDeviceMetrics();
+        var metrics = MonitoringService.SaveDeviceMetrics();
         DisplayService.WriteInformation($"Last Reboot = {metrics.LastRebootDate:yyyy-MM-dd HH:mm:ss}");
         DisplayService.WriteInformation($"CPU User Time = {metrics.Cpu.User:F1} %");
         DisplayService.WriteInformation($"CPU System Time = {metrics.Cpu.System:F1} %");

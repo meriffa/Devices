@@ -35,6 +35,25 @@ public class IdentityController : ControllerBase
     }
 
     /// <summary>
+    /// Return device bearer token
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="fingerprints"></param>
+    /// <returns></returns>
+    [HttpPost, AllowAnonymous]
+    public ActionResult<string> GetDeviceBearerToken([FromServices] IIdentityService service, List<Fingerprint> fingerprints)
+    {
+        try
+        {
+            return Ok(service.GetDeviceBearerToken(fingerprints));
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Return device statuses
     /// </summary>
     /// <param name="service"></param>

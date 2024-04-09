@@ -4,8 +4,12 @@ using Devices.Service.Models.Identification;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using NpgsqlTypes;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Devices.Service.Services.Identification;
 
@@ -19,6 +23,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
 
     #region Private Fields
     private readonly ILogger<IdentityService> logger = logger;
+    private readonly ServiceOptions options = options.Value;
     #endregion
 
     #region Public Methods
@@ -31,10 +36,66 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     {
         try
         {
+            if (GetDeviceId(fingerprints) is int deviceId)
+            {
+                using var cn = GetConnection();
+                using var cmd = GetCommand(
+                    @"SELECT
+                        ""DeviceToken""
+                    FROM
+                        ""Device""
+                    WHERE
+                        ""DeviceID"" = @DeviceID;", cn);
+                cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+                return (string)cmd.ExecuteScalar()!;
+            }
+            throw new("Unknown device specified.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return device bearer token
+    /// </summary>
+    /// <param name="fingerprints"></param>
+    /// <returns></returns>
+    public string GetDeviceBearerToken(List<Fingerprint> fingerprints)
+    {
+        try
+        {
+            var token = new JwtSecurityToken(
+                issuer: options.JwtBearer.Issuer,
+                audience: options.JwtBearer.Audience,
+                claims: [new Claim(JwtRegisteredClaimNames.Sub, GetDeviceToken(fingerprints)), new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())],
+                expires: DateTime.UtcNow.AddMinutes(options.JwtBearer.Expiration),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.JwtBearer.SigningKey)), SecurityAlgorithms.HmacSha256)
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return device id
+    /// </summary>
+    /// <param name="fingerprints"></param>
+    /// <returns></returns>
+    public int? GetDeviceId(List<Fingerprint> fingerprints)
+    {
+        try
+        {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    d.""DeviceToken""
+                    d.""DeviceID""
                 FROM
                     ""DeviceFingerprint"" f JOIN
                     ""Device"" d ON d.""DeviceID"" = f.""DeviceID""
@@ -48,10 +109,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             {
                 cmd.Parameters["@FingerprintType"].Value = (int)fingerprint.Type;
                 cmd.Parameters["@FingerprintValue"].Value = fingerprint.Value;
-                if (cmd.ExecuteScalar() is string result)
+                if (cmd.ExecuteScalar() is int result)
                     return result;
             }
-            throw new("Unknown device specified.");
+            return null;
         }
         catch (Exception ex)
         {

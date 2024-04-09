@@ -25,11 +25,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
 
     #region Public Methods
     /// <summary>
-    /// Return device token
+    /// Return device bearer token
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    public string GetDeviceToken(bool refresh = false)
+    public string GetDeviceBearerToken(bool refresh = false)
     {
         try
         {
@@ -37,7 +37,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
             if (refresh || !File.Exists(path))
             {
                 var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-                using var response = Client.PostAsync("/Service/Identity/GetDeviceToken", content).Result;
+                using var response = Client.PostAsync("/Service/Identity/GetDeviceBearerToken", content).Result;
                 response.EnsureSuccessStatusCode();
                 SaveIdentity(Options.ConfigurationFolder, path, response.Content.ReadAsStringAsync().Result!);
             }
@@ -56,7 +56,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     /// Return device identity file
     /// </summary>
     /// <returns></returns>
-    private static string GetIdentityFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.DeviceToken";
+    private static string GetIdentityFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.DeviceBearerToken";
 
     /// <summary>
     /// Return device fingerprints

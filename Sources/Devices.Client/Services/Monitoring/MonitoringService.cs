@@ -27,16 +27,16 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Clien
 
     #region Public Methods
     /// <summary>
-    /// Return device metrics
+    /// Save device metrics
     /// </summary>
     /// <returns></returns>
-    public DeviceMetrics GetDeviceMetrics()
+    public DeviceMetrics SaveDeviceMetrics()
     {
         try
         {
             var metrics = deviceMetricsService.GetMetrics();
             var content = new StringContent(JsonSerializer.Serialize(metrics), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync("/Service/Monitoring/SaveDeviceMetrics", content).Result;
+            using var response = SendRequest(() => Client.PostAsync("/Service/Monitoring/SaveDeviceMetrics", content).Result);
             response.EnsureSuccessStatusCode();
             return metrics;
         }

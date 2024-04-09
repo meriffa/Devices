@@ -8,11 +8,11 @@ public interface IIdentityService
 
     #region Public Methods
     /// <summary>
-    /// Return device token
+    /// Return device bearer token
     /// </summary>
     /// <param name="refresh"></param>
     /// <returns></returns>
-    string GetDeviceToken(bool refresh = false);
+    string GetDeviceBearerToken(bool refresh = false);
     #endregion
 
 }

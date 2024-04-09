@@ -1,11 +1,14 @@
 using Devices.Service.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Text;
 
 namespace Devices.Service.Extensions;
 
@@ -36,12 +39,12 @@ public static class ServicesExtensions
     /// Register data protection, authentication & authorization
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="serviceOptions"></param>
     /// <returns></returns>
-    public static AuthorizationBuilder AddSecurity(this IServiceCollection services, ServiceOptions options)
+    public static AuthorizationBuilder AddSecurity(this IServiceCollection services, ServiceOptions serviceOptions)
     {
         services.AddDataProtection()
-            .PersistKeysToFileSystem(new(options.DataProtectionFolder));
+            .PersistKeysToFileSystem(new(serviceOptions.DataProtectionFolder));
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
@@ -52,10 +55,29 @@ public static class ServicesExtensions
                 options.AccessDeniedPath = "/AccessDenied";
                 options.EventsType = typeof(Services.Security.WebAuthenticationService);
             })
+            .AddJwtBearer(options =>
+            {
+                options.Events = new JwtBearerEvents();
+                options.Events.OnTokenValidated += Services.Security.DeviceTokenValidationService.OnTokenValidated;
+                options.SaveToken = false;
+                options.TokenValidationParameters = new()
+                {
+                    ValidAlgorithms = ["HS256"],
+                    ValidIssuer = serviceOptions.JwtBearer.Issuer,
+                    ValidateIssuer = true,
+                    ValidAudience = serviceOptions.JwtBearer.Audience,
+                    ValidateAudience = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serviceOptions.JwtBearer.SigningKey)),
+                    ValidateIssuerSigningKey = true
+                };
+            })
             .AddScheme<DeviceAuthenticationOptions, Services.Security.DeviceAuthenticationService>(Services.Security.DeviceAuthenticationService.AuthenticationScheme, options => { });
         var builder = services.AddAuthorizationBuilder()
             .SetDefaultPolicy(new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme, Services.Security.DeviceAuthenticationService.AuthenticationScheme)
+                .AddAuthenticationSchemes(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    JwtBearerDefaults.AuthenticationScheme,
+                    Services.Security.DeviceAuthenticationService.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build());
         return builder;
@@ -69,11 +91,6 @@ public static class ServicesExtensions
     public static AuthorizationBuilder AddPolicies(this AuthorizationBuilder builder)
     {
         return builder
-            .AddPolicy("WebPolicy", policy =>
-            {
-                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-                policy.RequireAuthenticatedUser();
-            })
             .AddPolicy("FrameworkPolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -81,8 +98,14 @@ public static class ServicesExtensions
             })
             .AddPolicy("DevicePolicy", policy =>
             {
+                policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                 policy.AuthenticationSchemes.Add(Services.Security.DeviceAuthenticationService.AuthenticationScheme);
                 policy.RequireClaim(ClaimTypes.Role, ["Device"]);
+            })
+            .AddPolicy("WebPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireAuthenticatedUser();
             });
     }
 

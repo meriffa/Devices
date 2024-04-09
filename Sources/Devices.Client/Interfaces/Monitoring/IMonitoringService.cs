@@ -10,10 +10,10 @@ public interface IMonitoringService
 
     #region Public Methods
     /// <summary>
-    /// Return device metrics
+    /// Save device metrics
     /// </summary>
     /// <returns></returns>
-    DeviceMetrics GetDeviceMetrics();
+    DeviceMetrics SaveDeviceMetrics();
     #endregion
 
 }

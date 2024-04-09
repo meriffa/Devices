@@ -2,7 +2,6 @@
 
 ### Framework
 
-- Identity: Convert Device Token To STS Token Bearer (Token Expiration & Renewal Mechanism)
 - Resilience: Random Client Request Delay (DDoS Mitigation), Server / Client Outages (store locally & retry, ignore store option, retry options (number, duration, duration increment))
 - Device: Raspberry Pi Pico
 - Device: NVIDIA Jetson Nano

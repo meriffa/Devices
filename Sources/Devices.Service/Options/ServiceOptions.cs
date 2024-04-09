@@ -13,6 +13,11 @@ public class ServiceOptions
     public required DatabaseOptions Database { get; set; }
 
     /// <summary>
+    /// Service options JWT bearer
+    /// </summary>
+    public required JwtBearerOptions JwtBearer { get; set; }
+
+    /// <summary>
     /// Service options package folder
     /// </summary>
     public required string PackageFolder { get; set; }
