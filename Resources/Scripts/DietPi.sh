@@ -131,7 +131,10 @@ InstallNETRuntime() {
 # Download Devices.Client
 DownloadClient() {
   echo "'Devices.Client' download started."
-  ssh HOST_SBC "curl -o ~/Devices.Client.zip -H \"deviceToken: $1\" -fks https://<HostPlaceholder>/Service/Configuration/GetReleasePackage?releaseId=$2"
+  local TOKEN_REQUEST="[{\"type\": 2, \"value\": \"Ethernet:$1\"}]"
+  local BEARER_TOKEN=$(ssh HOST_SBC "curl -H \"Content-Type: application/json\" -X POST -d '$TOKEN_REQUEST' -fks https://<HostPlaceholder>/Service/Identity/GetDeviceBearerToken")
+  [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' download failed."
+  ssh HOST_SBC "curl -o ~/Devices.Client.zip -H \"Authorization: Bearer $BEARER_TOKEN\" -fks https://<HostPlaceholder>/Service/Configuration/GetReleasePackage?releaseId=$2"
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' download failed."
   ssh HOST_SBC "unzip -qq ~/Devices.Client.zip -d ~/Devices.Client/"
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' extract failed."
@@ -142,19 +145,19 @@ DownloadClient() {
 
 # Configuration
 Configuration() {
-  # # Enable Camera
-  # dietpi-config 1 -> RPi Camera = On -> Reboot
-  # ls /dev/video*
-  # # Enable I2C
-  # dietpi-config 3 -> I2C State = On, I2C Frequency = 100kHz -> Reboot
-  # i2cdetect -y 1
-  # # Enable SPI
-  # dietpi-config 3 -> SPI State = On -> Reboot
-  # ls /sys/dev/spi*
-  # # Enable 1-Wire
-  # echo "dtoverlay=w1-gpio,gpiopin=4" >> /boot/config.txt
-  # reboot now
-  # ls /sys/bus/w1/devices/
+  # Enable Camera
+  dietpi-config 1 -> RPi Camera = On -> Reboot
+  ls /dev/video*
+  # Enable I2C
+  dietpi-config 3 -> I2C State = On, I2C Frequency = 100kHz -> Reboot
+  i2cdetect -y 1
+  # Enable SPI
+  dietpi-config 3 -> SPI State = On -> Reboot
+  ls /sys/dev/spi*
+  # Enable 1-Wire
+  echo "dtoverlay=w1-gpio,gpiopin=4" >> /boot/config.txt
+  reboot now
+  ls /sys/bus/w1/devices/
 }
 
 # Get specified operation

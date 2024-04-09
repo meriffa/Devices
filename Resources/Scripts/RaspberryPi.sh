@@ -148,7 +148,10 @@ InstallNETRuntime() {
 # Download Devices.Client
 DownloadClient() {
   echo "'Devices.Client' download started."
-  ssh HOST_SBC "curl -o ~/Devices.Client.zip -H \"deviceToken: $1\" -fks https://<HostPlaceholder>/Service/Configuration/GetReleasePackage?releaseId=$2"
+  local TOKEN_REQUEST="[{\"type\": 2, \"value\": \"Ethernet:$1\"}]"
+  local BEARER_TOKEN=$(ssh HOST_SBC "curl -H \"Content-Type: application/json\" -X POST -d '$TOKEN_REQUEST' -fks https://<HostPlaceholder>/Service/Identity/GetDeviceBearerToken")
+  [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' download failed."
+  ssh HOST_SBC "curl -o ~/Devices.Client.zip -H \"Authorization: Bearer $BEARER_TOKEN\" -fks https://<HostPlaceholder>/Service/Configuration/GetReleasePackage?releaseId=$2"
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' download failed."
   ssh HOST_SBC "sudo unzip -qq ~/Devices.Client.zip -d /root/Devices.Client/"
   [ $? != 0 ] && DisplayErrorAndStop "'Devices.Client' extract failed."

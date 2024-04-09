@@ -16,5 +16,5 @@
 - Setup WiFi Connection: `dietpi-config` -> Network Options: Adapters -> Onboard WiFi = On, WiFi -> Enable, \<SSID>, \<Password> -> Done -> Reboot
 - Install .NET Runtime: `./DietPi.sh InstallNETRuntime`
 - Register Device: `./AWS.sh RegisterDevice <DeviceID> "<DeviceName>" "<DeviceToken>" "<MACAddress>" "<Location>"`
-- Deploy Devices.Client: `./DietPi.sh DownloadClient "<DeviceToken>" <ReleaseID>`
+- Deploy Devices.Client: `./DietPi.sh DownloadClient "<MACAddress>" <ReleaseID>`
 - Setup Scheduled Jobs: `cd ~/Devices.Client && dotnet Devices.Client.dll execute --tasks Configuration`

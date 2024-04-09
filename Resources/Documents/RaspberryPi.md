@@ -13,7 +13,7 @@
 - Setup WiFi Connection: `sudo raspi-config` -> System Options -> Wireless LAN -> Country = \<Country>, SSID = \<SSID>, Password = \<Password>
 - Install .NET Runtime: `./RaspberryPi.sh InstallNETRuntime`
 - Register Device: `./AWS.sh RegisterDevice <DeviceID> "<DeviceName>" "<DeviceToken>" "<MACAddress>" "<Location>"`
-- Deploy Devices.Client: `./RaspberryPi.sh DownloadClient "<DeviceToken>" <ReleaseID>`
+- Deploy Devices.Client: `./RaspberryPi.sh DownloadClient "<MACAddress>" <ReleaseID>`
 - Setup Scheduled Jobs: `sudo su - root -c "cd ~/Devices.Client && dotnet Devices.Client.dll execute --tasks Configuration"`
 
 ### References
