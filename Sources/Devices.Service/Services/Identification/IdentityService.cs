@@ -38,16 +38,19 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
         {
             if (GetDeviceId(fingerprints) is int deviceId)
             {
+                var deviceToken = Guid.NewGuid().ToString().ToUpper();
                 using var cn = GetConnection();
                 using var cmd = GetCommand(
-                    @"SELECT
-                        ""DeviceToken""
-                    FROM
+                    @"UPDATE
                         ""Device""
+                    SET
+                        ""DeviceToken"" = @DeviceToken
                     WHERE
                         ""DeviceID"" = @DeviceID;", cn);
                 cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
-                return (string)cmd.ExecuteScalar()!;
+                cmd.Parameters.Add("@DeviceToken", NpgsqlDbType.Varchar, 64).Value = deviceToken;
+                cmd.ExecuteNonQuery();
+                return deviceToken;
             }
             throw new("Unknown device specified.");
         }
