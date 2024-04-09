@@ -44,11 +44,12 @@ public class Program
     private static void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
     {
         var section = configuration.GetRequiredSection(nameof(ServiceOptions));
+        var serviceOptions = section.Get<ServiceOptions>()!;
         services.Configure<ServiceOptions>(section);
         services.AddServices();
         services.AddServicesSolutions();
-        services.AddSecurity(section.Get<ServiceOptions>()!)
-            .AddPolicies()
+        services.AddSecurity(serviceOptions)
+            .AddPolicies(serviceOptions)
             .AddPoliciesSolutions();
         services.AddControllers()
             .AddApplicationPart(typeof(Service.Solutions.Garden.Controllers.GardenController).Assembly)

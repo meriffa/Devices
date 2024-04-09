@@ -87,8 +87,9 @@ public static class ServicesExtensions
     /// Add authorization policies
     /// </summary>
     /// <param name="builder"></param>
+    /// <param name="serviceOptions"></param>
     /// <returns></returns>
-    public static AuthorizationBuilder AddPolicies(this AuthorizationBuilder builder)
+    public static AuthorizationBuilder AddPolicies(this AuthorizationBuilder builder, ServiceOptions serviceOptions)
     {
         return builder
             .AddPolicy("FrameworkPolicy", policy =>
@@ -99,7 +100,8 @@ public static class ServicesExtensions
             .AddPolicy("DevicePolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                policy.AuthenticationSchemes.Add(Services.Security.DeviceAuthenticationService.AuthenticationScheme);
+                if (serviceOptions.EnableLegacyDeviceAuthentication)
+                    policy.AuthenticationSchemes.Add(Services.Security.DeviceAuthenticationService.AuthenticationScheme);
                 policy.RequireClaim(ClaimTypes.Role, ["Device"]);
             })
             .AddPolicy("WebPolicy", policy =>

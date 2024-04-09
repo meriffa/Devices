@@ -18,6 +18,11 @@ public class ServiceOptions
     public required JwtBearerOptions JwtBearer { get; set; }
 
     /// <summary>
+    /// Service options legacy device authentication flag
+    /// </summary>
+    public required bool EnableLegacyDeviceAuthentication { get; set; }
+
+    /// <summary>
     /// Service options package folder
     /// </summary>
     public required string PackageFolder { get; set; }
