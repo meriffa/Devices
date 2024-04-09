@@ -20,15 +20,15 @@ class GardenService:
     if videoFile is not None:
       deviceDate = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
       data = {"deviceDate": f"{deviceDate}", "faceCount": faces, "motionRegionCount": regions, "videoFileName": f"{videoFile}" }
-      headers = {"Content-type": "application/json", "deviceToken": f"{self.GetDeviceToken()}"}
+      headers = {"Content-type": "application/json", "Authorization": f"Bearer {self.GetDeviceIdentity()}"}
       r = requests.post(f"{self.__hostUrl}/Service/Solutions/Garden/SaveCameraNotification", headers = headers, json = data, verify = False)
       if r.status_code == 200:
         logging.info("Camera notification created.")
       else:
         logging.error(f"Camera notification creation failed (Error = {r.status_code}).")
 
-  # Return device token
-  def GetDeviceToken(self):
+  # Return device identity
+  def GetDeviceIdentity(self):
     result = subprocess.run(["dotnet", self.__devicesClientPath, "execute", "--tasks", "Identity"], stdout = subprocess.PIPE)
     if result.returncode:
       logging.error("Devices.Client execution failed.")
