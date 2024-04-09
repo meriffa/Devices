@@ -37,7 +37,6 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Hosting
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Logging
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Options.ConfigurationExtensions
-  dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Polly.Core
   dotnet add ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj package Microsoft.AspNetCore.Authentication.JwtBearer

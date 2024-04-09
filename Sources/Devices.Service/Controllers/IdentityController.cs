@@ -10,7 +10,7 @@ namespace Devices.Service.Controllers;
 /// <summary>
 /// Identity controller
 /// </summary>
-[ApiController, Route("/Service/[controller]/[action]"), Authorize(Policy = "FrameworkPolicy")]
+[ApiController, Route("/Service/[controller]/[action]")]
 public class IdentityController : ControllerBase
 {
 
@@ -54,11 +54,28 @@ public class IdentityController : ControllerBase
     }
 
     /// <summary>
+    /// Validate device bearer token
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "DevicePolicy")]
+    public ActionResult ValidateDeviceBearerToken()
+    {
+        try
+        {
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Return device statuses
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
     public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService service)
     {
         try

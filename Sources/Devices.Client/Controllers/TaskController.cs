@@ -17,12 +17,6 @@ public class TaskController : Controller
     /// </summary>
     [Option('t', "tasks", Required = true, HelpText = "Task types.")]
     public TaskTypes Tasks { get; set; }
-
-    /// <summary>
-    /// Force identity refresh flag
-    /// </summary>
-    [Option('r', "refresh", Required = false, Default = false, HelpText = "Force identity refresh.")]
-    public bool Refresh { get; set; }
     #endregion
 
     #region Public Methods
@@ -49,7 +43,7 @@ public class TaskController : Controller
     /// </summary>
     private void ExecuteIdentityTask()
     {
-        Console.WriteLine(IdentityService.GetDeviceBearerToken(Refresh));
+        Console.WriteLine(IdentityService.GetDeviceBearerToken());
     }
 
     /// <summary>

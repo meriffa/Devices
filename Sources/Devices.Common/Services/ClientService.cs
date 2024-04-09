@@ -1,3 +1,4 @@
+using Devices.Common.Models;
 using Devices.Common.Options;
 
 namespace Devices.Common.Services;
@@ -36,6 +37,19 @@ public abstract class ClientService : IDisposable
         Options = options;
         handler = new() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
         client = new(handler) { BaseAddress = new Uri(options.Service.Host), Timeout = TimeSpan.FromSeconds(options.Service.Timeout) };
+    }
+    #endregion
+
+    #region Protected Methods
+    /// <summary>
+    /// Add device authorization
+    /// </summary>
+    /// <param name="identity"></param>
+    protected void AddDeviceAuthorization(string identity)
+    {
+        if (Client.DefaultRequestHeaders.Contains(Constants.AuthorizationHeader))
+            Client.DefaultRequestHeaders.Remove(Constants.AuthorizationHeader);
+        Client.DefaultRequestHeaders.Add(Constants.AuthorizationHeader, $"Bearer {identity}");
     }
     #endregion
 

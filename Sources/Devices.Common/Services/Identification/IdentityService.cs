@@ -3,6 +3,7 @@ using Devices.Common.Models.Identification;
 using Devices.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -27,21 +28,22 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     /// <summary>
     /// Return device bearer token
     /// </summary>
-    /// <param name="refresh"></param>
     /// <returns></returns>
-    public string GetDeviceBearerToken(bool refresh = false)
+    public string GetDeviceBearerToken()
     {
         try
         {
-            string path = Path.Combine(Options.ConfigurationFolder, GetIdentityFile());
-            if (refresh || !File.Exists(path))
+            var path = GetIdentityFile(Options.ConfigurationFolder);
+            if (LoadIdentity(path) is string identity)
             {
-                var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-                using var response = Client.PostAsync("/Service/Identity/GetDeviceBearerToken", content).Result;
+                AddDeviceAuthorization(identity);
+                using var response = Client.GetAsync("/Service/Identity/ValidateDeviceBearerToken").Result;
+                if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    return GetDeviceBearerToken(path);
                 response.EnsureSuccessStatusCode();
-                SaveIdentity(Options.ConfigurationFolder, path, response.Content.ReadAsStringAsync().Result!);
+                return identity;
             }
-            return LoadIdentity(path);
+            return GetDeviceBearerToken(path);
         }
         catch (Exception ex)
         {
@@ -55,8 +57,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     /// <summary>
     /// Return device identity file
     /// </summary>
+    /// <param name="folder"></param>
     /// <returns></returns>
-    private static string GetIdentityFile() => $"{Assembly.GetExecutingAssembly().GetName().Name}.DeviceBearerToken";
+    private static string GetIdentityFile(string folder) => Path.Combine(folder, $"{Assembly.GetExecutingAssembly().GetName().Name}.DeviceBearerToken");
 
     /// <summary>
     /// Return device fingerprints
@@ -75,22 +78,34 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static string LoadIdentity(string path)
-    {
-        return File.ReadAllText(path);
-    }
+    private static string? LoadIdentity(string path) => File.Exists(path) ? File.ReadAllText(path) : null;
 
     /// <summary>
     /// Save device identity
     /// </summary>
-    /// <param name="folder"></param>
     /// <param name="path"></param>
-    /// <param name="deviceId"></param>
-    private static void SaveIdentity(string folder, string path, string deviceId)
+    /// <param name="identity"></param>
+    /// <returns></returns>
+    private static string SaveIdentity(string path, string identity)
     {
+        var folder = Path.GetDirectoryName(path);
         if (!Path.Exists(folder))
-            Directory.CreateDirectory(folder);
-        File.WriteAllText(path, deviceId);
+            Directory.CreateDirectory(folder!);
+        File.WriteAllText(path, identity);
+        return identity;
+    }
+
+    /// <summary>
+    /// Return device bearer token
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    private string GetDeviceBearerToken(string path)
+    {
+        var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
+        using var response = Client.PostAsync("/Service/Identity/GetDeviceBearerToken", content).Result;
+        response.EnsureSuccessStatusCode();
+        return SaveIdentity(path, response.Content.ReadAsStringAsync().Result!);
     }
     #endregion
 

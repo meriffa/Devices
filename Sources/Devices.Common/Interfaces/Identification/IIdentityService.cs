@@ -10,9 +10,8 @@ public interface IIdentityService
     /// <summary>
     /// Return device bearer token
     /// </summary>
-    /// <param name="refresh"></param>
     /// <returns></returns>
-    string GetDeviceBearerToken(bool refresh = false);
+    string GetDeviceBearerToken();
     #endregion
 
 }
