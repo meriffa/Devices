@@ -51,7 +51,7 @@ public static class ServicesExtensions
                 options.ExpireTimeSpan = TimeSpan.FromDays(90);
                 options.SlidingExpiration = true;
                 options.LoginPath = "/SignIn";
-                options.LogoutPath = "/Services/Security/SignOut";
+                options.LogoutPath = "/Service/Security/SignOut";
                 options.AccessDeniedPath = "/AccessDenied";
                 options.EventsType = typeof(Services.Security.WebAuthenticationService);
             })

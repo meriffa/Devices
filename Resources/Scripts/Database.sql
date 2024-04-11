@@ -179,5 +179,6 @@ SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FRO
 INSERT INTO "ApplicationDependency" ("ApplicationID", "RequiredApplicationID", "MinimumVersion") VALUES
     (2, 1, '1.0.0'),
 	(3, 1, NULL),
-	(4, 2, NULL);
+	(4, 2, NULL),
+    (5, 1, '1.0.0');
 --SELECT SETVAL($$"DeviceDeployment_DeploymentID_seq"$$, COALESCE((SELECT MAX("DeploymentID") FROM "DeviceDeployment"), 0));

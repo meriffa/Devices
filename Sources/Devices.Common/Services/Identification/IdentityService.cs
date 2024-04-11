@@ -37,7 +37,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
             if (LoadIdentity(path) is string identity)
             {
                 AddDeviceAuthorization(identity);
-                using var response = Client.GetAsync("/Service/Identity/ValidateDeviceBearerToken").Result;
+                using var response = GetRequest("/Service/Identity/ValidateDeviceBearerToken", retry: true);
                 if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     return GetDeviceBearerToken(path);
                 response.EnsureSuccessStatusCode();
@@ -103,7 +103,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ClientOpt
     private string GetDeviceBearerToken(string path)
     {
         var content = new StringContent(JsonSerializer.Serialize(GetFingerprints()), Encoding.UTF8, "application/json");
-        using var response = Client.PostAsync("/Service/Identity/GetDeviceBearerToken", content).Result;
+        using var response = PostRequest("/Service/Identity/GetDeviceBearerToken", content);
         response.EnsureSuccessStatusCode();
         return SaveIdentity(path, response.Content.ReadAsStringAsync().Result!);
     }

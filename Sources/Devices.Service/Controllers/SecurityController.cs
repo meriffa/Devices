@@ -10,7 +10,7 @@ namespace Devices.Service.Controllers;
 /// <summary>
 /// Security controller
 /// </summary>
-[ApiController, Route("/Services/[controller]/[action]"), Authorize(Policy = "WebPolicy")]
+[ApiController, Route("/Service/[controller]/[action]"), Authorize(Policy = "WebPolicy")]
 public class SecurityController : Controller
 {
 

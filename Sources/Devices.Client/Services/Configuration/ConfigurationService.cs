@@ -33,7 +33,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            using var response = Client.GetAsync("/Service/Configuration/GetPendingReleases").Result;
+            using var response = GetRequest("/Service/Configuration/GetPendingReleases", retry: true);
             response.EnsureSuccessStatusCode();
             return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
         }
@@ -54,7 +54,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(applications), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync("/Service/Configuration/GetRequiredReleases", content).Result;
+            using var response = PostRequest("/Service/Configuration/GetRequiredReleases", content, retry: true);
             response.EnsureSuccessStatusCode();
             return response.Content.ReadFromJsonAsync<List<Release>>().Result!;
         }
@@ -74,7 +74,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     {
         try
         {
-            using var response = Client.GetAsync($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}").Result;
+            using var response = GetRequest($"/Service/Configuration/GetReleasePackage?releaseId={releaseId}", retry: true);
             response.EnsureSuccessStatusCode();
             using var stream = File.Create(fileName);
             response.Content.ReadAsStream().CopyTo(stream);
@@ -104,7 +104,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 Details = details
             };
             var content = new StringContent(JsonSerializer.Serialize(deployment), Encoding.UTF8, "application/json");
-            using var response = Client.PostAsync("/Service/Configuration/SaveDeployment", content).Result;
+            using var response = PostRequest("/Service/Configuration/SaveDeployment", content);
             response.EnsureSuccessStatusCode();
         }
         catch (Exception ex)
