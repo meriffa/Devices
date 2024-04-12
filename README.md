@@ -1,6 +1,6 @@
-# IoT Device Management Framework
+# Device Management Framework
 
-IoT Device Management Framework is an open-source and cross-platform framework for managing IoT devices.
+Device Management Framework is an open-source framework for managing Edge AI & IoT devices.
 
 ## Services
 
@@ -23,7 +23,7 @@ The repository contains the following components:
 
 Solution consists of the following components:
 
-![Architecture Diagram](./Resources/Images/Architecture.png)
+![Architecture Diagram](Resources/Images/Architecture.png)
 
 - Devices.Service: Provides framework services to be deployed to cloud infrastructure.
 - Devices.Service.Solutions: Provides reference solution services to be deployed to cloud infrastructure.
@@ -33,18 +33,10 @@ Solution consists of the following components:
 - Devices.Client: Provides framework device client.
 - Devices.Client.Solutions: Provides reference solution device client.
 
-## Platforms
+## References
 
-The framework has been tested with the following platforms:
-
-- Devices
-  - Raspberry Pi Zero 2 W
-  - Raspberry Pi 4 Model B
-  - Raspberry Pi 5
-- Device Operating Systems
-  - DietPi 9.2.1 (Debian 12, Arm32, ARMv6)
-  - DietPi 9.2.1 (Debian 12, Arm64, ARMv8)
-  - Raspberry Pi OS 2024-03-15 (Debian 12, Arm64, ARMv8)
-- Development
-  - .NET Core 8.0
-  - Python 3.11
+- [Development Environment](Resources/Documents/Development.md)
+- [AWS Host Configuration](Resources/Documents/AWS.md)
+- [Device Operations](Resources/Documents/Operations.md)
+- [Reference Solutions](Resources/Documents/Solutions.md)
+- [Platforms](Resources/Documents/Platforms.md)

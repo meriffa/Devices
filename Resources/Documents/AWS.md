@@ -1,4 +1,4 @@
-## AWS Configuration
+## AWS Host Configuration
 
 ### Management
 - [AWS Console](https://console.aws.amazon.com) -> Sign In

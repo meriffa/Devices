@@ -1,4 +1,4 @@
-## Solutions
+## Reference Solutions
 
 ### Garden Management System
 
