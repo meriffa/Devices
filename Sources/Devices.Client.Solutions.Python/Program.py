@@ -2,7 +2,6 @@
 
 import configparser
 import cv2
-import datetime
 import logging
 import logging.config
 from ApplicationArguments import ApplicationArguments
