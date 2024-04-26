@@ -4,5 +4,12 @@
     "html.format.wrapLineLength": 300,
     "editor.minimap.enabled": false,
     "typescript.surveys.enabled": false,
+    "cSpell.enableFiletypes": [
+        "shellscript"
+    ],
+    "black-formatter.args": [
+        "--line-length",
+        "300"
+    ],
     "dotnet.defaultSolution": "Sources/Devices.sln"
 }

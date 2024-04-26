@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
-import cv2
-import PIL.Image
-import transformers
 from ApplicationArguments import ApplicationArguments
 from Camera import Camera
 from CameraFPS import CameraFPS
+from Model import Model
+import cv2
 
 
 # Initialization
@@ -13,8 +12,8 @@ def Initialize():
     arguments = ApplicationArguments().Parse()
     camera = Camera(arguments.width, arguments.height, arguments.fps)
     cameraFPS = CameraFPS(arguments.displayFPS)
-    pipeline = transformers.pipeline(model="facebook/detr-resnet-101")
-    return camera, cameraFPS, pipeline
+    model = Model()
+    return camera, cameraFPS, model
 
 
 # Check if program stop is requested
@@ -27,19 +26,11 @@ def StopRequested(windowTitle):
     return False
 
 
-# Image Segmentation
-def ImageSegmentationDETRBox(pipeline, frame):
-    image = PIL.Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    predictions = pipeline(image)
-    for prediction in predictions:
-        print(f'Label = {prediction["label"]}, Score = {prediction["score"]}')
-
-
 # Process frame
-def ProcessFrame(camera, cameraFPS, pipeline):
+def ProcessFrame(camera, cameraFPS, model):
     frame = camera.GetFrame()
-    ImageSegmentationDETRBox(pipeline, frame)
     cameraFPS.Display(frame)
+    model.Display(frame, model.Run(frame))
     return frame
 
 
@@ -52,7 +43,7 @@ def Finalize(camera):
 # Camera feed processing
 def Main():
     windowTitle = "Camera"
-    camera, cameraFPS, pipeline = Initialize()
+    camera, cameraFPS, model = Initialize()
     camera.Start()
     try:
         _ = cv2.namedWindow(windowTitle, cv2.WINDOW_AUTOSIZE)
@@ -60,7 +51,7 @@ def Main():
             cameraFPS.Start()
             if StopRequested(windowTitle):
                 break
-            cv2.imshow(windowTitle, ProcessFrame(camera, cameraFPS, pipeline))
+            cv2.imshow(windowTitle, ProcessFrame(camera, cameraFPS, model))
             cameraFPS.Stop()
     except KeyboardInterrupt:
         print("Program interrupted.")
