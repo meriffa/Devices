@@ -93,45 +93,6 @@ public class GardenController : ControllerBase
             return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
         }
     }
-
-    /// <summary>
-    /// Return device camera notifications
-    /// </summary>
-    /// <param name="service"></param>
-    /// <param name="deviceId"></param>
-    /// <returns></returns>
-    [HttpGet, Authorize(Policy = "GardenPolicy")]
-    public ActionResult<List<DeviceCameraNotification>> GetDeviceCameraNotifications([FromServices] IGardenService service, int? deviceId)
-    {
-        try
-        {
-            return Ok(service.GetDeviceCameraNotifications(deviceId));
-        }
-        catch (Exception ex)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// Save camera notification
-    /// </summary>
-    /// <param name="service"></param>
-    /// <param name="cameraNotification"></param>
-    /// <returns></returns>
-    [HttpPost, Authorize(Policy = "DevicePolicy")]
-    public ActionResult SaveCameraNotification([FromServices] IGardenService service, CameraNotification cameraNotification)
-    {
-        try
-        {
-            service.SaveCameraNotification(HttpContext.User.GetDeviceId(), cameraNotification);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
-        }
-    }
     #endregion
 
 }

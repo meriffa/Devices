@@ -112,7 +112,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/root/Devices.Client.Solutions.Python
-ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -w 1280 -h 720 -f 30 -p 8888 -v /root/Videos
+ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -w 800 -h 600 -f 30 -p 8443
 Restart=always
 RestartSec=10
 TimeoutStopSec=90
