@@ -1,5 +1,7 @@
+using Devices.Service.Solutions.Garden.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
@@ -46,6 +48,15 @@ public static class ServicesExtensions
     public static void AuthorizeAreasSolutions(this RazorPagesOptions options)
     {
         options.Conventions.AuthorizeAreaFolder("Garden", "/", "GardenPolicy");
+    }
+
+    /// <summary>
+    /// Register SignalR hubs
+    /// </summary>
+    /// <param name="application"></param>
+    public static void MapSignalRHubsSolutions(this WebApplication application)
+    {
+        application.MapHub<GardenHub>("/Hub/Solutions/Garden");
     }
     #endregion
 

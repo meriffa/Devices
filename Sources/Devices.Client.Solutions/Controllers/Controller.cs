@@ -14,6 +14,7 @@ public abstract class Controller
     private IServiceProvider services = null!;
     private DisplayService? displayService;
     private IGardenService? gardenService;
+    private IGardenHub? gardenHub;
     #endregion
 
     #region Properties
@@ -26,6 +27,11 @@ public abstract class Controller
     /// Garden service
     /// </summary>
     protected IGardenService GardenService => gardenService ??= services.GetRequiredService<IGardenService>();
+
+    /// <summary>
+    /// Garden hub
+    /// </summary>
+    protected IGardenHub GardenHub => gardenHub ??= services.GetRequiredService<IGardenHub>();
     #endregion
 
     #region Public Methods

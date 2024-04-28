@@ -1,0 +1,53 @@
+@page
+@{
+    ViewData["Title"] = "Garden Watering";
+}
+@section Scripts
+{
+    <script src="~/Resources/SignalR/8.0.0/signalr.min.js"></script>
+    <script type="text/javascript" src="~/_content/Devices.Web.Solutions/Resources/Scripts/Watering.js" asp-append-version="true"></script>
+}
+<div class="row justify-content-start row-cols-auto align-items-center">
+    <div class="col">
+        Device
+    </div>
+    <div class="col-2">
+        <select id="cmbDevice" class="form-select"></select>
+    </div>
+    <div class="col">
+        <button id="btnTurnAllPumpsOn" type="button" class="btn btn-outline-dark" title="Turn all pumps on" disabled>Turn All Pumps On</button>
+        <button id="btnTurnAllPumpsOff" type="button" class="btn btn-outline-dark" title="Turn all pumps off" disabled>Turn All Pumps Off</button>
+        <button id="btnShutdown" type="button" class="btn btn-outline-dark" title="Shutdown controller" disabled>Shutdown controller</button>
+        <button id="btnClearDeviceLog" type="button" class="btn btn-outline-dark" title="Clear device log">Clear Device Log</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <div class="form-check form-switch">
+            <input id="chkPump1" data-pump="1" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump1">Water Pump #1</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump2" data-pump="2" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump2">Water Pump #2</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump3" data-pump="3" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump3">Water Pump #3</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump4" data-pump="4" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump4">Water Pump #4</label>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        Device Log
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <textarea id="txtDeviceLog" rows="15" cols="100" readonly></textarea>
+    </div>
+</div>

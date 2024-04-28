@@ -60,6 +60,7 @@ public class Program
             options.AuthorizeAreas();
             options.AuthorizeAreasSolutions();
         });
+        services.AddSignalR();
     }
 
     /// <summary>
@@ -84,6 +85,7 @@ public class Program
         application.UseSecurity();
         application.MapControllers();
         application.MapRazorPages();
+        application.MapSignalRHubsSolutions();
         return application;
     }
     #endregion

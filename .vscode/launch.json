@@ -84,7 +84,7 @@
             "preLaunchTask": "Build Solution",
             "program": "${workspaceFolder}/Sources/Devices.Client.Solutions/bin/Debug/net8.0/Devices.Client.Solutions.dll",
             "args": [
-                "garden"
+                "watering"
             ],
             "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions",
             "console": "integratedTerminal",

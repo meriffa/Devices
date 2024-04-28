@@ -65,6 +65,7 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj reference ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package CommandLineParser
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Iot.Device.Bindings
+  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.AspNetCore.SignalR.Client
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.CommandLine
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
