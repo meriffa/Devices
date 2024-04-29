@@ -7,47 +7,75 @@
     <script src="~/Resources/SignalR/8.0.0/signalr.min.js"></script>
     <script type="text/javascript" src="~/_content/Devices.Web.Solutions/Resources/Scripts/Watering.js" asp-append-version="true"></script>
 }
-<div class="row justify-content-start row-cols-auto align-items-center">
-    <div class="col">
-        Device
+<div class="row">
+    <div class="col-3">
+        <div class="row justify-content-start align-items-center">
+            <div class="col">
+                Device
+            </div>
+            <div class="col-10">
+                <select id="cmbDevice" class="form-select"></select>
+            </div>
+        </div>
     </div>
-    <div class="col-2">
-        <select id="cmbDevice" class="form-select"></select>
-    </div>
     <div class="col">
-        <button id="btnTurnAllPumpsOn" type="button" class="btn btn-outline-dark" title="Turn all pumps on" disabled>Turn All Pumps On</button>
-        <button id="btnTurnAllPumpsOff" type="button" class="btn btn-outline-dark" title="Turn all pumps off" disabled>Turn All Pumps Off</button>
-        <button id="btnShutdown" type="button" class="btn btn-outline-dark" title="Shutdown controller" disabled>Shutdown controller</button>
-        <button id="btnClearDeviceLog" type="button" class="btn btn-outline-dark" title="Clear device log">Clear Device Log</button>
+        <button id="btnTurnAllPumpsOn" type="button" class="btn btn-outline-dark btn-success" title="Turn all pumps on" disabled>Turn All Pumps On</button>
+        <button id="btnTurnAllPumpsOff" type="button" class="btn btn-outline-dark btn-danger" title="Turn all pumps off" disabled>Turn All Pumps Off</button>
     </div>
 </div>
-<div class="row">
-    <div class="col-2">
+<div class="row align-items-center py-3">
+    <div class="col-3">
         <div class="form-check form-switch">
             <input id="chkPump1" data-pump="1" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump1">Water Pump #1</label>
+            <label class="form-check-label" for="chkPump1">Water Pump #1 (GPIO 17)</label>
         </div>
         <div class="form-check form-switch">
             <input id="chkPump2" data-pump="2" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump2">Water Pump #2</label>
+            <label class="form-check-label" for="chkPump2">Water Pump #2 (GPIO 27)</label>
         </div>
         <div class="form-check form-switch">
             <input id="chkPump3" data-pump="3" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump3">Water Pump #3</label>
+            <label class="form-check-label" for="chkPump3">Water Pump #3 (GPIO 22)</label>
         </div>
         <div class="form-check form-switch">
             <input id="chkPump4" data-pump="4" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump4">Water Pump #4</label>
+            <label class="form-check-label" for="chkPump4">Water Pump #4 (GPIO 5)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump5" data-pump="5" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump5">Water Pump #5 (GPIO 6)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump6" data-pump="6" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump6">Water Pump #6 (GPIO 26)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump7" data-pump="7" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump7">Water Pump #7 (GPIO 23)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump8" data-pump="8" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump8">Water Pump #8 (GPIO 24)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump9" data-pump="9" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump9">Water Pump #9 (GPIO 25)</label>
+        </div>
+        <div class="form-check form-switch">
+            <input id="chkPump10" data-pump="10" class="form-check-input" type="checkbox" role="switch" disabled>
+            <label class="form-check-label" for="chkPump10">Water Pump #10 (GPIO 16)</label>
+        </div>
+    </div>
+    <div class="col">
+        Device Log
+        <div class="col">
+            <textarea id="txtDeviceLog" rows="13" cols="100" readonly></textarea>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col">
-        Device Log
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <textarea id="txtDeviceLog" rows="15" cols="100" readonly></textarea>
+    <div class="col offset-3">
+        <button id="btnClearDeviceLog" type="button" class="btn btn-outline-dark" title="Clear device log">Clear Device Log</button>
+        <button id="btnShutdown" type="button" class="btn btn-outline-dark" title="Shutdown controller" disabled>Shutdown Controller</button>
     </div>
 </div>

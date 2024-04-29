@@ -84,7 +84,7 @@
             "preLaunchTask": "Build Solution",
             "program": "${workspaceFolder}/Sources/Devices.Client.Solutions/bin/Debug/net8.0/Devices.Client.Solutions.dll",
             "args": [
-                "watering"
+                "Watering"
             ],
             "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions",
             "console": "integratedTerminal",
@@ -101,7 +101,7 @@
             "program": "/usr/bin/dotnet",
             "args": [
                 "../Devices.Client.Solutions.Debug/Devices.Client.Solutions.dll",
-                "garden"
+                "Watering"
             ],
             "cwd": "~/Devices.Client.Solutions.Debug",
             "console": "integratedTerminal",

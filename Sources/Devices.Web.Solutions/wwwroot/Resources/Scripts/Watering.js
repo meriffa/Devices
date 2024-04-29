@@ -9,10 +9,10 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     // Initialization
     Devices.Host.Site.initContentPage = function () {
         $("#btnTurnAllPumpsOn").click(function () {
-            $("[id^=chkPump]").prop("checked", true).trigger("change");
+            $("[id^=chkPump]:not(:checked)").prop("checked", true).trigger("change");
         });
         $("#btnTurnAllPumpsOff").click(function () {
-            $("[id^=chkPump]").prop("checked", false).trigger("change");
+            $("[id^=chkPump]:checked").prop("checked", false).trigger("change");
         });
         $("#btnShutdown").click(function () {
             namespace.connection.invoke("SendShutdownRequest", parseInt($("#cmbDevice").val())).then(function () {

@@ -1,16 +1,20 @@
-using System.Reflection;
 using CommandLine;
+using System.Device.Gpio;
+using System.Reflection;
 
 namespace Devices.Client.Solutions.Controllers.Garden;
 
 /// <summary>
 /// Watering controller
 /// </summary>
-[Verb("watering", HelpText = "Watering task.")]
+[Verb("Watering", HelpText = "Watering task.")]
 public class WateringController : Controller
 {
 
+    #region Private Members
+    private static readonly int[] PIN_NUMBERS = [17, 27, 22, 5, 6, 26, 23, 24, 25, 16];
     private readonly EventWaitHandle shutdownRequest = new(false, EventResetMode.ManualReset);
+    #endregion
 
     #region Public Methods
     /// <summary>
@@ -22,7 +26,8 @@ public class WateringController : Controller
         if (singleInstance)
         {
             DisplayService.WriteInformation("Watering task started.");
-            if (Task.Run(StartPumpRequestHandlingTask).Result)
+            using var controller = GetController();
+            if (Task.Run(async () => await StartPumpRequestHandlingTask(controller)).Result)
                 shutdownRequest.WaitOne();
             GardenHub.Stop();
             DisplayService.WriteInformation("Watering task completed.");
@@ -34,16 +39,29 @@ public class WateringController : Controller
 
     #region Private Methods
     /// <summary>
-    /// Start pump request handling task
+    /// Return controller instance
     /// </summary>
     /// <returns></returns>
-    private async Task<bool> StartPumpRequestHandlingTask()
+    private static GpioController GetController()
+    {
+        var controller = new GpioController(PinNumberingScheme.Logical);
+        foreach (var pin in PIN_NUMBERS)
+            controller.OpenPin(pin, PinMode.Output);
+        return controller;
+    }
+
+    /// <summary>
+    /// Start pump request handling task
+    /// </summary>
+    /// <param name="controller"></param>
+    /// <returns></returns>
+    private async Task<bool> StartPumpRequestHandlingTask(GpioController controller)
     {
         try
         {
             GardenHub.HandlePumpRequest((deviceId, pumpId, pumpState) =>
             {
-                DisplayService.WriteInformation("[Under Construction].");
+                controller.Write(PIN_NUMBERS[pumpId - 1], pumpState ? PinValue.High : PinValue.Low);
             });
             GardenHub.HandleShutdownRequest((deviceId) =>
             {
