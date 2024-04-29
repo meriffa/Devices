@@ -15,7 +15,13 @@ public interface IGardenService
     /// Return weather devices
     /// </summary>
     /// <returns></returns>
-    List<Device> GetDevices();
+    List<Device> GetWeatherDevices();
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <returns></returns>
+    List<Device> GetWateringDevices();
 
     /// <summary>
     /// Return device weather conditions

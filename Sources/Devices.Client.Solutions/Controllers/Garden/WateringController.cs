@@ -14,6 +14,7 @@ public class WateringController : Controller
     #region Private Members
     private static readonly int[] PIN_NUMBERS = [17, 27, 22, 5, 6, 26, 23, 24, 25, 16];
     private readonly EventWaitHandle shutdownRequest = new(false, EventResetMode.ManualReset);
+    private int deviceId = 0;
     #endregion
 
     #region Public Methods
@@ -29,6 +30,9 @@ public class WateringController : Controller
             using var controller = GetController();
             if (Task.Run(async () => await StartPumpRequestHandlingTask(controller)).Result)
                 shutdownRequest.WaitOne();
+            foreach (var pin in PIN_NUMBERS)
+                controller.Write(pin, PinValue.High);
+            GardenHub.SendShutdownResponse(deviceId);
             GardenHub.Stop();
             DisplayService.WriteInformation("Watering task completed.");
         }
@@ -46,7 +50,7 @@ public class WateringController : Controller
     {
         var controller = new GpioController(PinNumberingScheme.Logical);
         foreach (var pin in PIN_NUMBERS)
-            controller.OpenPin(pin, PinMode.Output);
+            controller.OpenPin(pin, PinMode.Output, PinValue.High);
         return controller;
     }
 
@@ -61,10 +65,11 @@ public class WateringController : Controller
         {
             GardenHub.HandlePumpRequest((deviceId, pumpId, pumpState) =>
             {
-                controller.Write(PIN_NUMBERS[pumpId - 1], pumpState ? PinValue.High : PinValue.Low);
+                controller.Write(PIN_NUMBERS[pumpId - 1], pumpState ? PinValue.Low : PinValue.High);
             });
             GardenHub.HandleShutdownRequest((deviceId) =>
             {
+                this.deviceId = deviceId;
                 shutdownRequest.Set();
             });
             return await GardenHub.Start();

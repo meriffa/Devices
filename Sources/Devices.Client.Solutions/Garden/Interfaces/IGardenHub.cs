@@ -30,6 +30,12 @@ public interface IGardenHub
     /// </summary>
     /// <param name="action"></param>
     void HandleShutdownRequest(Action<int> action);
+
+    /// <summary>
+    /// Send shutdown response
+    /// </summary>
+    /// <param name="deviceId"></param>
+    void SendShutdownResponse(int deviceId);
     #endregion
 
 }

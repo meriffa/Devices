@@ -23,11 +23,29 @@ public class GardenController : ControllerBase
     /// <param name="service"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "GardenPolicy")]
-    public ActionResult<List<Device>> GetDevices([FromServices] IGardenService service)
+    public ActionResult<List<Device>> GetWeatherDevices([FromServices] IGardenService service)
     {
         try
         {
-            return Ok(service.GetDevices());
+            return Ok(service.GetWeatherDevices());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<List<Device>> GetWateringDevices([FromServices] IGardenService service)
+    {
+        try
+        {
+            return Ok(service.GetWateringDevices());
         }
         catch (Exception ex)
         {

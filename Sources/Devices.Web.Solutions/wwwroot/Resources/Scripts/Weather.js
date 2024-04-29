@@ -18,7 +18,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         $.ajax({
             method: "GET",
             contentType: "application/json",
-            url: "/Service/Solutions/Garden/GetDevices",
+            url: "/Service/Solutions/Garden/GetWeatherDevices",
             success: function (devices) {
                 $.each(devices, function (key, device) {
                     $("#cmbDevice").append(`<option value="${device.id}">${device.name} (${device.location})</option>`);

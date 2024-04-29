@@ -43,6 +43,16 @@ public class GardenHub : Hub
     {
         await Clients.All.SendAsync("ShutdownRequest", deviceId);
     }
+
+    /// <summary>
+    /// Send shutdown response
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public async Task SendShutdownResponse(int deviceId)
+    {
+        await Clients.All.SendAsync("ShutdownResponse", deviceId);
+    }
     #endregion
 
 }

@@ -14,13 +14,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         $("#btnTurnAllPumpsOff").click(function () {
             $("[id^=chkPump]:checked").prop("checked", false).trigger("change");
         });
-        $("#btnShutdown").click(function () {
-            namespace.connection.invoke("SendShutdownRequest", parseInt($("#cmbDevice").val())).then(function () {
-                logMessage("Controller shutdown requested.");
-            }).catch(function (ex) {
-                logMessage(`ERROR: ${ex.toString()}`);
-            });
-        });
+        $("#btnShutdown").click(sendShutdownRequest);
         $("#btnClearDeviceLog").click(function () {
             $("#txtDeviceLog").val("");
         });
@@ -33,7 +27,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         $.ajax({
             method: "GET",
             contentType: "application/json",
-            url: "/Service/Solutions/Garden/GetDevices",
+            url: "/Service/Solutions/Garden/GetWateringDevices",
             success: function (devices) {
                 $.each(devices, function (key, device) {
                     $("#cmbDevice").append(`<option value="${device.id}">${device.name} (${device.location})</option>`);
@@ -51,6 +45,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     function connectToHub() {
         namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Garden").withAutomaticReconnect().build();
         namespace.connection.on("PumpResponse", receivePumpResponse);
+        namespace.connection.on("ShutdownResponse", receiveShutdownResponse);
         namespace.connection.start().then(function () {
             setupPumpControls(true);
         }).catch(function (ex) {
@@ -77,6 +72,20 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             logMessage(`Water Pump #${pumpId} = ${pumpState ? "On" : "Off"} completed.`);
         else
             logMessage(`Water Pump #${pumpId} = ${pumpState ? "On" : "Off"} completed (Error = '${error}').`);
+    }
+
+    // Send shutdown response
+    function sendShutdownRequest() {
+        namespace.connection.invoke("SendShutdownRequest", parseInt($("#cmbDevice").val())).then(function () {
+            logMessage("Controller shutdown requested.");
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
+    }
+
+    // Receive shutdown response
+    function receiveShutdownResponse(deviceId) {
+        logMessage("Controller shutdown completed.");
     }
 
     // Log message

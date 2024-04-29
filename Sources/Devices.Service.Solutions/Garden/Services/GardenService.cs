@@ -29,7 +29,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     /// Return weather devices
     /// </summary>
     /// <returns></returns>
-    public List<Device> GetDevices()
+    public List<Device> GetWeatherDevices()
     {
         try
         {
@@ -41,8 +41,40 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     d.""DeviceName"",
                     d.""DeviceLocation""
                 FROM
-                    ""Garden"".""WeatherCondition"" w JOIN
-                    ""Device"" d ON d.""DeviceID"" = w.""DeviceID""
+                    ""Device"" d JOIN
+                    ""Garden"".""WeatherCondition"" w ON w.""DeviceID"" = d.""DeviceID""
+                ORDER BY
+                    d.""DeviceName"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(IdentityService.GetDevice(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <returns></returns>
+    public List<Device> GetWateringDevices()
+    {
+        try
+        {
+            var result = new List<Device>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT DISTINCT
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
+                FROM
+                    ""Device"" d JOIN
+                    ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" AND da.""ApplicationID"" = 5
                 ORDER BY
                     d.""DeviceName"";", cn);
             using var r = cmd.ExecuteReader();

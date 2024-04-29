@@ -83,6 +83,22 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
             }
         });
     }
+
+    /// <summary>
+    /// Send shutdown response
+    /// </summary>
+    /// <param name="deviceId"></param>
+    public void SendShutdownResponse(int deviceId)
+    {
+        try
+        {
+            Task.Run(async () => await connection.InvokeAsync("SendShutdownResponse", deviceId));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+        }
+    }
     #endregion
 
     #region Private Methods
