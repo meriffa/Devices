@@ -25,51 +25,151 @@
 </div>
 <div class="row align-items-center py-3">
     <div class="col-3">
-        <div class="form-check form-switch">
-            <input id="chkPump1" data-pump="1" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump1">Water Pump #1 (GPIO 17)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump0" data-pump="0" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump0">Water Pump #1 (GPIO 17)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump0">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset0" type="button" data-pump="0" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #1 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump2" data-pump="2" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump2">Water Pump #2 (GPIO 27)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump1" data-pump="1" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump1">Water Pump #2 (GPIO 27)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump1">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset1" type="button" data-pump="1" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #2 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump3" data-pump="3" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump3">Water Pump #3 (GPIO 22)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump2" data-pump="2" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump2">Water Pump #3 (GPIO 22)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump2">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset2" type="button" data-pump="2" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #3 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump4" data-pump="4" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump4">Water Pump #4 (GPIO 5)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump3" data-pump="3" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump3">Water Pump #4 (GPIO 5)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump3">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset3" type="button" data-pump="3" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #4 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump5" data-pump="5" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump5">Water Pump #5 (GPIO 6)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump4" data-pump="4" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump4">Water Pump #5 (GPIO 6)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump4">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset4" type="button" data-pump="4" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #5 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump6" data-pump="6" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump6">Water Pump #6 (GPIO 26)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump5" data-pump="5" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump5">Water Pump #6 (GPIO 26)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump5">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset5" type="button" data-pump="5" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #6 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump7" data-pump="7" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump7">Water Pump #7 (GPIO 23)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump6" data-pump="6" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump6">Water Pump #7 (GPIO 23)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump6">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset6" type="button" data-pump="6" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #7 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump8" data-pump="8" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump8">Water Pump #8 (GPIO 24)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump7" data-pump="7" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump7">Water Pump #8 (GPIO 24)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump7">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset7" type="button" data-pump="7" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #8 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump9" data-pump="9" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump9">Water Pump #9 (GPIO 25)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump8" data-pump="8" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump8">Water Pump #9 (GPIO 25)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump8">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset8" type="button" data-pump="8" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #9 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
-        <div class="form-check form-switch">
-            <input id="chkPump10" data-pump="10" class="form-check-input" type="checkbox" role="switch" disabled>
-            <label class="form-check-label" for="chkPump10">Water Pump #10 (GPIO 16)</label>
+        <div class="row align-items-center pb-1">
+            <div class="col">
+                <div class="form-check form-switch">
+                    <input id="chkPump9" data-pump="9" class="form-check-input" type="checkbox" role="switch" disabled>
+                    <label class="form-check-label" for="chkPump9">Water Pump #10 (GPIO 16)</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div id="swPump9">00:00:00</div>
+            </div>
+            <div class="col-2">
+                <button id="btnStopwatchReset9" type="button" data-pump="9" class="btn btn-outline-secondary btn-sm" title="Reset Water Pump #10 stopwatch"><span class="bi-x-circle"></span></button>
+            </div>
         </div>
     </div>
     <div class="col">
         Device Log
         <div class="col">
-            <textarea id="txtDeviceLog" rows="13" cols="100" readonly></textarea>
+            <textarea id="txtDeviceLog" rows="14" cols="100" readonly></textarea>
         </div>
     </div>
 </div>

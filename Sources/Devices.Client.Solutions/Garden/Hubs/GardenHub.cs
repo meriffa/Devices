@@ -48,18 +48,18 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <param name="action"></param>
     public void HandlePumpRequest(Action<int, int, bool> action)
     {
-        connection.On<int, int, bool>("PumpRequest", (deviceId, pumpId, pumpState) =>
+        connection.On<int, int, bool>("PumpRequest", (deviceId, pumpIndex, pumpState) =>
         {
             try
             {
-                logger.LogInformation("PumpRequest: Device ID = {deviceId}, Pump ID = {pumpId}, Pump State = {pumpState}.", deviceId, pumpId, pumpState);
-                action(deviceId, pumpId, pumpState);
-                connection.InvokeAsync("SendPumpResponse", deviceId, pumpId, pumpState, null);
+                logger.LogInformation("PumpRequest: Device ID = {deviceId}, Pump Index = {pumpIndex}, Pump State = {pumpState}.", deviceId, pumpIndex, pumpState);
+                action(deviceId, pumpIndex, pumpState);
+                connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, null);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "{Error}", ex.Message);
-                connection.InvokeAsync("SendPumpResponse", deviceId, pumpId, pumpState, ex.Message);
+                connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, ex.Message);
             }
         });
     }

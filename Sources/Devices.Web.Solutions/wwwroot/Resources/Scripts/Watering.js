@@ -3,8 +3,11 @@ Devices.Web = Devices.Web || {};
 Devices.Web.Solutions = Devices.Web.Solutions || {};
 (function (namespace, $, undefined) {
 
-    // Hub connection
+    // Private members
     namespace.connection = null;
+    namespace.startTime = Array(10).fill(null);
+    namespace.stopwatchInterval = Array(10).fill(null);
+    namespace.elapsedPausedTime = Array(10).fill(0);
 
     // Initialization
     Devices.Host.Site.initContentPage = function () {
@@ -19,6 +22,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             $("#txtDeviceLog").val("");
         });
         $("[id^=chkPump]").change(sendPumpRequest);
+        $("[id^=btnStopwatchReset]").click(resetStopwatch);
         loadDevices();
     }
 
@@ -57,21 +61,27 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     function sendPumpRequest() {
         element = $(this)
         var deviceId = parseInt($("#cmbDevice").val());
-        var pumpId = element.data("pump");
+        var pumpIndex = element.data("pump");
         var pumpState = element.prop("checked");
-        namespace.connection.invoke("SendPumpRequest", deviceId, pumpId, pumpState).then(function () {
-            logMessage(`Water Pump #${pumpId} = ${pumpState ? "On" : "Off"} requested.`);
+        namespace.connection.invoke("SendPumpRequest", deviceId, pumpIndex, pumpState).then(function () {
+            logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} requested.`);
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
         });
+        $(`#btnStopwatchReset${pumpIndex}`).prop("disabled", pumpState);
     }
 
     // Receive pump response
-    function receivePumpResponse(deviceId, pumpId, pumpState, error) {
-        if (error == null)
-            logMessage(`Water Pump #${pumpId} = ${pumpState ? "On" : "Off"} completed.`);
+    function receivePumpResponse(deviceId, pumpIndex, pumpState, error) {
+        if (error == null) {
+            logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed.`);
+            if (pumpState)
+                startStopwatch(pumpIndex);
+            else
+                stopStopwatch(pumpIndex);
+        }
         else
-            logMessage(`Water Pump #${pumpId} = ${pumpState ? "On" : "Off"} completed (Error = '${error}').`);
+            logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed (Error = '${error}').`);
     }
 
     // Send shutdown response
@@ -90,7 +100,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Log message
     function logMessage(text) {
-        $("#txtDeviceLog").val(`[${Devices.Host.Site.formatDateTime(new Date())}] ${text}\n${$("#txtDeviceLog").val()}`);
+        $("#txtDeviceLog").val(`[${Devices.Host.Site.formatDateTimeMilliseconds(new Date())}] ${text}\n${$("#txtDeviceLog").val()}`);
     }
 
     // Setup pump controls
@@ -108,5 +118,41 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             $("[id^=chkPump]").attr("disabled", true);
         }
     }
+
+    // Start pump stopwatch
+    function startStopwatch(pumpIndex) {
+        if (!namespace.stopwatchInterval[pumpIndex]) {
+            namespace.startTime[pumpIndex] = new Date().getTime() - namespace.elapsedPausedTime[pumpIndex];
+            namespace.stopwatchInterval[pumpIndex] = setInterval(function () { updateStopwatch(pumpIndex); }, 1000);
+        }
+    }
+
+    // Stop pump stopwatch
+    function stopStopwatch(pumpIndex) {
+        clearInterval(namespace.stopwatchInterval[pumpIndex]);
+        namespace.elapsedPausedTime[pumpIndex] = new Date().getTime() - namespace.startTime[pumpIndex];
+        namespace.stopwatchInterval[pumpIndex] = null;
+    }
+
+    // Reset pump stopwatch
+    function resetStopwatch() {
+        var pumpIndex = $(this).data("pump");
+        stopStopwatch(pumpIndex);
+        namespace.elapsedPausedTime[pumpIndex] = 0;
+        document.getElementById(`swPump${pumpIndex}`).innerHTML = "00:00:00";
+    }
+
+    // Update pump stopwatch
+    function updateStopwatch(pumpIndex) {
+        var currentTime = new Date().getTime();
+        var elapsedTime = currentTime - namespace.startTime[pumpIndex];
+        var seconds = Math.floor(elapsedTime / 1000) % 60;
+        var minutes = Math.floor(elapsedTime / 1000 / 60) % 60;
+        var hours = Math.floor(elapsedTime / 1000 / 60 / 60);
+        document.getElementById(`swPump${pumpIndex}`).innerHTML = `${zeroPad(hours, 2)}:${zeroPad(minutes, 2)}:${zeroPad(seconds, 2)}`;
+    }
+
+    // Zero pad number
+    const zeroPad = (value, places) => String(value).padStart(places, "0");
 
 }(Devices.Web.Solutions.Watering = Devices.Web.Solutions.Watering || {}, jQuery));

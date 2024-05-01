@@ -63,9 +63,9 @@ public class WateringController : Controller
     {
         try
         {
-            GardenHub.HandlePumpRequest((deviceId, pumpId, pumpState) =>
+            GardenHub.HandlePumpRequest((deviceId, pumpIndex, pumpState) =>
             {
-                controller.Write(PIN_NUMBERS[pumpId - 1], pumpState ? PinValue.Low : PinValue.High);
+                controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
             });
             GardenHub.HandleShutdownRequest((deviceId) =>
             {

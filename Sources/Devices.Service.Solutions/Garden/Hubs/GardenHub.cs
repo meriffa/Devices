@@ -13,25 +13,25 @@ public class GardenHub : Hub
     /// Send pump request
     /// </summary>
     /// <param name="deviceId"></param>
-    /// <param name="pumpId"></param>
+    /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <returns></returns>
-    public async Task SendPumpRequest(int deviceId, int pumpId, bool pumpState)
+    public async Task SendPumpRequest(int deviceId, int pumpIndex, bool pumpState)
     {
-        await Clients.All.SendAsync("PumpRequest", deviceId, pumpId, pumpState);
+        await Clients.All.SendAsync("PumpRequest", deviceId, pumpIndex, pumpState);
     }
 
     /// <summary>
     /// Send pump response
     /// </summary>
     /// <param name="deviceId"></param>
-    /// <param name="pumpId"></param>
+    /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <param name="error"></param>
     /// <returns></returns>
-    public async Task SendPumpResponse(int deviceId, int pumpId, bool pumpState, string? error)
+    public async Task SendPumpResponse(int deviceId, int pumpIndex, bool pumpState, string? error)
     {
-        await Clients.All.SendAsync("PumpResponse", deviceId, pumpId, pumpState, error);
+        await Clients.All.SendAsync("PumpResponse", deviceId, pumpIndex, pumpState, error);
     }
 
     /// <summary>

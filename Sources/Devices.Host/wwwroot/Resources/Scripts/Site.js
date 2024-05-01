@@ -12,6 +12,11 @@ Devices.Host = Devices.Host || {};
         return value != null ? convertToLocalDateTime(new Date(value)).toISOString().slice(0, 19).replace("T", " ") : null;
     }
 
+    // Format date & time
+    namespace.formatDateTimeMilliseconds = function (value) {
+        return value != null ? convertToLocalDateTime(new Date(value)).toISOString().replace("T", " ").replace("Z", "") : null;
+    }
+
     // Format boolean
     namespace.formatBoolean = function (value) {
         return value == true ? "Yes" : "No";
