@@ -1,6 +1,7 @@
 using CommandLine;
 using System.Device.Gpio;
 using System.Reflection;
+using System.Timers;
 
 namespace Devices.Client.Solutions.Controllers.Garden;
 
@@ -13,7 +14,11 @@ public class WateringController : Controller
 
     #region Private Members
     private static readonly int[] PIN_NUMBERS = [17, 27, 22, 5, 6, 26, 23, 24, 25, 16];
+    private static readonly bool[] pumpStates = new bool[PIN_NUMBERS.Length];
     private readonly EventWaitHandle shutdownRequest = new(false, EventResetMode.ManualReset);
+    private static readonly object watchdogTimerSync = new();
+    private readonly System.Timers.Timer watchdogTimer = new(TimeSpan.FromSeconds(10));
+    private bool presenceRequested;
     private int deviceId = 0;
     #endregion
 
@@ -28,10 +33,11 @@ public class WateringController : Controller
         {
             DisplayService.WriteInformation("Watering task started.");
             using var controller = GetController();
+            SetupWatchdogTimer();
             if (Task.Run(async () => await StartPumpRequestHandlingTask(controller)).Result)
                 shutdownRequest.WaitOne();
-            foreach (var pin in PIN_NUMBERS)
-                controller.Write(pin, PinValue.High);
+            ClearOutputs(controller);
+            watchdogTimer.Stop();
             GardenHub.SendShutdownResponse(deviceId);
             GardenHub.Stop();
             DisplayService.WriteInformation("Watering task completed.");
@@ -55,6 +61,16 @@ public class WateringController : Controller
     }
 
     /// <summary>
+    /// Clear outputs
+    /// </summary>
+    /// <param name="controller"></param>
+    private static void ClearOutputs(GpioController controller)
+    {
+        foreach (var pin in PIN_NUMBERS)
+            controller.Write(pin, PinValue.High);
+    }
+
+    /// <summary>
     /// Start pump request handling task
     /// </summary>
     /// <param name="controller"></param>
@@ -66,6 +82,11 @@ public class WateringController : Controller
             GardenHub.HandlePumpRequest((deviceId, pumpIndex, pumpState) =>
             {
                 controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
+                pumpStates[pumpIndex] = pumpState;
+            });
+            GardenHub.HandlePresenceConfirmationResponse(() =>
+            {
+                presenceRequested = false;
             });
             GardenHub.HandleShutdownRequest((deviceId) =>
             {
@@ -79,6 +100,40 @@ public class WateringController : Controller
             DisplayService.WriteError(ex);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Setup watchdog timer
+    /// </summary>
+    private void SetupWatchdogTimer()
+    {
+        presenceRequested = false;
+        watchdogTimer.AutoReset = true;
+        watchdogTimer.Elapsed += HandleWatchdogTimerEvent;
+        watchdogTimer.Start();
+    }
+
+    /// <summary>
+    /// Handle watchdog timer event
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void HandleWatchdogTimerEvent(object? sender, ElapsedEventArgs e)
+    {
+        lock (watchdogTimerSync)
+            if (pumpStates.Contains(true))
+                if (!presenceRequested)
+                {
+                    GardenHub.SendPresenceConfirmationRequest();
+                    presenceRequested = true;
+                }
+                else
+                {
+                    DisplayService.WriteWarning("Presence confirmation not received. Shutting down.");
+                    shutdownRequest.Set();
+                }
+            else
+                presenceRequested = false;
     }
     #endregion
 

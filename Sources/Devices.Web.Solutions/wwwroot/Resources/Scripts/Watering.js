@@ -48,8 +48,9 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     // Connect to hub
     function connectToHub() {
         namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Garden").withAutomaticReconnect().build();
-        namespace.connection.on("PumpResponse", receivePumpResponse);
-        namespace.connection.on("ShutdownResponse", receiveShutdownResponse);
+        namespace.connection.on("PumpResponse", handlePumpResponse);
+        namespace.connection.on("PresenceConfirmationRequest", handlePresenceConfirmationRequest);
+        namespace.connection.on("ShutdownResponse", handleShutdownResponse);
         namespace.connection.start().then(function () {
             setupPumpControls(true);
         }).catch(function (ex) {
@@ -71,8 +72,8 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         $(`#btnStopwatchReset${pumpIndex}`).prop("disabled", pumpState);
     }
 
-    // Receive pump response
-    function receivePumpResponse(deviceId, pumpIndex, pumpState, error) {
+    // Handle pump response
+    function handlePumpResponse(deviceId, pumpIndex, pumpState, error) {
         if (error == null) {
             logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed.`);
             if (pumpState)
@@ -84,6 +85,15 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed (Error = '${error}').`);
     }
 
+    // Handle presence confirmation request
+    function handlePresenceConfirmationRequest() {
+        namespace.connection.invoke("SendPresenceConfirmationResponse").then(function () {
+            logMessage("Watering in progress ...");
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
+    }
+
     // Send shutdown response
     function sendShutdownRequest() {
         namespace.connection.invoke("SendShutdownRequest", parseInt($("#cmbDevice").val())).then(function () {
@@ -93,8 +103,8 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         });
     }
 
-    // Receive shutdown response
-    function receiveShutdownResponse(deviceId) {
+    // Handle shutdown response
+    function handleShutdownResponse(deviceId) {
         logMessage("Controller shutdown completed.");
     }
 

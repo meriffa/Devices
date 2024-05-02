@@ -26,6 +26,17 @@ public interface IGardenHub
     void HandlePumpRequest(Action<int, int, bool> action);
 
     /// <summary>
+    /// Send presence confirmation request
+    /// </summary>
+    void SendPresenceConfirmationRequest();
+
+    /// <summary>
+    /// Handle presence confirmation response
+    /// </summary>
+    /// <param name="action"></param>
+    void HandlePresenceConfirmationResponse(Action action);
+
+    /// <summary>
     /// Handle shutdown request
     /// </summary>
     /// <param name="action"></param>

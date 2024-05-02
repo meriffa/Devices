@@ -35,6 +35,24 @@ public class GardenHub : Hub
     }
 
     /// <summary>
+    /// Send presence confirmation request
+    /// </summary>
+    /// <returns></returns>
+    public async Task SendPresenceConfirmationRequest()
+    {
+        await Clients.All.SendAsync("PresenceConfirmationRequest");
+    }
+
+    /// <summary>
+    /// Send presence confirmation response
+    /// </summary>
+    /// <returns></returns>
+    public async Task SendPresenceConfirmationResponse()
+    {
+        await Clients.All.SendAsync("PresenceConfirmationResponse");
+    }
+
+    /// <summary>
     /// Send shutdown request
     /// </summary>
     /// <param name="deviceId"></param>

@@ -65,6 +65,40 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     }
 
     /// <summary>
+    /// Send presence confirmation request
+    /// </summary>
+    public void SendPresenceConfirmationRequest()
+    {
+        try
+        {
+            Task.Run(async () => await connection.InvokeAsync("SendPresenceConfirmationRequest"));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Handle presence confirmation response
+    /// </summary>
+    /// <param name="action"></param>
+    public void HandlePresenceConfirmationResponse(Action action)
+    {
+        connection.On("PresenceConfirmationResponse", () =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Error}", ex.Message);
+            }
+        });
+    }
+
+    /// <summary>
     /// Handle shutdown request
     /// </summary>
     /// <param name="action"></param>
@@ -93,6 +127,7 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
         try
         {
             Task.Run(async () => await connection.InvokeAsync("SendShutdownResponse", deviceId));
+            Thread.Sleep(TimeSpan.FromSeconds(1));
         }
         catch (Exception ex)
         {
