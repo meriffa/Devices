@@ -162,6 +162,18 @@ DeployClient() {
   echo "'$1' deployment completed."
 }
 
+# Setup python
+SetupPython() {
+  python3 -m venv ~/Python/.venv
+  source ~/Python/.venv/bin/activate
+  source ~/Python/.venv/bin/deactivate
+  pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu    # CPU
+  pip3 install torch torchvision torchaudio                                                     # GPU (https://pytorch.org/get-started/locally/)
+  pip3 install transformers[sentencepiece] diffusers accelerate datasets
+  pip3 install matplotlib easyocr pandas timm librosa soundfile opencv-python pillow
+  pip3 install PyQt5 PyQt6  
+}
+
 # Get specified operation
 if [ -z $1 ]; then
   DisplayErrorAndStop "No operation specified.";

@@ -117,6 +117,24 @@
             "env": {
                 "ENVIRONMENT": "Development",
             }
+        },
+        {
+            "name": "Devices.Client.Solutions.Python",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/Sources/Devices.Client.Solutions.Python/ProgramMachineLearning.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions.Python",
+            "env": {
+                "XDG_SESSION_TYPE": "wayland",
+                "HF_HOME": "~/Python/.cache/"
+            },
+            "args": [
+                "--task",
+                "ComputerVision",
+                "--model",
+                "1"
+            ]
         }
     ]
 }

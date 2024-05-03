@@ -46,4 +46,5 @@ def Finalize():
     cv2.destroyAllWindows()
 
 
-Main()
+if __name__ == "__main__":
+    Main()
