@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import diffusers
 import io
 import matplotlib.pyplot

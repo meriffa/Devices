@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import argparse
 import MachineLearning.Audio
 import MachineLearning.ComputerVision

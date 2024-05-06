@@ -1,40 +1,58 @@
 #!/usr/bin/python3
 
+import cv2
+import flask
 import logging
-import picamera2.outputs
-import socket
 import threading
+import waitress
 
 
 # Video streamer
 class VideoStreamer:
 
     # Initialization
-    def __init__(self, camera, port):
-        self.__camera = camera
+    def __init__(self, port):
         self.__port = port
+        self.__app = flask.Flask(__name__, template_folder="Templates")
+        if self.__port is not None:
+            self.__frame = None
+            self.__lock = threading.Lock()
+            logging.info(f"Video streamer initialized (Port = {port}).")
 
-    # Start streaming
+        # Page endpoint
+        @self.__app.route("/")
+        def index():
+            return flask.render_template("Index.html")
+
+        # Video endpoint
+        @self.__app.route("/video")
+        def video():
+            return flask.Response(self.GenerateFrames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+
+    # Start video streamer
     def Start(self):
         if self.__port is not None:
-            thread = threading.Thread(target=self.Stream)
-            thread.daemon = True
-            thread.start()
+            self.__thread = threading.Thread(target=self.StartApplication)
+            self.__thread.daemon = True
+            self.__thread.start()
 
-    # Stream content
-    def Stream(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as endpoint:
-            endpoint.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            endpoint.bind(("0.0.0.0", self.__port))
-            endpoint.listen()
-            logging.info(f"Streaming started (IP: 0.0.0.0:{self.__port}).")
-            while True:
-                clientConnection, clientAddress = endpoint.accept()
-                logging.info(f"Streaming client connected (IP: {clientAddress[0]}:{clientAddress[1]}).")
-                event = threading.Event()
-                stream = clientConnection.makefile("wb")
-                output = picamera2.outputs.FileOutput(stream)
-                output.start()
-                self.__camera.AddTransientEncoder(output)
-                output.connectiondead = lambda _: event.set()
-                event.wait()
+    # Start video streamer thread
+    def StartApplication(self):
+        waitress.serve(self.__app, host="0.0.0.0", port=self.__port, ident=None)
+
+    # Display video frame
+    def Display(self, frame):
+        if self.__port is not None:
+            with self.__lock:
+                self.__frame = frame.copy()
+
+    # Generate video frames
+    def GenerateFrames(self):
+        while True:
+            with self.__lock:
+                if self.__frame is None:
+                    continue
+                success, image = cv2.imencode(".jpg", self.__frame)
+                if not success:
+                    continue
+            yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + bytearray(image) + b"\r\n")

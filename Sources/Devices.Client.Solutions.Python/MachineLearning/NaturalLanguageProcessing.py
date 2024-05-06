@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import torch
 import transformers
 import huggingface_hub

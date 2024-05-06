@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import datasets
 import torch
 import transformers

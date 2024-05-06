@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import easyocr
 import io
 import json

@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
 import cv2
+import logging
 import pathlib
 import urllib.request
 
 
-# Neural network model
-class Model:
+# Object detection model
+class ObjectDetection:
 
     # Initialization
     def __init__(self):
@@ -28,14 +29,14 @@ class Model:
             file = f"{path}/{name}"
             if not pathlib.Path(file).is_file():
                 urllib.request.urlretrieve(url, file)
-        print(f"Model resources loaded.")
+        logging.info("Object detection model resources loaded.")
         return path
 
     # Load classes
     def LoadClassNames(self, path):
         with open(f"{path}/Classes_COCO.txt", "r") as file:
             classNames = [n.title() for n in file.read().split("\n")]
-            print(f"Model classes loaded.")
+            logging.info("Object detection model classes loaded.")
             return classNames
 
     # Load model
@@ -43,17 +44,18 @@ class Model:
         model = cv2.dnn.readNet(model=f"{path}/frozen_inference_graph.pb", config=f"{path}/ssd_mobilenet_v2_coco_2018_03_29.pbtxt", framework="TensorFlow")
         model.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
         model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-        print(f"Model loaded.")
+        logging.info("Object detection model loaded.")
         return model
 
-    # Run model
+    # Run object detection model
     def Run(self, image):
         blob = cv2.dnn.blobFromImage(image=image, size=(300, 300), mean=(104, 117, 123), swapRB=True)
         self.__model.setInput(blob)
         return self.__model.forward()
 
-    # Display detections
-    def Display(self, image, detections):
+    # Display object detections
+    def Display(self, image):
+        detections = self.Run(image)
         image_height, image_width, _ = image.shape
         for detection in detections[0, 0, :, :]:
             if detection[2] > 0.3:

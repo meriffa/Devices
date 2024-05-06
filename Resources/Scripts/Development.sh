@@ -164,6 +164,7 @@ DeployClient() {
 
 # Setup python
 SetupPython() {
+  sudo pip3 install flask waitress
   python3 -m venv ~/Python/.venv
   source ~/Python/.venv/bin/activate
   source ~/Python/.venv/bin/deactivate
@@ -171,7 +172,7 @@ SetupPython() {
   pip3 install torch torchvision torchaudio                                                     # GPU (https://pytorch.org/get-started/locally/)
   pip3 install transformers[sentencepiece] diffusers accelerate datasets
   pip3 install matplotlib easyocr pandas timm librosa soundfile opencv-python pillow
-  pip3 install PyQt5 PyQt6  
+  pip3 install PyQt5 PyQt6
 }
 
 # Get specified operation
