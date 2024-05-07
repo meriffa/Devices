@@ -9,7 +9,7 @@ class ApplicationArguments:
     # Initialization
     def __init__(self):
         self.__parser = argparse.ArgumentParser(prog="Devices.Client.Solutions.Python", add_help=False)
-        self.__parser.add_argument("-s", "--source", help="Video camera source.", type=str, required=True, choices=["Picamera2", "USB", "JetsonUSB"])
+        self.__parser.add_argument("-s", "--source", help="Video camera source.", type=str, required=True, choices=["Picamera2", "USB", "JetsonUSB", "JetsonCSI"])
         self.__parser.add_argument("-w", "--width", help="Video width.", type=int, required=True)
         self.__parser.add_argument("-h", "--height", help="Video height.", type=int, required=True)
         self.__parser.add_argument("-f", "--fps", help="Video FPS.", type=int, required=True)
