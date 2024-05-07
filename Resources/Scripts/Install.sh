@@ -80,7 +80,7 @@ SetupScheduledJob() {
 # Install Python client project
 InstallClientPython() {
   InstallPackages python3
-  InstallPythonPackages "pip,pip" "venv,venv" "numpy,numpy" "cv2,opencv" "picamera2,picamera2"
+  InstallPythonPackages "pip,pip" "venv,venv" "numpy,numpy" "cv2,opencv" "flask,flask" "waitress,waitress" "picamera2,picamera2"
   CreateClientPythonService "devices-client-python"
   StopService "devices-client-python"
   InstallClient "$1"
@@ -114,7 +114,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/root/Devices.Client.Solutions.Python
-ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -w 800 -h 600 -f 30 -p 8443
+ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -s Picamera2 -w 1920 -h 1080 -f 30 -p 8443 --displayDateTime --displayFPS
 Restart=always
 RestartSec=10
 TimeoutStopSec=90

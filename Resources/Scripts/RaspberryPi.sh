@@ -26,10 +26,16 @@ InstallPackages() {
 # Download image
 DownloadImage() {
   echo "Image download started."
-  wget -q -O raspios.img.xz https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64-lite.img.xz
+  # Raspberry Pi OS with desktop
+  wget -q -O raspios.img.xz https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed (wget)."
-  sha256sum raspios.img.xz | grep -iq "58A3EC57402C86332E67789A6B8F149AEEB4E7BB0A16C9388A66EA6E07012E45"
+  sha256sum raspios.img.xz | grep -iq "7E53A46AAB92051D523D7283C080532BEBB52CE86758629BF1951BE9B4B0560F"
   [ $? != 0 ] && DisplayErrorAndStop "Image download failed (grep)."
+  # # Raspberry Pi OS Lite
+  # wget -q -O raspios.img.xz https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64-lite.img.xz
+  # [ $? != 0 ] && DisplayErrorAndStop "Image download failed (wget)."
+  # sha256sum raspios.img.xz | grep -iq "58A3EC57402C86332E67789A6B8F149AEEB4E7BB0A16C9388A66EA6E07012E45"
+  # [ $? != 0 ] && DisplayErrorAndStop "Image download failed (grep)."
   echo "Image download completed."
 }
 
