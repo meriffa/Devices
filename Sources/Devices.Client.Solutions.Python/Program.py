@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from ApplicationArguments import ApplicationArguments
-from Camera import Camera
 from CameraDateTime import CameraDateTime
 from CameraFPS import CameraFPS
 from ObjectDetection import ObjectDetection
@@ -18,10 +17,15 @@ def Initialize():
     logging.config.fileConfig(f"{__file__[:-3]}.conf")
     configuration = configparser.ConfigParser()
     configuration.read(f"{__file__[:-3]}.ini")
-    camera = Camera(arguments.source, arguments.width, arguments.height, arguments.fps)
+    if arguments.source == "Picamera2":
+        import CameraPicamera2
+        camera = CameraPicamera2.CameraPicamera2(arguments.width, arguments.height, arguments.fps)
+    else:
+        import CameraOpenCV
+        camera = CameraOpenCV.CameraOpenCV(arguments.source, arguments.width, arguments.height, arguments.fps)
     cameraDateTime = CameraDateTime(arguments.displayDateTime)
     cameraFPS = CameraFPS(arguments.displayFPS)
-    objectDetection = ObjectDetection()
+    objectDetection = ObjectDetection(arguments.objectDetection)
     videoStreamer = VideoStreamer(arguments.port)
     return camera, cameraDateTime, cameraFPS, objectDetection, videoStreamer, arguments.displayPreview
 

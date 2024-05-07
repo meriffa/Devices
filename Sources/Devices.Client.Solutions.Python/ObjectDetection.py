@@ -10,11 +10,13 @@ import urllib.request
 class ObjectDetection:
 
     # Initialization
-    def __init__(self):
-        self.__COLOR = (0, 0, 255)
-        path = self.DownloadResources()
-        self.__classNames = self.LoadClassNames(path)
-        self.__model = self.LoadModel(path)
+    def __init__(self, enabled):
+        self.__enabled = enabled
+        if self.__enabled:
+            self.__COLOR = (0, 0, 255)
+            path = self.DownloadResources()
+            self.__classNames = self.LoadClassNames(path)
+            self.__model = self.LoadModel(path)
 
     # Download resources
     def DownloadResources(self):
@@ -48,21 +50,22 @@ class ObjectDetection:
         return model
 
     # Run object detection model
-    def Run(self, image):
+    def GetObjects(self, image):
         blob = cv2.dnn.blobFromImage(image=image, size=(300, 300), mean=(104, 117, 123), swapRB=True)
         self.__model.setInput(blob)
         return self.__model.forward()
 
     # Display object detections
     def Display(self, image):
-        detections = self.Run(image)
-        image_height, image_width, _ = image.shape
-        for detection in detections[0, 0, :, :]:
-            if detection[2] > 0.3:
-                class_name = f"{self.__classNames[int(detection[1]) - 1]} ({round(detection[2]*100, 1)}%)"
-                x = detection[3] * image_width
-                y = detection[4] * image_height
-                width = detection[5] * image_width
-                height = detection[6] * image_height
-                cv2.rectangle(image, (int(x), int(y)), (int(width), int(height)), self.__COLOR, thickness=1)
-                cv2.putText(image, class_name, (int(x), int(y - 5)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=self.__COLOR, thickness=1)
+        if self.__enabled:
+            detections = self.GetObjects(image)
+            image_height, image_width, _ = image.shape
+            for detection in detections[0, 0, :, :]:
+                if detection[2] > 0.3:
+                    class_name = f"{self.__classNames[int(detection[1]) - 1]} ({round(detection[2]*100, 1)}%)"
+                    x = detection[3] * image_width
+                    y = detection[4] * image_height
+                    width = detection[5] * image_width
+                    height = detection[6] * image_height
+                    cv2.rectangle(image, (int(x), int(y)), (int(width), int(height)), self.__COLOR, thickness=1)
+                    cv2.putText(image, class_name, (int(x), int(y - 5)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=self.__COLOR, thickness=1)

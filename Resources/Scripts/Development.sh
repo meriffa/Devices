@@ -164,7 +164,7 @@ DeployClient() {
 
 # Setup python
 SetupPython() {
-  sudo pip3 install flask waitress
+  sudo apt-get install python3-opencv python3-flask python3-waitress python3-picamera2 -y
   python3 -m venv ~/Python/.venv
   source ~/Python/.venv/bin/activate
   source ~/Python/.venv/bin/deactivate
