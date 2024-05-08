@@ -38,7 +38,7 @@ class VideoStreamer:
 
     # Start video streamer thread
     def StartApplication(self):
-        waitress.serve(self.__app, host="0.0.0.0", port=self.__port, ident=None)
+        waitress.serve(self.__app, host="0.0.0.0", port=self.__port, ident=None, url_scheme="https")
 
     # Display video frame
     def Display(self, frame):

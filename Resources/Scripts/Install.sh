@@ -114,7 +114,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/root/Devices.Client.Solutions.Python
-ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -s Picamera2 -w 1920 -h 1080 -f 30 -p 8443 --displayDateTime --displayFPS
+ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -s Picamera2 -w 1280 -h 720 -f 30 -p 5000 --displayDateTime --displayFPS
 Restart=always
 RestartSec=10
 TimeoutStopSec=90

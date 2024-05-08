@@ -166,6 +166,94 @@ DownloadClient() {
   echo "'Devices.Client' download completed."
 }
 
+# Deploy Nginx
+DeployNginx() {
+  InstallNginx
+  ConfigureNginx
+}
+
+# Install Nginx
+InstallNginx() {
+  echo "Nginx installation started."
+  ssh HOST_SBC -t "DEBIAN_FRONTEND=noninteractive sudo apt-get install nginx -y -qq"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx installation failed."
+  echo "Nginx installation completed."
+}
+
+# Configure Nginx
+ConfigureNginx() {
+  echo "Nginx configuration started."
+  # SSL Configuration
+  ssh HOST_SBC "sudo mkdir -p /etc/nginx/ssl/Devices.Host/"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  scp -q "$SOLUTION_FOLDER/Resources/Certificates/Devices.Host.pem" HOST_SBC:~
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo mv ~/Devices.Host.pem /etc/nginx/ssl/Devices.Host/"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  scp -q "$SOLUTION_FOLDER/Resources/Certificates/Devices.Host.key" HOST_SBC:~
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo mv ~/Devices.Host.key /etc/nginx/ssl/Devices.Host/"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo chown -R root:root /etc/nginx/ssl"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo chmod 400 /etc/nginx/ssl/Devices.Host/Devices.Host.key"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  # Add Server Block
+  ssh HOST_SBC "sudo tee /etc/nginx/sites-available/Devices.Host 1> /dev/null << END
+server {
+        listen 80;
+        listen [::]:80;
+        server_name Devices.Host.HTTP;
+        return 301 https://\\\$host:8443\\\$request_uri;
+}
+server {
+        listen 8443 ssl;
+        listen [::]:8443 ssl;
+        ssl_certificate /etc/nginx/ssl/Devices.Host/Devices.Host.pem;
+        ssl_certificate_key /etc/nginx/ssl/Devices.Host/Devices.Host.key;
+        server_name Devices.Host.HTTPS;
+        location / {
+                proxy_pass         http://localhost:5000;
+                proxy_redirect     off;
+                proxy_http_version 1.1;
+                proxy_set_header   Connection keep-alive;
+                proxy_set_header   Host \\\$host;
+                proxy_set_header   X-Real-IP \\\$remote_addr;
+                proxy_set_header   X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+                proxy_set_header   X-Forwarded-Proto \\\$scheme;
+                proxy_set_header   X-Forwarded-Host \\\$host:\\\$server_port;
+                proxy_set_header   X-Forwarded-Port \\\$server_port;
+                proxy_cache_bypass \\\$http_upgrade;
+                proxy_read_timeout 3600;
+        }
+}
+END"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo chown -R root:root /etc/nginx/sites-available"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo ln -s /etc/nginx/sites-available/Devices.Host /etc/nginx/sites-enabled/"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  # Remove Server Block
+  ssh HOST_SBC "sudo unlink /etc/nginx/sites-enabled/default"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo rm -f /etc/nginx/sites-available/default"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo rm -rf /var/www/html"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  # Server Configuration
+  ssh HOST_SBC "sudo sed -i 's/# server_tokens off;/server_tokens off;/g' /etc/nginx/nginx.conf"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo sed -i 's/# gzip_types text/gzip_types text/g' /etc/nginx/nginx.conf"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo nginx -t" &> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo systemctl restart nginx"
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
+  ssh HOST_SBC "sudo systemctl status nginx --no-pager --no-legend --lines 0 | grep -i \"Active: active (running)\"" &> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "Nginx verification failed."
+  echo "Nginx configuration completed."
+}
+
 # Configuration
 Configuration() {
   # Detect I2C devices
@@ -190,5 +278,6 @@ case $OPERATION in
   SetupFirewall) SetupFirewall ;;
   InstallNETRuntime) InstallNETRuntime ;;
   DownloadClient) DownloadClient "$2" $3 ;;
+  DeployNginx) DeployNginx ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac
