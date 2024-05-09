@@ -2,8 +2,12 @@
 @{
     ViewData["Title"] = "Garden Camera";
 }
-<div class="row">
-    <div class="col text-center">
-        <img class="img-fluid" src="https://HOST_SBC:8443/video" />
+<div class="row justify-content-center h-100">
+    <div class="col">
+        <div class="h-100 d-flex flex-column">
+            <div class="row justify-content-center flex-grow-1">
+                <iframe src="https://HOST_SBC:8443/camera" scrolling="no"></iframe>
+            </div>
+        </div>
     </div>
 </div>
