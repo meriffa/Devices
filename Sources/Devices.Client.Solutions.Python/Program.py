@@ -17,7 +17,7 @@ def Initialize():
     logging.config.fileConfig(f"{__file__[:-3]}.conf")
     configuration = configparser.ConfigParser()
     configuration.read(f"{__file__[:-3]}.ini")
-    if arguments.source == "Picamera2":
+    if arguments.source == "PiCSI":
         import CameraPicamera2
         camera = CameraPicamera2.CameraPicamera2(arguments.width, arguments.height, arguments.fps)
     else:

@@ -9,7 +9,7 @@ class CameraOpenCV:
 
     # Initialization
     def __init__(self, source, width, height, fps):
-        if source == "USB":
+        if source == "PiUSB":
             self.__pipeline = 0
             self.__width = width
             self.__height = height
