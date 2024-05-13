@@ -55,8 +55,10 @@ SetupScheduledJobs() {
   case $1 in
     "Devices.Client")
       SetupScheduledJob $1 "Devices.Client.dll" "*/5 * * * * cd /root/Devices.Client && /usr/bin/dotnet Devices.Client.dll execute --tasks Monitoring,Configuration >> /var/log/Devices.Client.log 2>&1" ;;
-    "Devices.Client.Solutions.Weather")
-      SetupScheduledJob $1 "Devices.Client.Solutions.dll Weather" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Weather >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
+    "Devices.Client.Solutions.Weather-B1")
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll Weather" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Weather -b 1 >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
+    "Devices.Client.Solutions.Weather-B7")
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll Weather" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Weather -b 7 >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
     "Devices.Client.Solutions.Watering")
       SetupScheduledJob $1 "Devices.Client.Solutions.dll Watering" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Watering >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
   esac
