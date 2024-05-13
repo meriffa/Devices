@@ -13,6 +13,14 @@ namespace Devices.Client.Solutions.Controllers.Garden;
 public class WeatherController : Controller
 {
 
+    #region Properties
+    /// <summary>
+    /// I2C bus id
+    /// </summary>
+    [Option('b', "busId", Required = true, HelpText = "I2C bus id.")]
+    public int BusId { get; set; }
+    #endregion
+
     #region Public Methods
     /// <summary>
     /// Execute controller
@@ -35,16 +43,16 @@ public class WeatherController : Controller
     /// Return current weather condition
     /// </summary>
     /// <returns></returns>
-    private static WeatherCondition GetWeatherCondition()
+    private WeatherCondition GetWeatherCondition()
     {
-        using var temperatureDevice = I2cDevice.Create(new(busId: 1, Bmx280Base.SecondaryI2cAddress));
+        using var temperatureDevice = I2cDevice.Create(new(busId: BusId, Bmx280Base.SecondaryI2cAddress));
         using var temperatureSensor = new Bme280(temperatureDevice)
         {
             TemperatureSampling = Sampling.UltraHighResolution,
             HumiditySampling = Sampling.UltraHighResolution,
             PressureSampling = Sampling.UltraHighResolution
         };
-        using var illuminanceDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, Max44009.DefaultI2cAddress));
+        using var illuminanceDevice = I2cDevice.Create(new I2cConnectionSettings(busId: BusId, Max44009.DefaultI2cAddress));
         using var illuminanceSensor = new Max44009(illuminanceDevice, IntegrationTime.Time100);
         var temperatureSensorData = temperatureSensor.Read();
         return new()
