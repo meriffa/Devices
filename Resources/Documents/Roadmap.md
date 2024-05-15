@@ -4,7 +4,7 @@
 
 - Real-Time Communication: Provide Alternative Management Protocol (SignalR, WebRTC), Configuration, Monitoring
 - Live Video: Streaming, Streaming Security, Image Processing, Dedicated Media Server
-- Image Processing: OpenCV DNN (Caffe, TensorFlow, PyTorch, Darknet, ONNX), Model Fine Tuning, Track Object Marker Movement
+- Image Processing: OpenCV Deep Learning / OpenCV DNN (Caffe, TensorFlow, PyTorch, Darknet, ONNX), Model Fine Tuning, Track Object Marker Movement
 - Provide additional ML/AI support ([TensorFlow Hub](https://tfhub.dev/) / [Kaggle Models](https://www.kaggle.com/models), [PyTorch Hub](https://pytorch.org/hub/), [Hugging Face Models](https://huggingface.co/docs/transformers/), Hugging Face Transformers, [ONNX Runtime](https://onnxruntime.ai/)).
 - Implement specialized device policies & roles (Weather Device, Camera Device).
 - Improve connectivity resiliency. Save data locally on connection error & resend on successful subsequent transmission. Apply to weather data & camera notifications.
