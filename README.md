@@ -40,3 +40,5 @@ Solution consists of the following components:
 - [Device Operations](Resources/Documents/Operations.md)
 - [Reference Solutions](Resources/Documents/Solutions.md)
 - [Platforms](Resources/Documents/Platforms.md)
+- [Release History](Resources/Documents/Releases.md#release-history)
+- [Roadmap](Resources/Documents/Roadmap.md#capability-roadmap)
