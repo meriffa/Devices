@@ -224,14 +224,9 @@ ConfigureNginx() {
   [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
   ssh HOST_AWS "sudo tee /etc/nginx/sites-available/Devices.Host 1> /dev/null << END
 server {
-        listen 80 default_server;
-        listen [::]:80 default_server deferred;
-        return 444;
-}
-server {
         listen 80;
         listen [::]:80;
-        server_name <HostPlaceholder>;
+        server_name Devices.Host.HTTP;
         return 301 https://\\\$host\\\$request_uri;
 }
 server {
@@ -239,7 +234,7 @@ server {
         listen [::]:443 ssl;
         ssl_certificate /etc/nginx/ssl/Devices.Host/Devices.Host.pem;
         ssl_certificate_key /etc/nginx/ssl/Devices.Host/Devices.Host.key;
-        server_name <HostPlaceholder>;
+        server_name Devices.Host.HTTPS;
         location / {
                 proxy_pass         http://localhost:5000;
                 proxy_http_version 1.1;
