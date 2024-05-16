@@ -22,7 +22,7 @@ def Initialize():
         camera = CameraPicamera2.CameraPicamera2(arguments.width, arguments.height, arguments.fps)
     else:
         import CameraOpenCV
-        camera = CameraOpenCV.CameraOpenCV(arguments.source, arguments.width, arguments.height, arguments.fps)
+        camera = CameraOpenCV.CameraOpenCV(arguments.source, arguments.width, arguments.height, arguments.fps, arguments.focus)
     cameraDateTime = CameraDateTime(arguments.displayDateTime)
     cameraFPS = CameraFPS(arguments.displayFPS)
     objectDetection = ObjectDetection(arguments.objectDetection)

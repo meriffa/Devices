@@ -8,12 +8,13 @@ import logging
 class CameraOpenCV:
 
     # Initialization
-    def __init__(self, source, width, height, fps):
-        if source == "PiUSB":
+    def __init__(self, source, width, height, fps, focus):
+        if source == "PiUSB" or source == "JetsonUVC":
             self.__pipeline = 0
             self.__width = width
             self.__height = height
             self.__fps = fps
+            self.__focus = focus
         elif source == "JetsonUSB":
             self.__pipeline = f"v4l2src device=/dev/video0 ! image/jpeg, width={width}, height={height}, framerate={fps}/1, format=MJPG ! nvv4l2decoder mjpeg=1 enable-max-performance=1 ! nvvidconv flip-method=4 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink sync=false"
         elif source == "JetsonCSI":
@@ -31,6 +32,8 @@ class CameraOpenCV:
             self.__videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, self.__width)
             self.__videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.__height)
             self.__videoCapture.set(cv2.CAP_PROP_FPS, self.__fps)
+            if self.__focus is not None:
+                self.__videoCapture.set(cv2.CAP_PROP_FOCUS, self.__focus)
         if not self.__videoCapture.isOpened():
             raise Exception("Camera start failed.")
         logging.info("Camera started.")
