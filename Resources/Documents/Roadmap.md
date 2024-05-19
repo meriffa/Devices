@@ -17,7 +17,8 @@
 - Provide additional programming language support (C/C++, Java).
 - Provide additional connectivity support (Bluetooth, BLE, Zigbee).
 
-### Garden Management System
+### Reference Solutions
 
+- Intrusion Detection System: Entrance Sensors, Visual Notification, Video
 - Watering System 2.0: Water Level Sensor, Reverse Pumps, Relay & Terminal Strip Block Housing (3D Print)
 - Implement direct device control (buttons, LCD display).
