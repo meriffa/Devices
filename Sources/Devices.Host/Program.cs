@@ -60,7 +60,10 @@ public class Program
             options.AuthorizeAreas();
             options.AuthorizeAreasSolutions();
         });
-        services.AddSignalR();
+        services.AddSignalR(options =>
+        {
+            options.DisableImplicitFromServicesParameters = true;
+        });
     }
 
     /// <summary>

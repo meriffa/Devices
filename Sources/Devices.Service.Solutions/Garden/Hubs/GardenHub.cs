@@ -1,3 +1,7 @@
+using Devices.Service.Solutions.Garden.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Devices.Service.Solutions.Garden.Hubs;
@@ -5,7 +9,8 @@ namespace Devices.Service.Solutions.Garden.Hubs;
 /// <summary>
 /// Garden hub
 /// </summary>
-public class GardenHub : Hub
+[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme}, {CookieAuthenticationDefaults.AuthenticationScheme}")]
+public class GardenHub : Hub<IGardenHub>
 {
 
     #region Public Methods
@@ -16,9 +21,10 @@ public class GardenHub : Hub
     /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <returns></returns>
+    [Authorize(Policy = "GardenPolicy")]
     public async Task SendPumpRequest(int deviceId, int pumpIndex, bool pumpState)
     {
-        await Clients.All.SendAsync("PumpRequest", deviceId, pumpIndex, pumpState);
+        await Clients.All.PumpRequest(deviceId, pumpIndex, pumpState);
     }
 
     /// <summary>
@@ -29,27 +35,30 @@ public class GardenHub : Hub
     /// <param name="pumpState"></param>
     /// <param name="error"></param>
     /// <returns></returns>
+    [Authorize(Policy = "DevicePolicy")]
     public async Task SendPumpResponse(int deviceId, int pumpIndex, bool pumpState, string? error)
     {
-        await Clients.All.SendAsync("PumpResponse", deviceId, pumpIndex, pumpState, error);
+        await Clients.All.PumpResponse(deviceId, pumpIndex, pumpState, error);
     }
 
     /// <summary>
     /// Send presence confirmation request
     /// </summary>
     /// <returns></returns>
+    [Authorize(Policy = "DevicePolicy")]
     public async Task SendPresenceConfirmationRequest()
     {
-        await Clients.All.SendAsync("PresenceConfirmationRequest");
+        await Clients.All.PresenceConfirmationRequest();
     }
 
     /// <summary>
     /// Send presence confirmation response
     /// </summary>
     /// <returns></returns>
+    [Authorize(Policy = "GardenPolicy")]
     public async Task SendPresenceConfirmationResponse()
     {
-        await Clients.All.SendAsync("PresenceConfirmationResponse");
+        await Clients.All.PresenceConfirmationResponse();
     }
 
     /// <summary>
@@ -57,9 +66,10 @@ public class GardenHub : Hub
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
+    [Authorize(Policy = "GardenPolicy")]
     public async Task SendShutdownRequest(int deviceId)
     {
-        await Clients.All.SendAsync("ShutdownRequest", deviceId);
+        await Clients.All.ShutdownRequest(deviceId);
     }
 
     /// <summary>
@@ -67,9 +77,10 @@ public class GardenHub : Hub
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
+    [Authorize(Policy = "DevicePolicy")]
     public async Task SendShutdownResponse(int deviceId)
     {
-        await Clients.All.SendAsync("ShutdownResponse", deviceId);
+        await Clients.All.ShutdownResponse(deviceId);
     }
     #endregion
 

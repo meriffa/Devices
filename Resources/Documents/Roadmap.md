@@ -2,6 +2,9 @@
 
 ### Framework
 
+- Implement SignalR Redis Backplane.
+- Implement Redis Cache for web application.
+- Build Release Management REST API & web pages.
 - Real-Time Communication: Provide Alternative Management Protocol (SignalR, WebRTC), Configuration, Monitoring
 - Live Video: Streaming, Streaming Security, Image Processing, Dedicated Media Server
 - Image Processing: OpenCV Deep Learning / OpenCV DNN (Caffe, TensorFlow, PyTorch, Darknet, ONNX), Model Fine Tuning, Track Object Marker Movement

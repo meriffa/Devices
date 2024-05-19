@@ -1,4 +1,5 @@
 using Devices.Client.Solutions.Garden.Interfaces;
+using Devices.Common.Interfaces.Identification;
 using Devices.Common.Options;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -11,12 +12,12 @@ namespace Devices.Client.Solutions.Garden.Hubs;
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="options"></param>
-public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> options) : IGardenHub
+public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> options, IIdentityService identityService) : IGardenHub
 {
 
     #region Private Fields
     private readonly ILogger<GardenHub> logger = logger;
-    private readonly HubConnection connection = GetHubConnection(logger, options.Value);
+    private readonly HubConnection connection = GetHubConnection(logger, options.Value, identityService);
     #endregion
 
     #region Public Methods
@@ -48,18 +49,18 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <param name="action"></param>
     public void HandlePumpRequest(Action<int, int, bool> action)
     {
-        connection.On<int, int, bool>("PumpRequest", (deviceId, pumpIndex, pumpState) =>
+        connection.On<int, int, bool>("PumpRequest", async (deviceId, pumpIndex, pumpState) =>
         {
             try
             {
                 logger.LogInformation("PumpRequest: Device ID = {deviceId}, Pump Index = {pumpIndex}, Pump State = {pumpState}.", deviceId, pumpIndex, pumpState);
                 action(deviceId, pumpIndex, pumpState);
-                connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, null);
+                await connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, null);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "{Error}", ex.Message);
-                connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, ex.Message);
+                await connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, ex.Message);
             }
         });
     }
@@ -69,14 +70,17 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// </summary>
     public void SendPresenceConfirmationRequest()
     {
-        try
+        Task.Run(async () =>
         {
-            Task.Run(async () => await connection.InvokeAsync("SendPresenceConfirmationRequest"));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "{Error}", ex.Message);
-        }
+            try
+            {
+                await connection.InvokeAsync("SendPresenceConfirmationRequest");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Error}", ex.Message);
+            }
+        }).Wait();
     }
 
     /// <summary>
@@ -124,15 +128,17 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <param name="deviceId"></param>
     public void SendShutdownResponse(int deviceId)
     {
-        try
+        Task.Run(async () =>
         {
-            Task.Run(async () => await connection.InvokeAsync("SendShutdownResponse", deviceId));
-            Thread.Sleep(TimeSpan.FromSeconds(1));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "{Error}", ex.Message);
-        }
+            try
+            {
+                await connection.InvokeAsync("SendShutdownResponse", deviceId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Error}", ex.Message);
+            }
+        }).Wait();
     }
     #endregion
 
@@ -143,7 +149,7 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <param name="logger"></param>
     /// <param name="clientOptions"></param>
     /// <returns></returns>
-    private static HubConnection GetHubConnection(ILogger<GardenHub> logger, ClientOptions clientOptions)
+    private static HubConnection GetHubConnection(ILogger<GardenHub> logger, ClientOptions clientOptions, IIdentityService identityService)
     {
         var connection = new HubConnectionBuilder()
             .WithUrl($"{clientOptions.Service.Host}/Hub/Solutions/Garden", (connectionOptions) =>
@@ -154,6 +160,7 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
                         clientHandler.ServerCertificateCustomValidationCallback += (sender, certificate, chain, sslPolicyErrors) => { return true; };
                     return message;
                 };
+                connectionOptions.AccessTokenProvider = () => Task.FromResult((string?)identityService.GetDeviceBearerToken());
             }).WithAutomaticReconnect().Build();
         connection.Reconnected += connectionId =>
         {

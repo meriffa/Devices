@@ -45,7 +45,8 @@ public static class ServicesExtensions
     {
         services.AddDataProtection()
             .PersistKeysToFileSystem(new(serviceOptions.DataProtectionFolder));
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromDays(90);
@@ -57,8 +58,7 @@ public static class ServicesExtensions
             })
             .AddJwtBearer(options =>
             {
-                options.Events = new JwtBearerEvents();
-                options.Events.OnTokenValidated += Services.Security.DeviceTokenValidationService.OnTokenValidated;
+                options.Events = new JwtBearerEvents() { OnTokenValidated = Services.Security.DeviceTokenValidationService.OnTokenValidated };
                 options.SaveToken = false;
                 options.TokenValidationParameters = new()
                 {
@@ -70,14 +70,10 @@ public static class ServicesExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serviceOptions.JwtBearer.SigningKey)),
                     ValidateIssuerSigningKey = true
                 };
-            })
-            .AddScheme<DeviceAuthenticationOptions, Services.Security.DeviceAuthenticationService>(Services.Security.DeviceAuthenticationService.AuthenticationScheme, options => { });
+            });
         var builder = services.AddAuthorizationBuilder()
             .SetDefaultPolicy(new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    JwtBearerDefaults.AuthenticationScheme,
-                    Services.Security.DeviceAuthenticationService.AuthenticationScheme)
+                .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build());
         return builder;
@@ -100,8 +96,6 @@ public static class ServicesExtensions
             .AddPolicy("DevicePolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                if (serviceOptions.EnableLegacyDeviceAuthentication)
-                    policy.AuthenticationSchemes.Add(Services.Security.DeviceAuthenticationService.AuthenticationScheme);
                 policy.RequireClaim(ClaimTypes.Role, ["Device"]);
             })
             .AddPolicy("WebPolicy", policy =>
