@@ -1,7 +1,9 @@
+using Devices.Service.Interfaces.Identification;
 using Devices.Service.Solutions.Garden.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Devices.Service.Solutions.Garden.Hubs;
@@ -17,70 +19,74 @@ public class GardenHub : Hub<IGardenHub>
     /// <summary>
     /// Send pump request
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="recipient"></param>
     /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
+    /// <param name="identityService"></param>
     /// <returns></returns>
     [Authorize(Policy = "GardenPolicy")]
-    public async Task SendPumpRequest(int deviceId, int pumpIndex, bool pumpState)
+    public async Task SendPumpRequest(string recipient, int pumpIndex, bool pumpState, [FromServices] IIdentityService identityService)
     {
-        await Clients.All.PumpRequest(deviceId, pumpIndex, pumpState);
+        await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).PumpRequest(Context.UserIdentifier!, pumpIndex, pumpState);
     }
 
     /// <summary>
     /// Send pump response
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="recipient"></param>
     /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <param name="error"></param>
     /// <returns></returns>
     [Authorize(Policy = "DevicePolicy")]
-    public async Task SendPumpResponse(int deviceId, int pumpIndex, bool pumpState, string? error)
+    public async Task SendPumpResponse(string recipient, int pumpIndex, bool pumpState, string? error)
     {
-        await Clients.All.PumpResponse(deviceId, pumpIndex, pumpState, error);
+        await Clients.User(recipient).PumpResponse(pumpIndex, pumpState, error);
     }
 
     /// <summary>
     /// Send presence confirmation request
     /// </summary>
+    /// <param name="recipient"></param>
     /// <returns></returns>
     [Authorize(Policy = "DevicePolicy")]
-    public async Task SendPresenceConfirmationRequest()
+    public async Task SendPresenceConfirmationRequest(string recipient)
     {
-        await Clients.All.PresenceConfirmationRequest();
+        await Clients.User(recipient).PresenceConfirmationRequest(Context.UserIdentifier!);
     }
 
     /// <summary>
     /// Send presence confirmation response
     /// </summary>
+    /// <param name="recipient"></param>
     /// <returns></returns>
     [Authorize(Policy = "GardenPolicy")]
-    public async Task SendPresenceConfirmationResponse()
+    public async Task SendPresenceConfirmationResponse(string recipient)
     {
-        await Clients.All.PresenceConfirmationResponse();
+        await Clients.User(recipient).PresenceConfirmationResponse();
     }
 
     /// <summary>
     /// Send shutdown request
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="recipient"></param>
+    /// <param name="identityService"></param>
     /// <returns></returns>
     [Authorize(Policy = "GardenPolicy")]
-    public async Task SendShutdownRequest(int deviceId)
+    public async Task SendShutdownRequest(string recipient, [FromServices] IIdentityService identityService)
     {
-        await Clients.All.ShutdownRequest(deviceId);
+        await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).ShutdownRequest(Context.UserIdentifier!);
     }
 
     /// <summary>
     /// Send shutdown response
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="recipient"></param>
     /// <returns></returns>
     [Authorize(Policy = "DevicePolicy")]
-    public async Task SendShutdownResponse(int deviceId)
+    public async Task SendShutdownResponse(string recipient)
     {
-        await Clients.All.ShutdownResponse(deviceId);
+        await Clients.User(recipient).ShutdownResponse();
     }
     #endregion
 

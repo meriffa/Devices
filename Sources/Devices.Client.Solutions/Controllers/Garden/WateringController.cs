@@ -19,7 +19,7 @@ public class WateringController : Controller
     private static readonly object watchdogTimerSync = new();
     private readonly System.Timers.Timer watchdogTimer = new(TimeSpan.FromSeconds(10));
     private bool presenceRequested;
-    private int deviceId = 0;
+    private string sender = string.Empty;
     #endregion
 
     #region Public Methods
@@ -38,7 +38,7 @@ public class WateringController : Controller
                 shutdownRequest.WaitOne();
             ClearOutputs(controller);
             watchdogTimer.Stop();
-            GardenHub.SendShutdownResponse(deviceId);
+            GardenHub.SendShutdownResponse(sender);
             GardenHub.Stop();
             DisplayService.WriteInformation("Watering task completed.");
         }
@@ -79,8 +79,9 @@ public class WateringController : Controller
     {
         try
         {
-            GardenHub.HandlePumpRequest((deviceId, pumpIndex, pumpState) =>
+            GardenHub.HandlePumpRequest((sender, pumpIndex, pumpState) =>
             {
+                this.sender = sender;
                 controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
                 pumpStates[pumpIndex] = pumpState;
             });
@@ -88,9 +89,9 @@ public class WateringController : Controller
             {
                 presenceRequested = false;
             });
-            GardenHub.HandleShutdownRequest((deviceId) =>
+            GardenHub.HandleShutdownRequest((sender) =>
             {
-                this.deviceId = deviceId;
+                this.sender = sender;
                 shutdownRequest.Set();
             });
             return await GardenHub.Start();
@@ -124,7 +125,7 @@ public class WateringController : Controller
             if (pumpStates.Contains(true))
                 if (!presenceRequested)
                 {
-                    GardenHub.SendPresenceConfirmationRequest();
+                    GardenHub.SendPresenceConfirmationRequest(this.sender);
                     presenceRequested = true;
                 }
                 else

@@ -47,20 +47,20 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// Handle pump request
     /// </summary>
     /// <param name="action"></param>
-    public void HandlePumpRequest(Action<int, int, bool> action)
+    public void HandlePumpRequest(Action<string, int, bool> action)
     {
-        connection.On<int, int, bool>("PumpRequest", async (deviceId, pumpIndex, pumpState) =>
+        connection.On<string, int, bool>("PumpRequest", async (sender, pumpIndex, pumpState) =>
         {
             try
             {
-                logger.LogInformation("PumpRequest: Device ID = {deviceId}, Pump Index = {pumpIndex}, Pump State = {pumpState}.", deviceId, pumpIndex, pumpState);
-                action(deviceId, pumpIndex, pumpState);
-                await connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, null);
+                logger.LogInformation("Pump request received (Sender = {sender}, Pump Index = {pumpIndex}, Pump State = {pumpState}).", sender, pumpIndex, pumpState);
+                action(sender, pumpIndex, pumpState);
+                await connection.InvokeAsync("SendPumpResponse", sender, pumpIndex, pumpState, null);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "{Error}", ex.Message);
-                await connection.InvokeAsync("SendPumpResponse", deviceId, pumpIndex, pumpState, ex.Message);
+                await connection.InvokeAsync("SendPumpResponse", sender, pumpIndex, pumpState, ex.Message);
             }
         });
     }
@@ -68,13 +68,14 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <summary>
     /// Send presence confirmation request
     /// </summary>
-    public void SendPresenceConfirmationRequest()
+    /// <param name="userId"></param>
+    public void SendPresenceConfirmationRequest(string userId)
     {
         Task.Run(async () =>
         {
             try
             {
-                await connection.InvokeAsync("SendPresenceConfirmationRequest");
+                await connection.InvokeAsync("SendPresenceConfirmationRequest", userId);
             }
             catch (Exception ex)
             {
@@ -106,14 +107,14 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// Handle shutdown request
     /// </summary>
     /// <param name="action"></param>
-    public void HandleShutdownRequest(Action<int> action)
+    public void HandleShutdownRequest(Action<string> action)
     {
-        connection.On<int>("ShutdownRequest", (deviceId) =>
+        connection.On<string>("ShutdownRequest", (sender) =>
         {
             try
             {
-                logger.LogInformation("ShutdownRequest: Device ID = {deviceId}.", deviceId);
-                action(deviceId);
+                logger.LogInformation("Shutdown request received (Sender = {sender}).", sender);
+                action(sender);
             }
             catch (Exception ex)
             {
@@ -125,14 +126,14 @@ public class GardenHub(ILogger<GardenHub> logger, IOptions<ClientOptions> option
     /// <summary>
     /// Send shutdown response
     /// </summary>
-    /// <param name="deviceId"></param>
-    public void SendShutdownResponse(int deviceId)
+    /// <param name="sender"></param>
+    public void SendShutdownResponse(string sender)
     {
         Task.Run(async () =>
         {
             try
             {
-                await connection.InvokeAsync("SendShutdownResponse", deviceId);
+                await connection.InvokeAsync("SendShutdownResponse", sender);
             }
             catch (Exception ex)
             {

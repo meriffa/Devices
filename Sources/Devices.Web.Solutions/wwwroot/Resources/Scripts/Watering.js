@@ -61,10 +61,9 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     // Send pump request
     function sendPumpRequest() {
         element = $(this)
-        var deviceId = parseInt($("#cmbDevice").val());
         var pumpIndex = element.data("pump");
         var pumpState = element.prop("checked");
-        namespace.connection.invoke("SendPumpRequest", deviceId, pumpIndex, pumpState).then(function () {
+        namespace.connection.invoke("SendPumpRequest", $("#cmbDevice").val(), pumpIndex, pumpState).then(function () {
             logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} requested.`);
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
@@ -73,7 +72,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     }
 
     // Handle pump response
-    function handlePumpResponse(deviceId, pumpIndex, pumpState, error) {
+    function handlePumpResponse(pumpIndex, pumpState, error) {
         if (error == null) {
             logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed.`);
             if (pumpState)
@@ -86,8 +85,8 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     }
 
     // Handle presence confirmation request
-    function handlePresenceConfirmationRequest() {
-        namespace.connection.invoke("SendPresenceConfirmationResponse").then(function () {
+    function handlePresenceConfirmationRequest(deviceId) {
+        namespace.connection.invoke("SendPresenceConfirmationResponse", deviceId).then(function () {
             logMessage("Watering in progress ...");
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
@@ -96,7 +95,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Send shutdown response
     function sendShutdownRequest() {
-        namespace.connection.invoke("SendShutdownRequest", parseInt($("#cmbDevice").val())).then(function () {
+        namespace.connection.invoke("SendShutdownRequest", $("#cmbDevice").val()).then(function () {
             logMessage("Controller shutdown requested.");
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
@@ -104,7 +103,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     }
 
     // Handle shutdown response
-    function handleShutdownResponse(deviceId) {
+    function handleShutdownResponse() {
         logMessage("Controller shutdown completed.");
     }
 

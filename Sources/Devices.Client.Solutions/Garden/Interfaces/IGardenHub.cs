@@ -23,12 +23,13 @@ public interface IGardenHub
     /// Handle pump request
     /// </summary>
     /// <param name="action"></param>
-    void HandlePumpRequest(Action<int, int, bool> action);
+    void HandlePumpRequest(Action<string, int, bool> action);
 
     /// <summary>
     /// Send presence confirmation request
     /// </summary>
-    void SendPresenceConfirmationRequest();
+    /// <param name="sender"></param>
+    void SendPresenceConfirmationRequest(string sender);
 
     /// <summary>
     /// Handle presence confirmation response
@@ -40,13 +41,13 @@ public interface IGardenHub
     /// Handle shutdown request
     /// </summary>
     /// <param name="action"></param>
-    void HandleShutdownRequest(Action<int> action);
+    void HandleShutdownRequest(Action<string> action);
 
     /// <summary>
     /// Send shutdown response
     /// </summary>
-    /// <param name="deviceId"></param>
-    void SendShutdownResponse(int deviceId);
+    /// <param name="sender"></param>
+    void SendShutdownResponse(string sender);
     #endregion
 
 }

@@ -18,6 +18,13 @@ public interface IIdentityService
     string GetDeviceToken(List<Fingerprint> fingerprints);
 
     /// <summary>
+    /// Return device token
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    string GetDeviceToken(int deviceId);
+
+    /// <summary>
     /// Return device bearer token
     /// </summary>
     /// <param name="fingerprints"></param>

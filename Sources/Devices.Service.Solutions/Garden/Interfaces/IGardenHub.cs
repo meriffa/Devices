@@ -10,27 +10,27 @@ public interface IGardenHub
     /// <summary>
     /// Pump request
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="sender"></param>
     /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <returns></returns>
-    public Task PumpRequest(int deviceId, int pumpIndex, bool pumpState);
+    public Task PumpRequest(string sender, int pumpIndex, bool pumpState);
 
     /// <summary>
     /// Pump response
     /// </summary>
-    /// <param name="deviceId"></param>
     /// <param name="pumpIndex"></param>
     /// <param name="pumpState"></param>
     /// <param name="error"></param>
     /// <returns></returns>
-    public Task PumpResponse(int deviceId, int pumpIndex, bool pumpState, string? error);
+    public Task PumpResponse(int pumpIndex, bool pumpState, string? error);
 
     /// <summary>
     /// Presence confirmation request
     /// </summary>
+    /// <param name="sender"></param>
     /// <returns></returns>
-    public Task PresenceConfirmationRequest();
+    public Task PresenceConfirmationRequest(string sender);
 
     /// <summary>
     /// Presence confirmation response
@@ -41,16 +41,15 @@ public interface IGardenHub
     /// <summary>
     /// Shutdown request
     /// </summary>
-    /// <param name="deviceId"></param>
+    /// <param name="sender"></param>
     /// <returns></returns>
-    public Task ShutdownRequest(int deviceId);
+    public Task ShutdownRequest(string sender);
 
     /// <summary>
     /// Shutdown response
     /// </summary>
-    /// <param name="deviceId"></param>
     /// <returns></returns>
-    public Task ShutdownResponse(int deviceId);
+    public Task ShutdownResponse();
     #endregion
 
 }

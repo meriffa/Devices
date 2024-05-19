@@ -74,7 +74,10 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     d.""DeviceLocation""
                 FROM
                     ""Device"" d JOIN
-                    ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" AND da.""ApplicationID"" = 5
+                    ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" JOIN
+                    ""Application"" a ON a.""ApplicationID"" = da.""ApplicationID""
+                WHERE
+                    a.""ApplicationName"" = 'Devices.Client.Solutions Scheduled Job (Watering)'
                 ORDER BY
                     d.""DeviceName"";", cn);
             using var r = cmd.ExecuteReader();

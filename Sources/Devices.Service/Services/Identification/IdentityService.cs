@@ -62,6 +62,33 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
+    /// Return device token
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public string GetDeviceToken(int deviceId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    ""DeviceToken""
+                FROM
+                    ""Device""
+                WHERE
+                    ""DeviceID"" = @DeviceID;", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            return (string)cmd.ExecuteScalar()!;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Return device bearer token
     /// </summary>
     /// <param name="fingerprints"></param>
@@ -196,9 +223,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             throw;
         }
     }
-    #endregion
 
-    #region Internal Methods
     /// <summary>
     /// Return device instance
     /// </summary>
@@ -226,7 +251,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
         Uptime = reader["LastReboot"] is DBNull ? null : DateTime.UtcNow.Subtract((DateTime)reader["LastReboot"]),
         Deployments = GetDeviceDeployments((int)reader["DeviceID"])
     };
+    #endregion
 
+    #region Private Methods
     /// <summary>
     /// Return device level
     /// </summary>
