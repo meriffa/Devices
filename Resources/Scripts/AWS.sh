@@ -246,6 +246,19 @@ server {
                 proxy_set_header   X-Forwarded-Proto \\\$scheme;
                 proxy_read_timeout 3600;
         }
+        location /Hub/Solutions/Garden {
+                proxy_pass         http://localhost:5000;
+                proxy_http_version 1.1;
+                proxy_set_header   Upgrade \\\$http_upgrade;
+                proxy_set_header   Connection "upgrade";
+                proxy_set_header   Host \\\$host;
+                proxy_cache_bypass \\\$http_upgrade;
+                proxy_set_header   X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+                proxy_set_header   X-Forwarded-Proto \\\$scheme;
+                proxy_read_timeout 3600;
+                proxy_buffering    off;
+                proxy_cache        off;
+        }
 }
 END"
   [ $? != 0 ] && DisplayErrorAndStop "Nginx configuration failed."
