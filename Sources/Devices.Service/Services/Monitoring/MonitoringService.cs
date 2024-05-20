@@ -197,7 +197,7 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     };
 
     /// <summary>
-    /// Cleanup monitoring metrics (1 month or older)
+    /// Cleanup monitoring metrics
     /// </summary>
     /// <param name="cn"></param>
     /// <param name="deviceId"></param>

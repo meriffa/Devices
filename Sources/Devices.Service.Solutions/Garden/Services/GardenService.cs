@@ -197,6 +197,7 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
         try
         {
             using var cn = GetConnection();
+            CleanupWeatherCondition(cn, deviceId, DateTime.UtcNow);
             using var cmd = GetCommand(
                 @"INSERT INTO ""Garden"".""WeatherCondition""
                     (""DeviceID"",
@@ -291,6 +292,20 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
         AggregationType.Monthly => "month",
         _ => throw new($"Aggregation type '{aggregationType}' is not supported.")
     };
+
+    /// <summary>
+    /// Cleanup weather condition
+    /// </summary>
+    /// <param name="cn"></param>
+    /// <param name="deviceId"></param>
+    /// <param name="serviceDate"></param>
+    private void CleanupWeatherCondition(NpgsqlConnection cn, int deviceId, DateTime serviceDate)
+    {
+        using var cmd = GetCommand(@"DELETE FROM ""Garden"".""WeatherCondition"" WHERE ""DeviceID"" = @DeviceID AND ""DeviceDate"" < @DeviceDate;", cn);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+        cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = serviceDate.AddYears(-1);
+        cmd.ExecuteNonQuery();
+    }
     #endregion
 
 }
