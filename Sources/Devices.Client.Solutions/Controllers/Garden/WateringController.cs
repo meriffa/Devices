@@ -19,7 +19,6 @@ public class WateringController : Controller
     private static readonly object watchdogTimerSync = new();
     private readonly System.Timers.Timer watchdogTimer = new(TimeSpan.FromSeconds(10));
     private bool presenceRequested;
-    private string sender = string.Empty;
     #endregion
 
     #region Public Methods
@@ -34,12 +33,14 @@ public class WateringController : Controller
             DisplayService.WriteInformation("Watering task started.");
             using var controller = GetController();
             SetupWatchdogTimer();
-            if (Task.Run(async () => await StartPumpRequestHandlingTask(controller)).Result)
+            if (StartPumpRequestHandlingTask(controller))
+            {
                 shutdownRequest.WaitOne();
-            ClearOutputs(controller);
-            watchdogTimer.Stop();
-            GardenHub.SendShutdownResponse(sender);
-            GardenHub.Stop();
+                ClearOutputs(controller);
+                watchdogTimer.Stop();
+                GardenHub.SendShutdownResponse();
+                GardenHub.Stop();
+            }
             DisplayService.WriteInformation("Watering task completed.");
         }
         else
@@ -75,13 +76,13 @@ public class WateringController : Controller
     /// </summary>
     /// <param name="controller"></param>
     /// <returns></returns>
-    private async Task<bool> StartPumpRequestHandlingTask(GpioController controller)
+    private bool StartPumpRequestHandlingTask(GpioController controller)
     {
         try
         {
-            GardenHub.HandlePumpRequest((sender, pumpIndex, pumpState) =>
+            GardenHub.HandleDevicePresenceConfirmationRequest();
+            GardenHub.HandlePumpRequest((pumpIndex, pumpState) =>
             {
-                this.sender = sender;
                 controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
                 pumpStates[pumpIndex] = pumpState;
             });
@@ -89,12 +90,12 @@ public class WateringController : Controller
             {
                 presenceRequested = false;
             });
-            GardenHub.HandleShutdownRequest((sender) =>
+            GardenHub.HandleShutdownRequest(() =>
             {
-                this.sender = sender;
                 shutdownRequest.Set();
             });
-            return await GardenHub.Start();
+            GardenHub.Start();
+            return true;
         }
         catch (Exception ex)
         {
@@ -125,7 +126,7 @@ public class WateringController : Controller
             if (pumpStates.Contains(true))
                 if (!presenceRequested)
                 {
-                    GardenHub.SendPresenceConfirmationRequest(this.sender);
+                    GardenHub.SendPresenceConfirmationRequest();
                     presenceRequested = true;
                 }
                 else

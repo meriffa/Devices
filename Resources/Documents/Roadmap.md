@@ -6,6 +6,7 @@
 - Implement Redis Cache for web application.
 - Build Release Management REST API & web pages.
 - Real-Time Communication: Provide Alternative Management Protocol (SignalR, WebRTC), Configuration, Monitoring
+- Handle Running Application Redeployment (Devices.Client.Solutions Watering, Pre/Post Deployment Action)
 - Live Video: Streaming, Streaming Security, Image Processing, Dedicated Media Server
 - Image Processing: OpenCV Deep Learning / OpenCV DNN (Caffe, TensorFlow, PyTorch, Darknet, ONNX), Model Fine Tuning, Track Object Marker Movement
 - Provide additional ML/AI support ([TensorFlow Hub](https://tfhub.dev/) / [Kaggle Models](https://www.kaggle.com/models), [PyTorch Hub](https://pytorch.org/hub/), [Hugging Face Models](https://huggingface.co/docs/transformers/), Hugging Face Transformers, [ONNX Runtime](https://onnxruntime.ai/)).
@@ -16,6 +17,7 @@
 - Improve programming language support (Python).
 - Provide additional programming language support (C/C++, Java).
 - Provide additional connectivity support (Bluetooth, BLE, Zigbee).
+- Implement Device Groups (Configuration)
 
 ### Reference Solutions
 

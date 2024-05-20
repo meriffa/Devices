@@ -10,26 +10,28 @@ public interface IGardenHub
     /// <summary>
     /// Start hub client
     /// </summary>
-    /// <returns></returns>
-    Task<bool> Start();
+    void Start();
 
     /// <summary>
     /// Stop hub client
     /// </summary>
-    /// <returns></returns>
-    Task<bool> Stop();
+    void Stop();
+
+    /// <summary>
+    /// Handle device presence confirmation request
+    /// </summary>
+    void HandleDevicePresenceConfirmationRequest();
 
     /// <summary>
     /// Handle pump request
     /// </summary>
     /// <param name="action"></param>
-    void HandlePumpRequest(Action<string, int, bool> action);
+    void HandlePumpRequest(Action<int, bool> action);
 
     /// <summary>
     /// Send presence confirmation request
     /// </summary>
-    /// <param name="sender"></param>
-    void SendPresenceConfirmationRequest(string sender);
+    void SendPresenceConfirmationRequest();
 
     /// <summary>
     /// Handle presence confirmation response
@@ -41,13 +43,12 @@ public interface IGardenHub
     /// Handle shutdown request
     /// </summary>
     /// <param name="action"></param>
-    void HandleShutdownRequest(Action<string> action);
+    void HandleShutdownRequest(Action action);
 
     /// <summary>
     /// Send shutdown response
     /// </summary>
-    /// <param name="sender"></param>
-    void SendShutdownResponse(string sender);
+    void SendShutdownResponse();
     #endregion
 
 }

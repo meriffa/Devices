@@ -17,6 +17,29 @@ public class GardenHub : Hub<IGardenHub>
 
     #region Public Methods
     /// <summary>
+    /// Send device presence confirmation request
+    /// </summary>
+    /// <param name="recipient"></param>
+    /// <param name="identityService"></param>
+    /// <returns></returns>
+    [Authorize(Policy = "GardenPolicy")]
+    public async Task SendDevicePresenceConfirmationRequest(string recipient, [FromServices] IIdentityService identityService)
+    {
+        await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).DevicePresenceConfirmationRequest(Context.UserIdentifier!);
+    }
+
+    /// <summary>
+    /// Send device presence confirmation response
+    /// </summary>
+    /// <param name="recipient"></param>
+    /// <returns></returns>
+    [Authorize(Policy = "DevicePolicy")]
+    public async Task SendDevicePresenceConfirmationResponse(string recipient)
+    {
+        await Clients.User(recipient).DevicePresenceConfirmationResponse();
+    }
+
+    /// <summary>
     /// Send pump request
     /// </summary>
     /// <param name="recipient"></param>

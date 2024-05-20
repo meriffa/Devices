@@ -11,6 +11,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Initialization
     Devices.Host.Site.initContentPage = function () {
+        $("#cmbDevice").change(verifyDevicePresence);
         $("#btnTurnAllPumpsOn").click(function () {
             $("[id^=chkPump]:not(:checked)").prop("checked", true).trigger("change");
         });
@@ -23,7 +24,21 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         });
         $("[id^=chkPump]").change(sendPumpRequest);
         $("[id^=btnStopwatchReset]").click(resetStopwatch);
-        loadDevices();
+        connectToHub();
+    }
+
+    // Connect to hub
+    function connectToHub() {
+        namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Garden").withAutomaticReconnect().build();
+        namespace.connection.on("DevicePresenceConfirmationResponse", handleDevicePresenceConfirmationResponse);
+        namespace.connection.on("PumpResponse", handlePumpResponse);
+        namespace.connection.on("PresenceConfirmationRequest", handlePresenceConfirmationRequest);
+        namespace.connection.on("ShutdownResponse", handleShutdownResponse);
+        namespace.connection.start().then(function () {
+            loadDevices();
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
     }
 
     // Load devices
@@ -36,8 +51,8 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
                 $.each(devices, function (key, device) {
                     $("#cmbDevice").append(`<option value="${device.id}">${device.name} (${device.location})</option>`);
                 });
-                if ($("#cmbDevice").val())
-                    connectToHub();
+                if ($("#cmbDevice > option").length > 0)
+                    verifyDevicePresence();
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 Devices.Host.Site.displayError(jqXHR, textStatus, errorThrown);
@@ -45,17 +60,19 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         });
     }
 
-    // Connect to hub
-    function connectToHub() {
-        namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Garden").withAutomaticReconnect().build();
-        namespace.connection.on("PumpResponse", handlePumpResponse);
-        namespace.connection.on("PresenceConfirmationRequest", handlePresenceConfirmationRequest);
-        namespace.connection.on("ShutdownResponse", handleShutdownResponse);
-        namespace.connection.start().then(function () {
-            setupPumpControls(true);
-        }).catch(function (ex) {
+    // Verify device presence
+    function verifyDevicePresence() {
+        setupPumpControls(false);
+        logMessage(`Device '${$("#cmbDevice option:selected").text()}' presence verification requested.`);
+        namespace.connection.invoke("SendDevicePresenceConfirmationRequest", $("#cmbDevice").val()).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
         });
+    }
+
+    // Handle device presence confirmation response
+    function handleDevicePresenceConfirmationResponse() {
+        setupPumpControls(true);
+        logMessage(`Device '${$("#cmbDevice option:selected").text()}' presence verification completed.`);
     }
 
     // Send pump request
@@ -104,6 +121,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Handle shutdown response
     function handleShutdownResponse() {
+        setupPumpControls(false);
         logMessage("Controller shutdown completed.");
     }
 
@@ -117,14 +135,18 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         if (enabled) {
             $("#btnTurnAllPumpsOn").removeAttr("disabled");
             $("#btnTurnAllPumpsOff").removeAttr("disabled");
+            $("#btnClearDeviceLog").removeAttr("disabled");
             $("#btnShutdown").removeAttr("disabled");
             $("[id^=chkPump]").removeAttr("disabled");
+            $("[id^=btnStopwatchReset]").removeAttr("disabled");
         }
         else {
             $("#btnTurnAllPumpsOn").attr("disabled", true);
             $("#btnTurnAllPumpsOff").attr("disabled", true);
+            $("#btnClearDeviceLog").attr("disabled", true);
             $("#btnShutdown").attr("disabled", true);
             $("[id^=chkPump]").attr("disabled", true);
+            $("[id^=btnStopwatchReset]").attr("disabled", true);
         }
     }
 

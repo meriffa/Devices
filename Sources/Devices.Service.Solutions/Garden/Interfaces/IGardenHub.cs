@@ -8,6 +8,19 @@ public interface IGardenHub
 
     #region Public Methods
     /// <summary>
+    /// Presence device confirmation request
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public Task DevicePresenceConfirmationRequest(string sender);
+
+    /// <summary>
+    /// Presence device confirmation response
+    /// </summary>
+    /// <returns></returns>
+    public Task DevicePresenceConfirmationResponse();
+
+    /// <summary>
     /// Pump request
     /// </summary>
     /// <param name="sender"></param>

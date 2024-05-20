@@ -16,8 +16,9 @@
 - Change Database User Password: `./AWS.sh ChangeDatabaseUserPassword`
 
 # Change Device WiFi Network
+- Connect laptop to portable router (WiFi)
 - Connect device to portable router (Ethernet).
-- Get device IP from router.
+- Get device IP from portable router.
 - Connect to device (ssh).
 - Change device WiFi network.
 - Disconnect device from router (Ethernet) & restart device.
