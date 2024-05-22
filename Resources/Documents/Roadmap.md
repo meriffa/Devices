@@ -23,4 +23,4 @@
 
 - Intrusion Detection System: Entrance Sensors, Visual Notification, Video
 - Watering System 2.0: Water Level Sensor, Reverse Pumps, Relay & Terminal Strip Block Housing (3D Print)
-- Implement direct device control (buttons, LCD display).
+- Implement Direct Device Control (Buttons, LCD Display).

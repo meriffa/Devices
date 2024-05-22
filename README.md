@@ -42,3 +42,4 @@ Solution consists of the following components:
 - [Platforms](Resources/Documents/Platforms.md)
 - [Release History](Resources/Documents/Releases.md#release-history)
 - [Roadmap](Resources/Documents/Roadmap.md#capability-roadmap)
+- [FAQ](Resources/Documents/FAQ.md)
