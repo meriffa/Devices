@@ -1,45 +1,42 @@
 # Device Management Framework
 
-Device Management Framework is an open-source framework for managing Edge AI & IoT devices.
+Device Management Framework is an open-source solution for managing Edge Computing, Edge AI & IoT devices.
 
-## Services
+## Architecture
 
-The framework provides the following services:
+![Architecture Diagram](/Resources/Images/Architecture.png)
 
-- Device Identity: The service uses fingerprinting services (host name, NIC MAC address, SSH public key) to identify the device using backend database and store the device identity locally.
-- Device Monitoring: The service captures basic device metrics (CPU, memory, last reboot time) into a backend database.
-- Device Configuration: The service allows for centralized device configuration and application deployment.
-
-## Repository
-
-The repository contains the following components:
-
-- Framework
-- Reference Solutions
-  - Garden Management System: Provides an end-to-end reference implementation of the framework and its features. The system collects current weather conditions (temperature, humidity, pressure & light) data from device sensors and displays the information on a web site.
-  - Peripherals: Provides reference implementations for using various hardware components such as sensors, LEDs, motors, switches, etc.
+- Core Tier: The core tier has web interface, web services and real-time communication endpoints and structured data store
+  - The web site allows end users to monitor and manage devices remotely.
+  - The web services allow both devices and backend systems to connect and implement specific management services (Security, Monitoring, Configuration).
+  - The real-time communication endpoints provide direct control message relay channel between devices and browser based or backed system clients.
+  - The device metadata and configuration is stored in a transactional database.
+  - The core tier is hosed either on premise or on a cloud infrastructure.
+- Device Tier: The device tier hosts the device agent and business applications.
+  - The device agent application manages the device configuration and business application deployments.
+  - The business applications are interacting with the sensors and peripherals to provide a specific business capability.
 
 ## Components
 
-Solution consists of the following components:
-
-![Architecture Diagram](Resources/Images/Architecture.png)
-
-- Devices.Service: Provides framework services to be deployed to cloud infrastructure.
-- Devices.Service.Solutions: Provides reference solution services to be deployed to cloud infrastructure.
-- Devices.Web: Provides framework web UI components.
-- Devices.Web.Solutions: Provides reference solution web UI components.
-- Devices.Host: Provides hosting environment for Devices.Service, Devices.Service.Solutions, Devices.Web and Devices.Web.Solutions components.
-- Devices.Client: Provides framework device client.
-- Devices.Client.Solutions: Provides reference solution device client.
+- [Devices.Common](/Sources/Devices.Common/): Class library shared between core and device tiers.
+- [Devices.Common.Solutions](/Sources/Devices.Common.Solutions/): Reference class library shared between core and device tiers.
+- [Devices.Host](/Sources/Devices.Host/): Core tier host (web site, web services) application.
+- [Devices.Service](/Sources/Devices.Service/): Core tier web services.
+- [Devices.Service.Solutions](/Sources/Devices.Service.Solutions/): Core tier reference web services.
+- [Devices.Web](/Sources/Devices.Web/): Core tier web site pages & assets.
+- [Devices.Web.Solutions](/Sources/Devices.Web.Solutions/): Core tier reference web site pages & assets.
+- [Devices.Client](/Sources/Devices.Client/): Device agent application.
+- [Devices.Client.Solutions](/Sources/Devices.Client.Solutions/): Device reference business application (C#).
+- [Devices.Client.Solutions.Python](/Sources/Devices.Client.Solutions.Python/): Device reference business application (Python).
 
 ## References
 
-- [Development Environment](Resources/Documents/Development.md)
-- [AWS Host Configuration](Resources/Documents/AWS.md)
-- [Device Operations](Resources/Documents/Operations.md)
-- [Reference Solutions](Resources/Documents/Solutions.md)
-- [Platforms](Resources/Documents/Platforms.md)
-- [Release History](Resources/Documents/Releases.md#release-history)
-- [Roadmap](Resources/Documents/Roadmap.md#capability-roadmap)
-- [FAQ](Resources/Documents/FAQ.md)
+- [FAQ](/Resources/Documents/FAQ.md)
+- [Development](/Resources/Documents/Development.md)
+- [AWS](/Resources/Documents/AWS.md)
+- [Operations](/Resources/Documents/Operations.md)
+- [Examples](/Resources/Documents/Solutions.md)
+- [Platforms](/Resources/Documents/Platforms.md)
+- [Releases](/Resources/Documents/Releases.md#release-history)
+- [Roadmap](/Resources/Documents/Roadmap.md#capability-roadmap)
+- [Glossary](/Resources/Documents/Glossary.md)

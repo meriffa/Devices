@@ -14,7 +14,7 @@
 - [How does the solution work?](#how-does-the-solution-work)
 
 ### What is the purpose of this solution?
-The purpose of this solution is to allow companies to manage their Edge Computing / Edge AI / IoT devices. Device management includes security, monitoring, configuration and application deployment. 
+The purpose of this solution is to allow companies to manage their Edge Computing, Edge AI & IoT devices. Device management includes security, monitoring, configuration and application deployment. 
 
 ### What devices is the solution intended for?
 Devices include Single Board Computers (e.g. Raspberry Pi, NVIDIA Jetson), Mini PCs (AMD Ryzen Embedded, Intel NUC) and other Systems on Chip (SoC) connected to input devices (sensors, cameras) and output devices (relays, motors, pumps) running on full operating system (Linux, Windows). See the [Managed Devices](/Resources/Images/Devices.png) diagram as an example.
@@ -47,4 +47,4 @@ The solution is build with scalability as a key design principle. It can support
 There are several components that contribute to the overall solution cost. The solution itself is free to use. The solution deployment requires development effort to customize it to a particular environment and potentially integrate it with existing systems. The deployment also requires additional infrastructure (shared / dedicated, physical / virtualized) where the solution will be hosted. The overall customization and infrastructure cost depends on a particular implementation.
 
 ### How does the solution work?
-See the [README](/README.md) for solution architecture, components and technical details.
+See the [README](/README.md) for solution architecture and components.
