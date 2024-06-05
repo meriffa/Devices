@@ -114,6 +114,8 @@
 - ePaper Display
   - Hardware: Waveshare 7.5inch e-Paper (B) Display, e-Paper Driver HAT (HAT Board Alignment = Inside Relative To Raspberry Pi, Ribbon Cable Orientation = Pins Up Both Sides)
   - Software: Enable SPI, dotnet Devices.Client.Solutions.dll "Outputs-EPaperDisplay" -i Image.png
+- Arducam Camera Pan Tilt Platform
+  - Hardware: VCC = 5V, SDA = SDA, SCL = SCL, GND = GND
 
 #### Outputs: LEDs
 
