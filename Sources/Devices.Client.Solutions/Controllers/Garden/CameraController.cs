@@ -37,6 +37,8 @@ public class CameraController : Controller
     protected override void Execute()
     {
         DisplayService.WriteInformation("Camera task started.");
+        ValidateDegree(Pan);
+        ValidateDegree(Tilt);
         using var device = new ArducamPanTilt(BusId);
         device.SetPan(Pan);
         device.SetTilt(Tilt);
@@ -44,4 +46,15 @@ public class CameraController : Controller
     }
     #endregion
 
+    #region Private Methods
+    /// <summary>
+    /// Validate degree value
+    /// </summary>
+    /// <param name="value"></param>
+    private static void ValidateDegree(int value)
+    {
+        if (value < 0 || value > 180)
+            throw new Exception($"Invalid degree value {value} specified.");
+    }
+    #endregion
 }
