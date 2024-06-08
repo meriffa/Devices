@@ -18,12 +18,10 @@ class CameraPicamera2:
         configuration = self.__camera.create_preview_configuration(main=main, controls=controls, transform=transform)
         self.__camera.align_configuration(configuration)
         self.__camera.configure(configuration)
-        self.__encoder = picamera2.encoders.H264Encoder()
         logging.info(f"Camera configured (Display: {width}x{height}, FPS: {fps}).")
 
     # Start camera
     def Start(self):
-        self.__camera.start_encoder(self.__encoder, quality=picamera2.encoders.Quality.VERY_HIGH)
         self.__camera.start(show_preview=False)
         logging.info("Camera started.")
 
@@ -34,5 +32,4 @@ class CameraPicamera2:
     # Stop camera
     def Stop(self):
         self.__camera.stop()
-        self.__camera.stop_encoder(self.__encoder)
         logging.info("Camera stopped.")

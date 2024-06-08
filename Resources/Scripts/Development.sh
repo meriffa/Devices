@@ -162,7 +162,7 @@ DeployClient() {
   echo "'$1' deployment completed."
 }
 
-# Setup python
+# Setup Python
 SetupPython() {
   sudo apt-get install python3-opencv python3-flask python3-waitress python3-picamera2 -y
   python3 -m venv ~/Python/.venv
