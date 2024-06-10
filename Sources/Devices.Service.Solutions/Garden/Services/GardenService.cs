@@ -58,41 +58,6 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     }
 
     /// <summary>
-    /// Return watering devices
-    /// </summary>
-    /// <returns></returns>
-    public List<Device> GetWateringDevices()
-    {
-        try
-        {
-            var result = new List<Device>();
-            using var cn = GetConnection();
-            using var cmd = GetCommand(
-                @"SELECT DISTINCT
-                    d.""DeviceID"",
-                    d.""DeviceName"",
-                    d.""DeviceLocation""
-                FROM
-                    ""Device"" d JOIN
-                    ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" JOIN
-                    ""Application"" a ON a.""ApplicationID"" = da.""ApplicationID""
-                WHERE
-                    a.""ApplicationName"" = 'Devices.Client.Solutions Scheduled Job (Watering)'
-                ORDER BY
-                    d.""DeviceName"";", cn);
-            using var r = cmd.ExecuteReader();
-            while (r.Read())
-                result.Add(IdentityService.GetDevice(r));
-            return result;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "{Error}", ex.Message);
-            throw;
-        }
-    }
-
-    /// <summary>
     /// Return device weather conditions
     /// </summary>
     /// <param name="deviceId"></param>
@@ -220,6 +185,72 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
             cmd.Parameters.Add("@Pressure", NpgsqlDbType.Numeric).Value = weatherCondition.Pressure;
             cmd.Parameters.Add("@Illuminance", NpgsqlDbType.Numeric).Value = weatherCondition.Illuminance;
             cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <returns></returns>
+    public List<Device> GetWateringDevices()
+    {
+        try
+        {
+            var result = new List<Device>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT DISTINCT
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
+                FROM
+                    ""Device"" d JOIN
+                    ""DeviceApplication"" da ON da.""DeviceID"" = d.""DeviceID"" JOIN
+                    ""Application"" a ON a.""ApplicationID"" = da.""ApplicationID""
+                WHERE
+                    a.""ApplicationName"" = 'Devices.Client.Solutions Scheduled Job (Watering)'
+                ORDER BY
+                    d.""DeviceName"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(IdentityService.GetDevice(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return camera devices
+    /// </summary>
+    /// <returns></returns>
+    public List<Device> GetCameraDevices()
+    {
+        try
+        {
+            var result = new List<Device>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT DISTINCT
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
+                FROM
+                    ""Device"" d
+                ORDER BY
+                    d.""DeviceName"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(IdentityService.GetDevice(r));
+            return result;
         }
         catch (Exception ex)
         {

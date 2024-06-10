@@ -38,8 +38,8 @@ public class WateringController : Controller
                 shutdownRequest.WaitOne();
                 ClearOutputs(controller);
                 watchdogTimer.Stop();
-                GardenHub.SendShutdownResponse();
-                GardenHub.Stop();
+                WateringHub.SendShutdownResponse();
+                WateringHub.Stop();
             }
             DisplayService.WriteInformation("Watering task completed.");
         }
@@ -80,21 +80,15 @@ public class WateringController : Controller
     {
         try
         {
-            GardenHub.HandleDevicePresenceConfirmationRequest();
-            GardenHub.HandlePumpRequest((pumpIndex, pumpState) =>
+            WateringHub.HandleDevicePresenceConfirmationRequest(() => null);
+            WateringHub.HandlePumpRequest((pumpIndex, pumpState) =>
             {
                 controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
                 pumpStates[pumpIndex] = pumpState;
             });
-            GardenHub.HandlePresenceConfirmationResponse(() =>
-            {
-                presenceRequested = false;
-            });
-            GardenHub.HandleShutdownRequest(() =>
-            {
-                shutdownRequest.Set();
-            });
-            GardenHub.Start();
+            WateringHub.HandleOperatorPresenceConfirmationResponse(() => presenceRequested = false);
+            WateringHub.HandleShutdownRequest(() => shutdownRequest.Set());
+            WateringHub.Start();
             return true;
         }
         catch (Exception ex)
@@ -126,12 +120,12 @@ public class WateringController : Controller
             if (pumpStates.Contains(true))
                 if (!presenceRequested)
                 {
-                    GardenHub.SendPresenceConfirmationRequest();
+                    WateringHub.SendOperatorPresenceConfirmationRequest();
                     presenceRequested = true;
                 }
                 else
                 {
-                    DisplayService.WriteWarning("Presence confirmation not received. Shutting down.");
+                    DisplayService.WriteWarning("Operator presence confirmation not received. Shutting down.");
                     shutdownRequest.Set();
                 }
             else

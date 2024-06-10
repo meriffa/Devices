@@ -56,7 +56,8 @@ class Program
             {
                 services.AddDeviceServices(context.Configuration);
                 services.AddSingleton<Garden.Interfaces.IGardenService, Garden.Services.GardenService>();
-                services.AddSingleton<Garden.Interfaces.IGardenHub, Garden.Hubs.GardenHub>();
+                services.AddSingleton<Garden.Interfaces.IWateringHub, Garden.Hubs.WateringHub>();
+                services.AddSingleton<Garden.Interfaces.ICameraHub, Garden.Hubs.CameraHub>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

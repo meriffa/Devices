@@ -246,7 +246,7 @@ server {
                 proxy_set_header   X-Forwarded-Proto \\\$scheme;
                 proxy_read_timeout 3600;
         }
-        location /Hub/Solutions/Garden {
+        location /Hub {
                 proxy_pass         http://localhost:5000;
                 proxy_http_version 1.1;
                 proxy_set_header   Upgrade \\\$http_upgrade;

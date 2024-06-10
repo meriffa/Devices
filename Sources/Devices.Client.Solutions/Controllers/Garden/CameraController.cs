@@ -1,5 +1,7 @@
 using CommandLine;
 using Devices.Client.Solutions.Peripherals.I2C;
+using Devices.Common.Solutions.Garden.Models;
+using System.Reflection;
 
 namespace Devices.Client.Solutions.Controllers.Garden;
 
@@ -10,24 +12,17 @@ namespace Devices.Client.Solutions.Controllers.Garden;
 public class CameraController : Controller
 {
 
+    #region Private Members
+    private readonly EventWaitHandle shutdownRequest = new(false, EventResetMode.ManualReset);
+    private readonly CameraState cameraState = new() { Pan = 90, Tilt = 90 };
+    #endregion
+
     #region Properties
     /// <summary>
     /// I2C bus id
     /// </summary>
     [Option('b', "busId", Required = true, HelpText = "I2C bus id.")]
     public int BusId { get; set; }
-
-    /// <summary>
-    /// Pan degrees
-    /// </summary>
-    [Option('p', "pan", Required = true, HelpText = "Pan degrees.")]
-    public int Pan { get; set; }
-
-    /// <summary>
-    /// Tilt degrees
-    /// </summary>
-    [Option('t', "tilt", Required = true, HelpText = "Tilt degrees.")]
-    public int Tilt { get; set; }
     #endregion
 
     #region Public Methods
@@ -36,25 +31,55 @@ public class CameraController : Controller
     /// </summary>
     protected override void Execute()
     {
-        DisplayService.WriteInformation("Camera task started.");
-        ValidateDegree(Pan);
-        ValidateDegree(Tilt);
-        using var device = new ArducamPanTilt(BusId);
-        device.SetPan(Pan);
-        device.SetTilt(Tilt);
-        DisplayService.WriteInformation("Camera task completed.");
+        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}.Watering", out var singleInstance);
+        if (singleInstance)
+        {
+            DisplayService.WriteInformation("Camera task started.");
+            using var panTiltDevice = new ArducamPanTilt(BusId);
+            if (StartPumpRequestHandlingTask(panTiltDevice))
+            {
+                shutdownRequest.WaitOne();
+                CameraHub.SendShutdownResponse();
+                CameraHub.Stop();
+            }
+            DisplayService.WriteInformation("Camera task completed.");
+        }
+        else
+            DisplayService.WriteWarning("Camera task skipped. Another task instance is already running.");
+
     }
     #endregion
 
     #region Private Methods
     /// <summary>
-    /// Validate degree value
+    /// Start pump request handling task
     /// </summary>
-    /// <param name="value"></param>
-    private static void ValidateDegree(int value)
+    /// <param name="panTiltDevice"></param>
+    /// <returns></returns>
+    private bool StartPumpRequestHandlingTask(ArducamPanTilt panTiltDevice)
     {
-        if (value < 0 || value > 180)
-            throw new Exception($"Invalid degree value {value} specified.");
+        try
+        {
+            CameraHub.HandleDevicePresenceConfirmationRequest(() => cameraState);
+            CameraHub.HandleShutdownRequest(() => shutdownRequest.Set());
+            CameraHub.HandlePanRequest((value) =>
+            {
+                cameraState.Pan = value;
+                panTiltDevice.SetPan(value);
+            });
+            CameraHub.HandleTiltRequest((value) =>
+            {
+                cameraState.Tilt = value;
+                panTiltDevice.SetTilt(value);
+            });
+            CameraHub.Start();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            DisplayService.WriteError(ex);
+            return false;
+        }
     }
     #endregion
 }

@@ -14,7 +14,8 @@ public abstract class Controller
     private IServiceProvider services = null!;
     private DisplayService? displayService;
     private IGardenService? gardenService;
-    private IGardenHub? gardenHub;
+    private IWateringHub? wateringHub;
+    private ICameraHub? cameraHub;
     #endregion
 
     #region Properties
@@ -29,9 +30,14 @@ public abstract class Controller
     protected IGardenService GardenService => gardenService ??= services.GetRequiredService<IGardenService>();
 
     /// <summary>
-    /// Garden hub
+    /// Watering hub
     /// </summary>
-    protected IGardenHub GardenHub => gardenHub ??= services.GetRequiredService<IGardenHub>();
+    protected IWateringHub WateringHub => wateringHub ??= services.GetRequiredService<IWateringHub>();
+
+    /// <summary>
+    /// Camera hub
+    /// </summary>
+    protected ICameraHub CameraHub => cameraHub ??= services.GetRequiredService<ICameraHub>();
     #endregion
 
     #region Public Methods

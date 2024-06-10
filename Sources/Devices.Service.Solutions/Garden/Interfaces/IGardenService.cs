@@ -18,12 +18,6 @@ public interface IGardenService
     List<Device> GetWeatherDevices();
 
     /// <summary>
-    /// Return watering devices
-    /// </summary>
-    /// <returns></returns>
-    List<Device> GetWateringDevices();
-
-    /// <summary>
     /// Return device weather conditions
     /// </summary>
     /// <param name="deviceId"></param>
@@ -44,6 +38,18 @@ public interface IGardenService
     /// <param name="deviceId"></param>
     /// <param name="weatherCondition"></param>
     void SaveWeatherCondition(int deviceId, WeatherCondition weatherCondition);
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <returns></returns>
+    List<Device> GetWateringDevices();
+
+    /// <summary>
+    /// Return camera devices
+    /// </summary>
+    /// <returns></returns>
+    List<Device> GetCameraDevices();
     #endregion
 
 }

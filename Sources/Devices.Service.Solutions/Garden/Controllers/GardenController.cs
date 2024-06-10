@@ -36,24 +36,6 @@ public class GardenController : ControllerBase
     }
 
     /// <summary>
-    /// Return watering devices
-    /// </summary>
-    /// <param name="service"></param>
-    /// <returns></returns>
-    [HttpGet, Authorize(Policy = "GardenPolicy")]
-    public ActionResult<List<Device>> GetWateringDevices([FromServices] IGardenService service)
-    {
-        try
-        {
-            return Ok(service.GetWateringDevices());
-        }
-        catch (Exception ex)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
-        }
-    }
-
-    /// <summary>
     /// Return device weather conditions
     /// </summary>
     /// <param name="service"></param>
@@ -105,6 +87,42 @@ public class GardenController : ControllerBase
         {
             service.SaveWeatherCondition(HttpContext.User.GetDeviceId(), weatherCondition);
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return watering devices
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<List<Device>> GetWateringDevices([FromServices] IGardenService service)
+    {
+        try
+        {
+            return Ok(service.GetWateringDevices());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return camera devices
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<List<Device>> GetCameraDevices([FromServices] IGardenService service)
+    {
+        try
+        {
+            return Ok(service.GetCameraDevices());
         }
         catch (Exception ex)
         {

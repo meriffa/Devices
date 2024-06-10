@@ -56,7 +56,8 @@ public static class ServicesExtensions
     /// <param name="application"></param>
     public static void MapSignalRHubsSolutions(this WebApplication application)
     {
-        application.MapHub<GardenHub>("/Hub/Solutions/Garden");
+        application.MapHub<WateringHub>("/Hub/Solutions/Watering");
+        application.MapHub<CameraHub>("/Hub/Solutions/Camera");
     }
     #endregion
 

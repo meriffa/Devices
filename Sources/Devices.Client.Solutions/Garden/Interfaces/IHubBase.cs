@@ -1,9 +1,9 @@
 namespace Devices.Client.Solutions.Garden.Interfaces;
 
 /// <summary>
-/// Garden hub interface
+/// Base hub interface
 /// </summary>
-public interface IGardenHub
+public interface IHubBase
 {
 
     #region Public Methods
@@ -20,24 +20,8 @@ public interface IGardenHub
     /// <summary>
     /// Handle device presence confirmation request
     /// </summary>
-    void HandleDevicePresenceConfirmationRequest();
-
-    /// <summary>
-    /// Handle pump request
-    /// </summary>
-    /// <param name="action"></param>
-    void HandlePumpRequest(Action<int, bool> action);
-
-    /// <summary>
-    /// Send presence confirmation request
-    /// </summary>
-    void SendPresenceConfirmationRequest();
-
-    /// <summary>
-    /// Handle presence confirmation response
-    /// </summary>
-    /// <param name="action"></param>
-    void HandlePresenceConfirmationResponse(Action action);
+    /// <param name="getDevicePresenceConfirmation"></param>
+    void HandleDevicePresenceConfirmationRequest(Func<object?> getDevicePresenceConfirmation);
 
     /// <summary>
     /// Handle shutdown request

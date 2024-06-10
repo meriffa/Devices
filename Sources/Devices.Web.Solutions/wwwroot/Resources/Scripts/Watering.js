@@ -29,11 +29,11 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Connect to hub
     function connectToHub() {
-        namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Garden").withAutomaticReconnect().build();
+        namespace.connection = new signalR.HubConnectionBuilder().withUrl("/Hub/Solutions/Watering").withAutomaticReconnect().build();
         namespace.connection.on("DevicePresenceConfirmationResponse", handleDevicePresenceConfirmationResponse);
-        namespace.connection.on("PumpResponse", handlePumpResponse);
-        namespace.connection.on("PresenceConfirmationRequest", handlePresenceConfirmationRequest);
         namespace.connection.on("ShutdownResponse", handleShutdownResponse);
+        namespace.connection.on("PumpResponse", handlePumpResponse);
+        namespace.connection.on("OperatorPresenceConfirmationRequest", handleOperatorPresenceConfirmationRequest);
         namespace.connection.start().then(function () {
             loadDevices();
         }).catch(function (ex) {
@@ -75,6 +75,21 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         logMessage(`Device '${$("#cmbDevice option:selected").text()}' presence verification completed.`);
     }
 
+    // Send shutdown response
+    function sendShutdownRequest() {
+        namespace.connection.invoke("SendShutdownRequest", $("#cmbDevice").val()).then(function () {
+            logMessage("Controller shutdown requested.");
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
+    }
+
+    // Handle shutdown response
+    function handleShutdownResponse() {
+        setupPumpControls(false);
+        logMessage("Controller shutdown completed.");
+    }
+
     // Send pump request
     function sendPumpRequest() {
         element = $(this)
@@ -101,33 +116,13 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             logMessage(`Water Pump #${pumpIndex + 1} = ${pumpState ? "On" : "Off"} completed (Error = '${error}').`);
     }
 
-    // Handle presence confirmation request
-    function handlePresenceConfirmationRequest(deviceId) {
-        namespace.connection.invoke("SendPresenceConfirmationResponse", deviceId).then(function () {
+    // Handle operator presence confirmation request
+    function handleOperatorPresenceConfirmationRequest(deviceId) {
+        namespace.connection.invoke("SendOperatorPresenceConfirmationResponse", deviceId).then(function () {
             logMessage("Watering in progress ...");
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
         });
-    }
-
-    // Send shutdown response
-    function sendShutdownRequest() {
-        namespace.connection.invoke("SendShutdownRequest", $("#cmbDevice").val()).then(function () {
-            logMessage("Controller shutdown requested.");
-        }).catch(function (ex) {
-            logMessage(`ERROR: ${ex.toString()}`);
-        });
-    }
-
-    // Handle shutdown response
-    function handleShutdownResponse() {
-        setupPumpControls(false);
-        logMessage("Controller shutdown completed.");
-    }
-
-    // Log message
-    function logMessage(text) {
-        $("#txtDeviceLog").val(`[${Devices.Host.Site.formatDateTimeMilliseconds(new Date())}] ${text}\n${$("#txtDeviceLog").val()}`);
     }
 
     // Setup pump controls
@@ -148,6 +143,11 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             $("[id^=chkPump]").attr("disabled", true);
             $("[id^=btnStopwatchReset]").attr("disabled", true);
         }
+    }
+
+    // Log message
+    function logMessage(text) {
+        $("#txtDeviceLog").val(`[${Devices.Host.Site.formatDateTimeMilliseconds(new Date())}] ${text}\n${$("#txtDeviceLog").val()}`);
     }
 
     // Start pump stopwatch
