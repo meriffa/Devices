@@ -31,7 +31,7 @@ public class CameraController : Controller
     /// </summary>
     protected override void Execute()
     {
-        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}.Watering", out var singleInstance);
+        using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}.Camera", out var singleInstance);
         if (singleInstance)
         {
             DisplayService.WriteInformation("Camera task started.");
