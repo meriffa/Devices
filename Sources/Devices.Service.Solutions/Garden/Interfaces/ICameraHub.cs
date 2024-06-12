@@ -22,6 +22,22 @@ public interface ICameraHub : IHubBase
     /// <param name="value"></param>
     /// <returns></returns>
     public Task TiltRequest(string sender, int value);
+
+    /// <summary>
+    /// Focus request
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public Task FocusRequest(string sender, double value);
+
+    /// <summary>
+    /// Zoom request
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public Task ZoomRequest(string sender, double value);
     #endregion
 
 }

@@ -18,6 +18,18 @@ public interface ICameraHub : IHubBase
     /// </summary>
     /// <param name="action"></param>
     void HandleTiltRequest(Action<int> action);
+
+    /// <summary>
+    /// Handle focus request
+    /// </summary>
+    /// <param name="action"></param>
+    void HandleFocusRequest(Action<double> action);
+
+    /// <summary>
+    /// Handle zoom request
+    /// </summary>
+    /// <param name="action"></param>
+    void HandleZoomRequest(Action<double> action);
     #endregion
 
 }

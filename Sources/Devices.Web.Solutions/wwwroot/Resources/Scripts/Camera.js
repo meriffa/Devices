@@ -39,6 +39,38 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
             $("#cameraTilt").val(value);
             sendTiltRequest(value);
         });
+        $("#cameraFocus").change(function () {
+            $("#cameraFocusValue").val($("#cameraFocus").val());
+            sendFocusRequest(Number($("#cameraFocus").val()));
+        });
+        $("#cameraFocusValue").change(function () {
+            var value = Number($("#cameraFocusValue").val());
+            if (value < 0) {
+                value = 0;
+                $("#cameraFocusValue").val(value);
+            } else if (value > 180) {
+                value = 180;
+                $("#cameraFocusValue").val(value);
+            }
+            $("#cameraFocus").val(value);
+            sendFocusRequest(value);
+        });
+        $("#cameraZoom").change(function () {
+            $("#cameraZoomValue").val($("#cameraZoom").val());
+            sendZoomRequest(Number($("#cameraZoom").val()));
+        });
+        $("#cameraZoomValue").change(function () {
+            var value = Number($("#cameraZoomValue").val());
+            if (value < 1) {
+                value = 1;
+                $("#cameraZoomValue").val(value);
+            } else if (value > 10) {
+                value = 10;
+                $("#cameraZoomValue").val(value);
+            }
+            $("#cameraZoom").val(value);
+            sendZoomRequest(value);
+        });
         connectToHub();
     }
 
@@ -90,6 +122,18 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
         $("#cameraPanValue").val(state.pan);
         $("#cameraTilt").val(state.tilt);
         $("#cameraTiltValue").val(state.tilt);
+        $("#cameraFocus").attr({
+            "min": state.focusMinimum,
+            "max": state.focusMaximum
+        });
+        $("#cameraFocusValue").attr({
+            "min": state.focusMinimum,
+            "max": state.focusMaximum
+        });
+        $("#cameraFocus").val(state.focus);
+        $("#cameraFocusValue").val(state.focus);
+        $("#cameraZoom").val(state.zoom);
+        $("#cameraZoomValue").val(state.zoom);
     }
 
     // Send shutdown response
@@ -120,6 +164,24 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
     function sendTiltRequest(value) {
         namespace.connection.invoke("SendTiltRequest", $("#cmbDevice").val(), value).then(function () {
             logMessage(`Camera tilt ${value}° requested.`);
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
+    }
+
+    // Send focus request
+    function sendFocusRequest(value) {
+        namespace.connection.invoke("SendFocusRequest", $("#cmbDevice").val(), value).then(function () {
+            logMessage(`Camera focus ${value}x requested.`);
+        }).catch(function (ex) {
+            logMessage(`ERROR: ${ex.toString()}`);
+        });
+    }
+
+    // Send zoom request
+    function sendZoomRequest(value) {
+        namespace.connection.invoke("SendZoomRequest", $("#cmbDevice").val(), value).then(function () {
+            logMessage(`Camera zoom ${value}x requested.`);
         }).catch(function (ex) {
             logMessage(`ERROR: ${ex.toString()}`);
         });

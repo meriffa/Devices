@@ -53,6 +53,46 @@ public class CameraHub(ILogger<CameraHub> logger, IOptions<ClientOptions> option
             }
         });
     }
+
+    /// <summary>
+    /// Handle focus request
+    /// </summary>
+    /// <param name="action"></param>
+    public void HandleFocusRequest(Action<double> action)
+    {
+        connection.On<string, double>("FocusRequest", (sender, value) =>
+        {
+            try
+            {
+                logger.LogInformation("Camera focus request received (Sender = {sender}, Value = {value}).", this.sender = sender, value);
+                action(value);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Error}", ex.Message);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Handle zoom request
+    /// </summary>
+    /// <param name="action"></param>
+    public void HandleZoomRequest(Action<double> action)
+    {
+        connection.On<string, double>("ZoomRequest", (sender, value) =>
+        {
+            try
+            {
+                logger.LogInformation("Camera zoom request received (Sender = {sender}, Value = {value}).", this.sender = sender, value);
+                action(value);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Error}", ex.Message);
+            }
+        });
+    }
     #endregion
 
 }

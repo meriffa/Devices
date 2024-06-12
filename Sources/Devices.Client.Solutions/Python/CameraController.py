@@ -40,6 +40,22 @@ class CameraController:
     def StopRequested(self):
         return self.__sharedMemory.buf[0] != 0
 
+    # Process commands (zoom, focus)
+    def ProcessCommands(self):
+        buffer = self.__sharedMemory.buf
+        if buffer[4] != 0:
+            range = self.__camera.GetFocusRange()
+            buffer[8:12] = int(range[0] * 100).to_bytes(4, "little")
+            buffer[12:16] = int(range[1] * 100).to_bytes(4, "little")
+            logging.info(f"Camera focus range (min = {range[0]}, max = {range[1]}).")
+            buffer[4] = 0
+        if buffer[16] != 0:
+            self.__camera.SetFocus(int.from_bytes(buffer[20:24], "little") / 100)
+            buffer[16] = 0
+        if buffer[24] != 0:
+            self.__camera.SetZoom(int.from_bytes(buffer[28:32], "little") / 100)
+            buffer[24] = 0
+
     # Release shared memory
     def ReleaseSharedMemory(self):
         self.__sharedMemory.close()
@@ -59,6 +75,7 @@ class CameraController:
         self.__videoPublisher.Start()
         try:
             while not self.StopRequested():
+                self.ProcessCommands()
                 self.__cameraFPS.Start()
                 self.ProcessFrame()
                 self.__cameraFPS.Stop()

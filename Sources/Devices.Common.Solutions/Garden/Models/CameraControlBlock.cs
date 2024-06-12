@@ -11,11 +11,17 @@ public struct CameraControlBlock
     [FieldOffset(0)]
     public bool StopRequest;
     [FieldOffset(4)]
-    public bool ZoomRequest;
+    public bool FocusRangeRequest;
     [FieldOffset(8)]
-    public int ZoomValue;
+    public int FocusMinimum;
     [FieldOffset(12)]
-    public bool FocusRequest;
+    public int FocusMaximum;
     [FieldOffset(16)]
+    public bool FocusRequest;
+    [FieldOffset(20)]
     public int FocusValue;
+    [FieldOffset(24)]
+    public bool ZoomRequest;
+    [FieldOffset(28)]
+    public int ZoomValue;
 }

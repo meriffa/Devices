@@ -15,7 +15,7 @@ public class CameraController : Controller
 
     #region Private Members
     private readonly EventWaitHandle shutdownRequest = new(false, EventResetMode.ManualReset);
-    private readonly CameraState cameraState = new() { Pan = 90, Tilt = 90 };
+    private readonly CameraState cameraState = new() { Pan = 90, Tilt = 90, FocusMinimum = 0.0d, FocusMaximum = 0.0d, Focus = 0.0d, Zoom = 1.0d };
     #endregion
 
     #region Properties
@@ -63,21 +63,20 @@ public class CameraController : Controller
     {
         try
         {
-            CameraHub.HandleDevicePresenceConfirmationRequest(() => cameraState);
+            CameraHub.HandleDevicePresenceConfirmationRequest(() =>
+            {
+                (cameraState.FocusMinimum, cameraState.FocusMaximum) = cameraDevice.GetFocusRange();
+                return cameraState;
+            });
             CameraHub.HandleShutdownRequest(() =>
             {
-                try
-                {
-                    cameraDevice.SendStopRequest();
-                    shutdownRequest.Set();
-                }
-                catch (Exception ex)
-                {
-                    DisplayService.WriteError(ex);
-                }
+                cameraDevice.Stop();
+                shutdownRequest.Set();
             });
             CameraHub.HandlePanRequest((value) => panTiltDevice.SetPan(cameraState.Pan = value));
             CameraHub.HandleTiltRequest((value) => panTiltDevice.SetTilt(cameraState.Tilt = value));
+            CameraHub.HandleFocusRequest((value) => cameraDevice.SetFocus(cameraState.Focus = value));
+            CameraHub.HandleZoomRequest((value) => cameraDevice.SetZoom(cameraState.Zoom = value));
             CameraHub.Start();
             return true;
         }
