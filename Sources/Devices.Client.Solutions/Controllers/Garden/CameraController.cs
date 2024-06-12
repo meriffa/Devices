@@ -1,4 +1,5 @@
 using CommandLine;
+using Devices.Client.Solutions.Peripherals.Camera;
 using Devices.Client.Solutions.Peripherals.I2C;
 using Devices.Common.Solutions.Garden.Models;
 using System.Reflection;
@@ -35,8 +36,9 @@ public class CameraController : Controller
         if (singleInstance)
         {
             DisplayService.WriteInformation("Camera task started.");
+            using var cameraDevice = new RaspberryPiCameraModule(1920, 1080, 50, "https://HOST_SBC:8443/camera");
             using var panTiltDevice = new ArducamPanTilt(BusId);
-            if (StartPumpRequestHandlingTask(panTiltDevice))
+            if (StartPumpRequestHandlingTask(cameraDevice, panTiltDevice))
             {
                 shutdownRequest.WaitOne();
                 CameraHub.SendShutdownResponse();
@@ -54,24 +56,28 @@ public class CameraController : Controller
     /// <summary>
     /// Start pump request handling task
     /// </summary>
+    /// <param name="cameraDevice"></param>
     /// <param name="panTiltDevice"></param>
     /// <returns></returns>
-    private bool StartPumpRequestHandlingTask(ArducamPanTilt panTiltDevice)
+    private bool StartPumpRequestHandlingTask(RaspberryPiCameraModule cameraDevice, ArducamPanTilt panTiltDevice)
     {
         try
         {
             CameraHub.HandleDevicePresenceConfirmationRequest(() => cameraState);
-            CameraHub.HandleShutdownRequest(() => shutdownRequest.Set());
-            CameraHub.HandlePanRequest((value) =>
+            CameraHub.HandleShutdownRequest(() =>
             {
-                cameraState.Pan = value;
-                panTiltDevice.SetPan(value);
+                try
+                {
+                    cameraDevice.SendStopRequest();
+                    shutdownRequest.Set();
+                }
+                catch (Exception ex)
+                {
+                    DisplayService.WriteError(ex);
+                }
             });
-            CameraHub.HandleTiltRequest((value) =>
-            {
-                cameraState.Tilt = value;
-                panTiltDevice.SetTilt(value);
-            });
+            CameraHub.HandlePanRequest((value) => panTiltDevice.SetPan(cameraState.Pan = value));
+            CameraHub.HandleTiltRequest((value) => panTiltDevice.SetTilt(cameraState.Tilt = value));
             CameraHub.Start();
             return true;
         }
@@ -82,4 +88,5 @@ public class CameraController : Controller
         }
     }
     #endregion
+
 }

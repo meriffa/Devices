@@ -142,37 +142,33 @@ INSERT INTO "Application" ("ApplicationID", "ApplicationName", "ApplicationEnabl
     (3, 'Devices.Client Scheduled Job', TRUE),
     (4, 'Devices.Client.Solutions Scheduled Job (Weather)', TRUE),
 	(5, 'Devices.Client.Solutions Scheduled Job (Watering)', TRUE),
-	(6, 'Devices.Client.Solutions.Python', TRUE),
-    (7, 'System', TRUE);
+    (6, 'System', TRUE);
 INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArguments") VALUES
     (1, 1, 'Install.sh', 'InstallClient "Devices.Client"'),
     (2, 1, 'Install.sh', 'InstallClient "Devices.Client.Solutions"'),
     (3, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client"'),
     (4, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client.Solutions.Weather"'),
 	(5, 1, 'Install.sh', 'SetupScheduledJobs "Devices.Client.Solutions.Watering"'),
-	(6, 1, 'Install.sh', 'InstallClientPython "Devices.Client.Solutions.Python"'),
-    (7, 1, 'Install.sh', 'SystemUpdate'),
-    (8, 1, 'Install.sh', 'SystemRestart'),
-    (9, 1, 'Install.sh', 'SynchronizeClock'),
-    (10, 1, 'Install.sh', 'ExecuteCommand "ls ~"'),
-	(11, 1, 'Install.sh', 'UploadDeviceLogs');
+    (6, 1, 'Install.sh', 'SystemUpdate'),
+    (7, 1, 'Install.sh', 'SystemRestart'),
+    (8, 1, 'Install.sh', 'SynchronizeClock'),
+    (9, 1, 'Install.sh', 'ExecuteCommand "ls ~"'),
+	(10, 1, 'Install.sh', 'UploadDeviceLogs');
 INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled", "AllowConcurrency") VALUES
     (1, NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE, FALSE),
     (2, NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE, FALSE),
     (3, NOW(), 3, 'Install.zip', NULL, '1.0.0', 3, TRUE, FALSE),
     (4, NOW(), 4, 'Install.zip', NULL, '1.0.0', 4, TRUE, FALSE),
 	(5, NOW(), 5, 'Install.zip', NULL, '1.0.0', 5, TRUE, FALSE),
-	(6, NOW(), 6, 'Devices.Client.Solutions.Python.zip', NULL, '1.0.0', 6, TRUE, FALSE),
-    (7, NOW(), 7, 'Install.zip', NULL, '1.0.0', 7, FALSE, FALSE),
-    (8, NOW(), 7, 'Install.zip', NULL, '1.0.0', 8, FALSE, FALSE),
-    (9, NOW(), 7, 'Install.zip', NULL, '1.0.0', 9, FALSE, FALSE),
-    (10, NOW(), 7, 'Install.zip', NULL, '1.0.0', 10, FALSE, FALSE),
-	(11, NOW(), 7, 'Install.zip', NULL, '1.0.0', 11, FALSE, FALSE);
+    (6, NOW(), 6, 'Install.zip', NULL, '1.0.0', 6, FALSE, FALSE),
+    (7, NOW(), 6, 'Install.zip', NULL, '1.0.0', 7, FALSE, FALSE),
+    (8, NOW(), 6, 'Install.zip', NULL, '1.0.0', 8, FALSE, FALSE),
+    (9, NOW(), 6, 'Install.zip', NULL, '1.0.0', 9, FALSE, FALSE),
+	(10, NOW(), 6, 'Install.zip', NULL, '1.0.0', 10, FALSE, FALSE);
 SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FROM "Release"), 0));
 INSERT INTO "ApplicationDependency" ("ApplicationID", "RequiredApplicationID", "MinimumVersion") VALUES
     (2, 1, '1.0.0'),
 	(3, 1, NULL),
 	(4, 2, NULL),
-	(5, 2, NULL),
-    (6, 1, '1.0.0');
---SELECT SETVAL($$"DeviceDeployment_DeploymentID_seq"$$, COALESCE((SELECT MAX("DeploymentID") FROM "DeviceDeployment"), 0));
+	(5, 2, NULL);
+SELECT SETVAL($$"DeviceDeployment_DeploymentID_seq"$$, COALESCE((SELECT MAX("DeploymentID") FROM "DeviceDeployment"), 0));

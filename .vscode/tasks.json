@@ -80,19 +80,6 @@
             }
         },
         {
-            "label": "Package Devices.Client.Solutions.Python",
-            "command": "./Resources/Scripts/AWS.sh",
-            "type": "process",
-            "args": [
-                "PackageClientPython",
-                "Devices.Client.Solutions.Python"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            }
-        },
-        {
             "label": "Package Install.sh",
             "command": "./Resources/Scripts/AWS.sh",
             "type": "process",

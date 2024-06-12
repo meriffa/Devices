@@ -47,7 +47,7 @@
             "console": "integratedTerminal",
             "stopAtEntry": false,
             "env": {
-                "ENVIRONMENT": "Development",
+                "ENVIRONMENT": "Development"
             }
         },
         {
@@ -74,7 +74,7 @@
                 "debuggerPath": "~/.vsdbg/vsdbg"
             },
             "env": {
-                "ENVIRONMENT": "Development",
+                "ENVIRONMENT": "Development"
             }
         },
         {
@@ -91,6 +91,7 @@
             "stopAtEntry": false,
             "env": {
                 "ENVIRONMENT": "Development",
+                "PYTHONNET_PYDLL": "/usr/lib/x86_64-linux-gnu/libpython3.11.so"
             }
         },
         {
@@ -116,25 +117,8 @@
             },
             "env": {
                 "ENVIRONMENT": "Development",
+                "PYTHONNET_PYDLL": "/usr/lib/aarch64-linux-gnu/libpython3.11.so"
             }
-        },
-        {
-            "name": "Devices.Client.Solutions.Python",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/Sources/Devices.Client.Solutions.Python/ProgramMachineLearning.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/Sources/Devices.Client.Solutions.Python",
-            "env": {
-                "XDG_SESSION_TYPE": "wayland",
-                "HF_HOME": "~/Python/.cache/"
-            },
-            "args": [
-                "--task",
-                "ComputerVision",
-                "--model",
-                "1"
-            ]
         }
     ]
 }

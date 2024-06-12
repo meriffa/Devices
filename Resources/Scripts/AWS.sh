@@ -395,7 +395,6 @@ ExtractDevicesHost() {
 DeployDevicesHostPackages() {
   PackageClient "Devices.Client"
   PackageClient "Devices.Client.Solutions"
-  PackageClientPython "Devices.Client.Solutions.Python"
   PackageInstall
   UploadDevicesHostPackages
 }
@@ -453,28 +452,6 @@ PackageClient() {
   echo "'$1' packaging completed."
 }
 
-# Package Python client project
-PackageClientPython() {
-  echo "'$1' packaging started."
-  pushd $SOLUTION_FOLDER/Sources/$1 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  rm -rf $1.zip
-  rm -rf Install.sh
-  cp $SOLUTION_FOLDER/Resources/Scripts/Install.sh .
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  zip -rq $1.zip .
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  SHA256_HASH=($(sha256sum $1.zip))
-  echo "Hash = ${SHA256_HASH^^}"
-  mkdir -p $SOLUTION_FOLDER/../Devices.Configuration/Packages/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  mv $1.zip $SOLUTION_FOLDER/../Devices.Configuration/Packages/
-  [ $? != 0 ] && DisplayErrorAndStop "'$1' packaging failed."
-  rm Install.sh
-  popd 1> /dev/null
-  echo "'$1' packaging completed."
-}
-
 # Package Install.sh
 PackageInstall() {
   echo "'Install.sh' packaging started."
@@ -528,7 +505,6 @@ case $OPERATION in
   DownloadDevicesHostLogs) DownloadDevicesHostLogs ;;
   DownloadDeviceLogs) DownloadDeviceLogs ;;
   PackageClient) PackageClient "$2" ;;
-  PackageClientPython) PackageClientPython "$2" ;;
   PackageInstall) PackageInstall ;;
   RegisterDevice) RegisterDevice $2 "$3" "$4" "$5" "$6" ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;

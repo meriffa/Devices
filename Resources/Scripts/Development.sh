@@ -71,6 +71,7 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.Json
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Hosting
+  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package pythonnet
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Extensions.Hosting
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Formatting.Compact
   dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Settings.Configuration

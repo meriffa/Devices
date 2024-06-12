@@ -81,11 +81,7 @@ public class WateringController : Controller
         try
         {
             WateringHub.HandleDevicePresenceConfirmationRequest(() => null);
-            WateringHub.HandlePumpRequest((pumpIndex, pumpState) =>
-            {
-                controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
-                pumpStates[pumpIndex] = pumpState;
-            });
+            WateringHub.HandlePumpRequest((pumpIndex, pumpState) => HandlePumpRequest(controller, pumpIndex, pumpState));
             WateringHub.HandleOperatorPresenceConfirmationResponse(() => presenceRequested = false);
             WateringHub.HandleShutdownRequest(() => shutdownRequest.Set());
             WateringHub.Start();
@@ -96,6 +92,18 @@ public class WateringController : Controller
             DisplayService.WriteError(ex);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Handle pump request
+    /// </summary>
+    /// <param name="controller"></param>
+    /// <param name="pumpIndex"></param>
+    /// <param name="pumpState"></param>
+    private static void HandlePumpRequest(GpioController controller, int pumpIndex, bool pumpState)
+    {
+        controller.Write(PIN_NUMBERS[pumpIndex], pumpState ? PinValue.Low : PinValue.High);
+        pumpStates[pumpIndex] = pumpState;
     }
 
     /// <summary>

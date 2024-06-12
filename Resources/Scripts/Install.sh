@@ -79,16 +79,6 @@ SetupScheduledJob() {
   echo "'$1' scheduled job setup completed."
 }
 
-# Install Python client project
-InstallClientPython() {
-  InstallPackages python3
-  InstallPythonPackages "pip,pip" "venv,venv" "numpy,numpy" "cv2,opencv" "flask,flask" "waitress,waitress" "picamera2,picamera2"
-  CreateClientPythonService "devices-client-python"
-  StopService "devices-client-python"
-  InstallClient "$1"
-  StartService "devices-client-python"
-}
-
 # Start service
 StartService() {
   sudo systemctl start $1 &> /dev/null
@@ -103,39 +93,6 @@ StopService() {
   sudo systemctl stop $1 &> /dev/null
   [ $? != 0 ] && DisplayErrorAndStop "Service '$1' stop failed failed."
   echo "Service '$1' stopped."
-}
-
-# Create Python client service
-CreateClientPythonService() {
-  if ! [ -f /etc/systemd/system/$1.service ]; then
-    echo "Python client service setup started."
-    sudo tee /etc/systemd/system/$1.service 1> /dev/null << END
-[Unit]
-Description=Devices.Client.Solutions.Python Application
-After=network.target
-
-[Service]
-WorkingDirectory=/root/Devices.Client.Solutions.Python
-ExecStart=/usr/bin/python3 /root/Devices.Client.Solutions.Python/Program.py -s Picamera2 -w 1280 -h 720 -f 30 -p 5000 --displayDateTime --displayFPS
-Restart=always
-RestartSec=10
-TimeoutStopSec=90
-KillSignal=SIGINT
-SyslogIdentifier=$1
-User=root
-
-[Install]
-WantedBy=multi-user.target
-END
-    [ $? != 0 ] && DisplayErrorAndStop "Python client service setup failed (1).";
-    sudo chown -R root:root /etc/systemd/system/$1.service
-    [ $? != 0 ] && DisplayErrorAndStop "Python client service setup failed (2).";
-    sudo systemctl enable $1 &> /dev/null
-    [ $? != 0 ] && DisplayErrorAndStop "Python client service setup failed (3).";
-    sudo systemctl status $1 --no-pager --no-legend --lines 0 | grep -i "Loaded: loaded (/etc/systemd/system/$1.service; enabled;" &> /dev/null
-    [ $? != 0 ] && DisplayErrorAndStop "Python client service setup failed (4).";
-    echo "Python client service setup completed."
-  fi
 }
 
 # System update
@@ -226,7 +183,6 @@ fi
 case $OPERATION in
   InstallClient) InstallClient "$2" ;;
   SetupScheduledJobs) SetupScheduledJobs "$2" ;;
-  InstallClientPython) InstallClientPython "$2" ;;
   SystemUpdate) SystemUpdate ;;
   SystemRestart) SystemRestart ;;
   SynchronizeClock) SynchronizeClock ;;

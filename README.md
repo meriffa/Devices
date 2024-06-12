@@ -26,8 +26,7 @@ Device Management Framework is an open-source solution for managing Edge Computi
 - [Devices.Web](/Sources/Devices.Web/): Core tier web site pages & assets.
 - [Devices.Web.Solutions](/Sources/Devices.Web.Solutions/): Core tier reference web site pages & assets.
 - [Devices.Client](/Sources/Devices.Client/): Device agent application.
-- [Devices.Client.Solutions](/Sources/Devices.Client.Solutions/): Device reference business application (C#).
-- [Devices.Client.Solutions.Python](/Sources/Devices.Client.Solutions.Python/): Device reference business application (Python).
+- [Devices.Client.Solutions](/Sources/Devices.Client.Solutions/): Device reference business application (C#, Python).
 
 ## References
 
