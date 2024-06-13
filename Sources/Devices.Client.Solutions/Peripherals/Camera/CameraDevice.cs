@@ -52,6 +52,7 @@ public sealed class CameraDevice(CameraDefinition cameraDefinition) : IDisposabl
                 file = MemoryMappedFile.CreateFromFile($"/dev/shm/{cameraController.InvokeMethod("GetSharedMemoryName").As<string>()}", FileMode.Open, null, size);
                 initialized.Set();
                 cameraController.InvokeMethod("Start");
+                PythonEngine.Shutdown();
             }
             catch (Exception ex)
             {
