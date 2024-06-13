@@ -178,9 +178,7 @@ INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "
     (4, NOW(), 4, 'Install.zip', NULL, '1.0.0', 4, TRUE, FALSE),
 	(5, NOW(), 5, 'Install.zip', NULL, '1.0.0', 5, TRUE, FALSE),
 	(6, NOW(), 6, 'Install.zip', NULL, '1.0.0', 6, TRUE, FALSE),
-
 	(7, NOW(), 7, 'Install.zip', NULL, '1.0.0', 7, TRUE, FALSE),
-
     (8, NOW(), 8, 'Install.zip', NULL, '1.0.0', 8, FALSE, FALSE),
     (9, NOW(), 8, 'Install.zip', NULL, '1.0.0', 9, FALSE, FALSE),
     (10, NOW(), 8, 'Install.zip', NULL, '1.0.0', 10, FALSE, FALSE),
