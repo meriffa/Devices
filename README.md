@@ -6,7 +6,7 @@ Device Management Framework is an open-source solution for managing Edge Computi
 
 ![Architecture Diagram](/Resources/Images/Architecture.png)
 
-- Core Tier: The core tier has web interface, web services and real-time communication endpoints and structured data store
+- Core Tier: The core tier has web interface, web services and real-time communication endpoints and structured data store.
   - The web site allows end users to monitor and manage devices remotely.
   - The web services allow both devices and backend systems to connect and implement specific management services (Security, Monitoring, Configuration).
   - The real-time communication endpoints provide direct control message relay channel between devices and browser based or backed system clients.
@@ -36,6 +36,5 @@ Device Management Framework is an open-source solution for managing Edge Computi
 - [Operations](/Resources/Documents/Operations.md)
 - [Examples](/Resources/Documents/Solutions.md)
 - [Platforms](/Resources/Documents/Platforms.md)
-- [Releases](/Resources/Documents/Releases.md#release-history)
 - [Roadmap](/Resources/Documents/Roadmap.md#capability-roadmap)
 - [Glossary](/Resources/Documents/Glossary.md)

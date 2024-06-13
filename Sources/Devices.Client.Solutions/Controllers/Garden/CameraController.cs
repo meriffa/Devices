@@ -36,7 +36,8 @@ public class CameraController : Controller
         if (singleInstance)
         {
             DisplayService.WriteInformation("Camera task started.");
-            using var cameraDevice = new RaspberryPiCameraModule(GardenService.GetCameraDefinition());
+            using var cameraDevice = new CameraDevice(GardenService.GetCameraDefinition());
+            cameraDevice.Start();
             using var panTiltDevice = new ArducamPanTilt(BusId);
             if (StartPumpRequestHandlingTask(cameraDevice, panTiltDevice))
             {
@@ -59,7 +60,7 @@ public class CameraController : Controller
     /// <param name="cameraDevice"></param>
     /// <param name="panTiltDevice"></param>
     /// <returns></returns>
-    private bool StartPumpRequestHandlingTask(RaspberryPiCameraModule cameraDevice, ArducamPanTilt panTiltDevice)
+    private bool StartPumpRequestHandlingTask(CameraDevice cameraDevice, ArducamPanTilt panTiltDevice)
     {
         try
         {
