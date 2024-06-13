@@ -62,7 +62,7 @@ SetupScheduledJobs() {
     "Devices.Client.Solutions.Watering")
       SetupScheduledJob $1 "Devices.Client.Solutions.dll Watering" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Watering >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
     "Devices.Client.Solutions.Camera-B1")
-      SetupScheduledJob $1 "Devices.Client.Solutions.dll Camera" "*/5 * * * * cd /root/Devices.Client.Solutions && /usr/bin/dotnet Devices.Client.Solutions.dll Camera -b 1 >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
+      SetupScheduledJob $1 "Devices.Client.Solutions.dll Camera" "*/5 * * * * cd /root/Devices.Client.Solutions && PYTHONNET_PYDLL=/usr/lib/aarch64-linux-gnu/libpython3.11.so /usr/bin/dotnet Devices.Client.Solutions.dll Camera -b 1 >> /var/log/Devices.Client.Solutions.log 2>&1" ;;
   esac
   echo "'$1' scheduled jobs setup completed."
 }
