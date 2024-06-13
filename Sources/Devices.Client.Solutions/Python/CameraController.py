@@ -12,11 +12,12 @@ from VideoPublisher import VideoPublisher
 class CameraController:
 
     # Initialization
-    def __init__(self, size, source, width, height, fps, location, focus=None, displayDateTime=False, displayFPS=False):
+    def __init__(self, size, source, width, height, fps, bitrate, location, focus=None, displayDateTime=False, displayFPS=False):
         self.__source = source
         self.__width = width
         self.__height = height
         self.__fps = fps
+        self.__bitrate = bitrate
         self.__location = location
         self.__displayDateTime = displayDateTime
         self.__displayFPS = displayFPS
@@ -29,7 +30,7 @@ class CameraController:
             self.__camera = CameraOpenCV.CameraOpenCV(self.__source, self.__width, self.__height, self.__fps, self.__focus)
         self.__cameraDateTime = CameraDateTime(self.__displayDateTime)
         self.__cameraFPS = CameraFPS(self.__displayFPS)
-        self.__videoPublisher = VideoPublisher(self.__width, self.__height, self.__fps, self.__location)
+        self.__videoPublisher = VideoPublisher(self.__width, self.__height, self.__fps, self.__bitrate, self.__location)
         self.__sharedMemory = multiprocessing.shared_memory.SharedMemory(create=True, size=size)
 
     # Return shared memory name

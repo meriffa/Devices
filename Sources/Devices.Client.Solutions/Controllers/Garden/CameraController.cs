@@ -36,7 +36,7 @@ public class CameraController : Controller
         if (singleInstance)
         {
             DisplayService.WriteInformation("Camera task started.");
-            using var cameraDevice = new RaspberryPiCameraModule(1920, 1080, 50, "https://HOST_SBC:8443/camera");
+            using var cameraDevice = new RaspberryPiCameraModule(GardenService.GetCameraDefinition());
             using var panTiltDevice = new ArducamPanTilt(BusId);
             if (StartPumpRequestHandlingTask(cameraDevice, panTiltDevice))
             {

@@ -14,6 +14,12 @@ public interface IGardenService
     /// </summary>
     /// <param name="weatherCondition"></param>
     void SaveWeatherCondition(WeatherCondition weatherCondition);
+
+    /// <summary>
+    /// Return camera definition
+    /// </summary>
+    /// <returns></returns>
+    CameraDefinition GetCameraDefinition();
     #endregion
 
 }

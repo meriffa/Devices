@@ -244,13 +244,50 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
                     d.""DeviceName"",
                     d.""DeviceLocation""
                 FROM
-                    ""Device"" d
+                    ""Device"" d JOIN
+                    ""Garden"".""Camera"" c ON c.""DeviceID"" = d.""DeviceID""
                 ORDER BY
                     d.""DeviceName"";", cn);
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(IdentityService.GetDevice(r));
             return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return camera definition
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public CameraDefinition GetCameraDefinition(int deviceId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT DISTINCT
+                    ""Source"",
+                    ""Width"",
+                    ""Height"",
+                    ""FramesPerSecond"",
+                    ""Bitrate"",
+                    ""PublishLocation"",
+                    ""ViewLocation""
+                FROM
+                    ""Garden"".""Camera""
+                WHERE
+                    ""DeviceID"" = @DeviceID;", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return GetCameraDefinition(r);
+            throw new($"Invalid camera device specified (DeviceID = {deviceId}).");
         }
         catch (Exception ex)
         {
@@ -266,36 +303,30 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static DeviceWeatherCondition GetDeviceWeatherCondition(NpgsqlDataReader reader)
+    private static DeviceWeatherCondition GetDeviceWeatherCondition(NpgsqlDataReader reader) => new()
     {
-        return new()
-        {
-            Device = IdentityService.GetDevice(reader),
-            DeviceDate = (DateTime)reader["DeviceDate"],
-            Temperature = (double)(decimal)reader["Temperature"],
-            Humidity = (double)(decimal)reader["Humidity"],
-            Pressure = (double)(decimal)reader["Pressure"],
-            Illuminance = (double)(decimal)reader["Illuminance"]
-        };
-    }
+        Device = IdentityService.GetDevice(reader),
+        DeviceDate = (DateTime)reader["DeviceDate"],
+        Temperature = (double)(decimal)reader["Temperature"],
+        Humidity = (double)(decimal)reader["Humidity"],
+        Pressure = (double)(decimal)reader["Pressure"],
+        Illuminance = (double)(decimal)reader["Illuminance"]
+    };
 
     /// <summary>
     /// Return aggregate weather condition instance
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static AggregateWeatherCondition GetAggregateWeatherCondition(NpgsqlDataReader reader)
+    private static AggregateWeatherCondition GetAggregateWeatherCondition(NpgsqlDataReader reader) => new()
     {
-        return new()
-        {
-            Device = IdentityService.GetDevice(reader),
-            DeviceDate = (DateTime)reader["DeviceDate"],
-            Temperature = GetAggregateMeasurement(reader, "Temperature"),
-            Humidity = GetAggregateMeasurement(reader, "Humidity"),
-            Pressure = GetAggregateMeasurement(reader, "Pressure"),
-            Illuminance = GetAggregateMeasurement(reader, "Illuminance")
-        };
-    }
+        Device = IdentityService.GetDevice(reader),
+        DeviceDate = (DateTime)reader["DeviceDate"],
+        Temperature = GetAggregateMeasurement(reader, "Temperature"),
+        Humidity = GetAggregateMeasurement(reader, "Humidity"),
+        Pressure = GetAggregateMeasurement(reader, "Pressure"),
+        Illuminance = GetAggregateMeasurement(reader, "Illuminance")
+    };
 
     /// <summary>
     /// Return aggregate measurement instance
@@ -337,6 +368,22 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ServiceOption
         cmd.Parameters.Add("@DeviceDate", NpgsqlDbType.TimestampTz).Value = serviceDate.AddYears(-1);
         cmd.ExecuteNonQuery();
     }
+
+    /// <summary>
+    /// Return camera definition instance
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static CameraDefinition GetCameraDefinition(NpgsqlDataReader reader) => new()
+    {
+        Source = (string)reader["Source"],
+        Width = (int)reader["Width"],
+        Height = (int)reader["Height"],
+        FramesPerSecond = (int)reader["FramesPerSecond"],
+        Bitrate = (int)reader["Bitrate"],
+        PublishLocation = (string)reader["PublishLocation"],
+        ViewLocation = (string)reader["ViewLocation"]
+    };
     #endregion
 
 }

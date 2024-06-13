@@ -5,7 +5,7 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
 
     // Initialization
     Devices.Host.Site.initContentPage = function () {
-        $("#cmbDevice").change(verifyDevicePresence);
+        $("#cmbDevice").change(loadCameraViewLocation);
         $("#btnShutdown").click(sendShutdownRequest);
         $("#cameraPan").change(function () {
             $("#cameraPanValue").val($("#cameraPan").val());
@@ -97,7 +97,23 @@ Devices.Web.Solutions = Devices.Web.Solutions || {};
                     $("#cmbDevice").append(`<option value="${device.id}">${device.name} (${device.location})</option>`);
                 });
                 if ($("#cmbDevice > option").length > 0)
-                    verifyDevicePresence();
+                    loadCameraViewLocation();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                Devices.Host.Site.displayError(jqXHR, textStatus, errorThrown);
+            }
+        });
+    }
+
+    // Load camera view location
+    function loadCameraViewLocation() {
+        $.ajax({
+            method: "GET",
+            contentType: "application/json",
+            url: `/Service/Solutions/Garden/GetCameraViewLocation?deviceId=${$("#cmbDevice").val()}`,
+            success: function (viewLocation) {
+                $("#videoPlayer").attr("src", viewLocation);
+                verifyDevicePresence();
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 Devices.Host.Site.displayError(jqXHR, textStatus, errorThrown);

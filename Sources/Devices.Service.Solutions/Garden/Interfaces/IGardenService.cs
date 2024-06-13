@@ -50,6 +50,13 @@ public interface IGardenService
     /// </summary>
     /// <returns></returns>
     List<Device> GetCameraDevices();
+
+    /// <summary>
+    /// Return camera definition
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public CameraDefinition GetCameraDefinition(int deviceId);
     #endregion
 
 }

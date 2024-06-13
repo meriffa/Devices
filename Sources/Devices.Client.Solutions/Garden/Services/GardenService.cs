@@ -5,6 +5,7 @@ using Devices.Common.Services;
 using Devices.Common.Solutions.Garden.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -35,6 +36,25 @@ public class GardenService(ILogger<GardenService> logger, IOptions<ClientOptions
             var content = new StringContent(JsonSerializer.Serialize(weatherCondition), Encoding.UTF8, "application/json");
             using var response = PostRequest("/Service/Solutions/Garden/SaveWeatherCondition", content);
             response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return camera definition
+    /// </summary>
+    /// <returns></returns>
+    public CameraDefinition GetCameraDefinition()
+    {
+        try
+        {
+            using var response = GetRequest("/Service/Solutions/Garden/GetCameraDefinition", retry: true);
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadFromJsonAsync<CameraDefinition>().Result!;
         }
         catch (Exception ex)
         {

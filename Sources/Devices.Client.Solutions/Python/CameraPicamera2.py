@@ -14,7 +14,7 @@ class CameraPicamera2:
         self.__camera = picamera2.Picamera2()
         main = {"format": "RGB888", "size": (width, height)}
         controls = {"FrameDurationLimits": (int(1000000 / fps), int(1000000 / fps))}
-        transform = libcamera.Transform(hflip=False, vflip=True)
+        transform = libcamera.Transform(hflip=True, vflip=True)
         configuration = self.__camera.create_preview_configuration(main=main, controls=controls, transform=transform)
         self.__camera.align_configuration(configuration)
         self.__camera.configure(configuration)

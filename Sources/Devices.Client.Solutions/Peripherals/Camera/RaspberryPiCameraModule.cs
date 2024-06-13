@@ -23,11 +23,8 @@ public sealed class RaspberryPiCameraModule : IDisposable
     /// <summary>
     /// Initialization
     /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="fps"></param>
-    /// <param name="location"></param>
-    public RaspberryPiCameraModule(int width, int height, int fps, string location)
+    /// <param name="cameraDefinition"></param>
+    public RaspberryPiCameraModule(CameraDefinition cameraDefinition)
     {
         task = Task.Run(() =>
         {
@@ -42,8 +39,16 @@ public sealed class RaspberryPiCameraModule : IDisposable
                 var cameraModuleFile = $"{AppDomain.CurrentDomain.BaseDirectory}Python/CameraController.py";
                 scope.Execute(PythonEngine.Compile(File.ReadAllText(cameraModuleFile), cameraModuleFile));
                 int size = Marshal.SizeOf(typeof(CameraControlBlock));
-                var args = new PyObject[] { size.ToPython(), "PiCSI".ToPython(), width.ToPython(), height.ToPython(), fps.ToPython(), location.ToPython() };
-                var cameraController = scope.Get("CameraController").Invoke(args, Py.kw("displayDateTime", true));
+                var cameraController = scope.Get("CameraController").Invoke(new PyObject[]
+                {
+                    size.ToPython(),
+                    cameraDefinition.Source.ToPython(),
+                    cameraDefinition.Width.ToPython(),
+                    cameraDefinition.Height.ToPython(),
+                    cameraDefinition.FramesPerSecond.ToPython(),
+                    cameraDefinition.Bitrate.ToPython(),
+                    cameraDefinition.PublishLocation.ToPython()
+                }, Py.kw("displayDateTime", true));
                 file = MemoryMappedFile.CreateFromFile($"/dev/shm/{cameraController.InvokeMethod("GetSharedMemoryName").As<string>()}", FileMode.Open, null, size);
                 cameraController.InvokeMethod("Start");
             }

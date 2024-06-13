@@ -129,6 +129,43 @@ public class GardenController : ControllerBase
             return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
         }
     }
+
+    /// <summary>
+    /// Return camera view location
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    public ActionResult<string> GetCameraViewLocation([FromServices] IGardenService service, int deviceId)
+    {
+        try
+        {
+            return Ok(service.GetCameraDefinition(deviceId).ViewLocation);
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return camera definition
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "DevicePolicy")]
+    public ActionResult<CameraDefinition> GetCameraDefinition([FromServices] IGardenService service)
+    {
+        try
+        {
+            return Ok(service.GetCameraDefinition(HttpContext.User.GetDeviceId()));
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
     #endregion
 
 }
