@@ -117,7 +117,7 @@ public class GardenController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    [HttpGet, Authorize(Policy = "GardenCameraPolicy")]
     public ActionResult<List<Device>> GetCameraDevices([FromServices] IGardenService service)
     {
         try
@@ -136,7 +136,7 @@ public class GardenController : ControllerBase
     /// <param name="service"></param>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "GardenPolicy")]
+    [HttpGet, Authorize(Policy = "GardenCameraPolicy")]
     public ActionResult<string> GetCameraViewLocation([FromServices] IGardenService service, int deviceId)
     {
         try

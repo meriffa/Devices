@@ -20,7 +20,7 @@ public abstract class HubBase<T> : Hub<T> where T : class, IHubBase
     /// <param name="identityService"></param>
     /// <returns></returns>
     [Authorize(Policy = "GardenPolicy")]
-    public async Task SendDevicePresenceConfirmationRequest(string recipient, [FromServices] IIdentityService identityService)
+    public virtual async Task SendDevicePresenceConfirmationRequest(string recipient, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).DevicePresenceConfirmationRequest(Context.UserIdentifier!);
     }
@@ -44,7 +44,7 @@ public abstract class HubBase<T> : Hub<T> where T : class, IHubBase
     /// <param name="identityService"></param>
     /// <returns></returns>
     [Authorize(Policy = "GardenPolicy")]
-    public async Task SendShutdownRequest(string recipient, [FromServices] IIdentityService identityService)
+    public virtual async Task SendShutdownRequest(string recipient, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).ShutdownRequest(Context.UserIdentifier!);
     }

@@ -45,6 +45,9 @@
                         {
                             <li class="nav-item"><a class="nav-link@(IsSelected(ViewData, "Garden Weather"))" asp-area="Garden" asp-page="/Weather">Garden Weather</a></li>
                             <li class="nav-item"><a class="nav-link@(IsSelected(ViewData, "Garden Watering"))" asp-area="Garden" asp-page="/Watering">Garden Watering</a></li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Model, "GardenCameraPolicy")).Succeeded)
+                        {
                             <li class="nav-item"><a class="nav-link@(IsSelected(ViewData, "Garden Camera"))" asp-area="Garden" asp-page="/Camera">Garden Camera</a></li>
                         }
                     </ul>

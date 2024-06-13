@@ -16,13 +16,37 @@ public class CameraHub : HubBase<ICameraHub>
 
     #region Public Methods
     /// <summary>
+    /// Send device presence confirmation request
+    /// </summary>
+    /// <param name="recipient"></param>
+    /// <param name="identityService"></param>
+    /// <returns></returns>
+    [Authorize(Policy = "GardenCameraPolicy")]
+    public override async Task SendDevicePresenceConfirmationRequest(string recipient, [FromServices] IIdentityService identityService)
+    {
+        await base.SendDevicePresenceConfirmationRequest(recipient, identityService);
+    }
+
+    /// <summary>
+    /// Send shutdown request
+    /// </summary>
+    /// <param name="recipient"></param>
+    /// <param name="identityService"></param>
+    /// <returns></returns>
+    [Authorize(Policy = "GardenCameraPolicy")]
+    public override async Task SendShutdownRequest(string recipient, [FromServices] IIdentityService identityService)
+    {
+        await base.SendShutdownRequest(recipient, identityService);
+    }
+
+    /// <summary>
     /// Send pan request
     /// </summary>
     /// <param name="recipient"></param>
     /// <param name="value"></param>
     /// <param name="identityService"></param>
     /// <returns></returns>
-    [Authorize(Policy = "GardenPolicy")]
+    [Authorize(Policy = "GardenCameraPolicy")]
     public async Task SendPanRequest(string recipient, int value, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).PanRequest(Context.UserIdentifier!, value);
@@ -35,7 +59,7 @@ public class CameraHub : HubBase<ICameraHub>
     /// <param name="value"></param>
     /// <param name="identityService"></param>
     /// <returns></returns>
-    [Authorize(Policy = "GardenPolicy")]
+    [Authorize(Policy = "GardenCameraPolicy")]
     public async Task SendTiltRequest(string recipient, int value, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).TiltRequest(Context.UserIdentifier!, value);
@@ -48,7 +72,7 @@ public class CameraHub : HubBase<ICameraHub>
     /// <param name="value"></param>
     /// <param name="identityService"></param>
     /// <returns></returns>
-    [Authorize(Policy = "GardenPolicy")]
+    [Authorize(Policy = "GardenCameraPolicy")]
     public async Task SendFocusRequest(string recipient, double value, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).FocusRequest(Context.UserIdentifier!, value);
@@ -61,7 +85,7 @@ public class CameraHub : HubBase<ICameraHub>
     /// <param name="value"></param>
     /// <param name="identityService"></param>
     /// <returns></returns>
-    [Authorize(Policy = "GardenPolicy")]
+    [Authorize(Policy = "GardenCameraPolicy")]
     public async Task SendZoomRequest(string recipient, double value, [FromServices] IIdentityService identityService)
     {
         await Clients.User(identityService.GetDeviceToken(Convert.ToInt32(recipient))).ZoomRequest(Context.UserIdentifier!, value);

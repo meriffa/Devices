@@ -37,7 +37,12 @@ public static class ServicesExtensions
             .AddPolicy("GardenPolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-                policy.RequireClaim(ClaimTypes.Role, ["Administrator", "User"]);
+                policy.RequireClaim(ClaimTypes.Role, ["Administrator", "UserCamera", "User"]);
+            })
+            .AddPolicy("GardenCameraPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, ["Administrator", "UserCamera"]);
             });
     }
 
@@ -48,6 +53,7 @@ public static class ServicesExtensions
     public static void AuthorizeAreasSolutions(this RazorPagesOptions options)
     {
         options.Conventions.AuthorizeAreaFolder("Garden", "/", "GardenPolicy");
+        options.Conventions.AuthorizeAreaPage("Garden", "/Camera", "GardenCameraPolicy");
     }
 
     /// <summary>
