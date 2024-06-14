@@ -10,21 +10,34 @@ namespace Devices.Client.Solutions.Garden.Hubs;
 /// <summary>
 /// Base hub
 /// </summary>
-/// <param name="url"></param>
-/// <param name="logger"></param>
-/// <param name="options"></param>
-/// <param name="identityService"></param>
-public abstract class HubBase(string url, ILogger<HubBase> logger, IOptions<ClientOptions> options, IIdentityService identityService) : IHubBase
+public abstract class HubBase : IHubBase
 {
 
-    #region Protected Fields
-    private readonly string url = url;
-    private readonly ILogger<HubBase> logger = logger;
+    #region Private Fields
+    private readonly string url;
+    private readonly ILogger<HubBase> logger;
+    private Action? shutdownAction;
     #endregion
 
     #region Protected Fields
-    protected readonly HubConnection connection = GetHubConnection(url, logger, options.Value, identityService);
+    protected readonly HubConnection connection;
     protected string sender = string.Empty;
+    #endregion
+
+    #region Initialization
+    /// <summary>
+    /// Initialization
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="logger"></param>
+    /// <param name="options"></param>
+    /// <param name="identityService"></param>
+    public HubBase(string url, ILogger<HubBase> logger, IOptions<ClientOptions> options, IIdentityService identityService)
+    {
+        this.url = url;
+        this.logger = logger;
+        connection = GetHubConnection(options.Value, identityService);
+    }
     #endregion
 
     #region Public Methods
@@ -50,7 +63,7 @@ public abstract class HubBase(string url, ILogger<HubBase> logger, IOptions<Clie
             try
             {
                 await connection.StopAsync();
-                logger.LogInformation("Hub connection closed (URL = '{url}', Connection ID = '{connection.ConnectionId}').", url, connection.ConnectionId);
+                logger.LogInformation("Hub connection closed (URL = '{url}').", url);
             }
             catch (Exception ex)
             {
@@ -82,15 +95,16 @@ public abstract class HubBase(string url, ILogger<HubBase> logger, IOptions<Clie
     /// <summary>
     /// Handle shutdown request
     /// </summary>
-    /// <param name="action"></param>
-    public void HandleShutdownRequest(Action action)
+    /// <param name="shutdownAction"></param>
+    public void HandleShutdownRequest(Action shutdownAction)
     {
+        this.shutdownAction = shutdownAction;
         connection.On<string>("ShutdownRequest", (sender) =>
         {
             try
             {
                 logger.LogInformation("Shutdown request received (Sender = {sender}).", this.sender = sender);
-                action();
+                shutdownAction();
             }
             catch (Exception ex)
             {
@@ -122,12 +136,10 @@ public abstract class HubBase(string url, ILogger<HubBase> logger, IOptions<Clie
     /// <summary>
     /// Return hub connection
     /// </summary>
-    /// <param name="url"></param>
-    /// <param name="logger"></param>
     /// <param name="clientOptions"></param>
     /// <param name="identityService"></param>
     /// <returns></returns>
-    private static HubConnection GetHubConnection(string url, ILogger<HubBase> logger, ClientOptions clientOptions, IIdentityService identityService)
+    private HubConnection GetHubConnection(ClientOptions clientOptions, IIdentityService identityService)
     {
         var connection = new HubConnectionBuilder()
             .WithUrl($"{clientOptions.Service.Host}{url}", (connectionOptions) =>
@@ -139,16 +151,27 @@ public abstract class HubBase(string url, ILogger<HubBase> logger, IOptions<Clie
                     return message;
                 };
                 connectionOptions.AccessTokenProvider = () => Task.FromResult((string?)identityService.GetDeviceBearerToken());
-            }).WithAutomaticReconnect().Build();
+            })
+            .WithAutomaticReconnect([TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(35)])
+            .Build();
+        connection.Reconnecting += error =>
+        {
+            logger.LogInformation("Hub connection lost (URL = '{url}', Error = {error}).", url, error?.Message ?? "N/A");
+            return Task.CompletedTask;
+        };
         connection.Reconnected += connectionId =>
         {
             logger.LogInformation("Hub connection reestablished (URL = '{url}', Connection ID = '{connectionId}').", url, connectionId);
             return Task.CompletedTask;
         };
-        connection.Closed += async (error) =>
+        connection.Closed += (error) =>
         {
-            await Task.Delay(new Random().Next(0, 5) * 1000);
-            await connection.StartAsync();
+            if (error != null)
+            {
+                logger.LogInformation("Hub connection terminated (URL = '{url}', Error = {error}).", url, error.Message);
+                shutdownAction?.Invoke();
+            }
+            return Task.CompletedTask;
         };
         return connection;
     }
