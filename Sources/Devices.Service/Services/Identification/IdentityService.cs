@@ -225,6 +225,69 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
+    /// Return devices
+    /// </summary>
+    /// <returns></returns>
+    public List<Device> GetDevices()
+    {
+        try
+        {
+            var result = new List<Device>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT DISTINCT
+                    ""DeviceID"",
+                    ""DeviceName"",
+                    ""DeviceLocation""
+                FROM
+                    ""Device""
+                ORDER BY
+                    ""DeviceName"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(GetDevice(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return device instance
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    public Device GetDevice(int deviceId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    ""DeviceID"",
+                    ""DeviceName"",
+                    ""DeviceLocation""
+                FROM
+                    ""Device""
+                WHERE
+                    ""DeviceID"" = @DeviceID;", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return GetDevice(r);
+            throw new($"Invalid device specified (DeviceID = {deviceId}).");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Return device instance
     /// </summary>
     /// <param name="reader"></param>

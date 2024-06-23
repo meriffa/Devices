@@ -87,6 +87,24 @@ public class IdentityController : ControllerBase
             return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
         }
     }
+
+    /// <summary>
+    /// Return devices
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService service)
+    {
+        try
+        {
+            return Ok(service.GetDevices());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
     #endregion
 
 }

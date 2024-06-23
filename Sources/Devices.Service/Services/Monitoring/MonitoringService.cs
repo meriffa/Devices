@@ -1,5 +1,7 @@
 using Devices.Common.Models.Monitoring;
+using Devices.Service.Interfaces.Identification;
 using Devices.Service.Interfaces.Monitoring;
+using Devices.Service.Models.Identification;
 using Devices.Service.Models.Monitoring;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
@@ -139,6 +141,33 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     }
 
     /// <summary>
+    /// Return device outages
+    /// </summary>
+    /// <param name="identityService"></param>
+    /// <param name="deviceId"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    public List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter)
+    {
+        try
+        {
+            var result = new List<DeviceOutage>();
+            using var cn = GetConnection();
+            if (deviceId != null)
+                AddDeviceOutages(cn, identityService.GetDevice(deviceId.Value), result);
+            else
+                foreach (var device in identityService.GetDevices())
+                    AddDeviceOutages(cn, device, result);
+            return FilterDeviceOutages(result, filter);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Upload device logs
     /// </summary>
     /// <param name="file"></param>
@@ -209,6 +238,139 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
         cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = serviceDate.AddMonths(-1);
         cmd.ExecuteNonQuery();
     }
+
+    /// <summary>
+    /// Return device monitoring start date
+    /// </summary>
+    /// <param name="cn"></param>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    private DateTime GetDeviceMonitoringStartDate(NpgsqlConnection cn, int deviceId)
+    {
+        using var cmd = GetCommand(@"SELECT MIN(""ServiceDate"") FROM ""DeviceMetric"" WHERE ""DeviceID"" = @DeviceID;", cn);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+        return AdjustDateUp(cmd.ExecuteScalar() as DateTime? ?? DateTime.UtcNow);
+    }
+
+    /// <summary>
+    /// Adjust date down
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static DateTime AdjustDateDown(DateTime value)
+    {
+        var date = value.AddMinutes((int)Math.Floor(value.Minute / 5.0d) * 5 - value.Minute);
+        return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0, DateTimeKind.Utc);
+    }
+
+    /// <summary>
+    /// Adjust date up
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static DateTime AdjustDateUp(DateTime value)
+    {
+        var date = value.AddMinutes((int)Math.Ceiling(value.Minute / 5.0d) * 5 - value.Minute);
+        return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0, DateTimeKind.Utc);
+    }
+
+    /// <summary>
+    /// Add device outages
+    /// </summary>
+    /// <param name="cn"></param>
+    /// <param name="device"></param>
+    /// <param name="outages"></param>
+    private void AddDeviceOutages(NpgsqlConnection cn, Device device, List<DeviceOutage> outages)
+    {
+        using var cmd = GetCommand(
+            @"WITH ""cteReferenceDates"" AS (
+                    SELECT
+                        ""ReferenceDate""
+                    FROM
+                        GENERATE_SERIES(@StartDate, @EndDate, '5 minutes'::interval) ""ReferenceDate""),
+                    ""cteDeviceMetric"" AS (
+                    SELECT
+                        ""DeviceID"",
+                        TO_TIMESTAMP(ROUND(EXTRACT(epoch FROM ""ServiceDate"") / 300) * 300) AT TIME ZONE 'UTC' ""ServiceDate""
+                    FROM
+                        ""DeviceMetric""
+                    WHERE
+                        ""DeviceID"" = @DeviceID)
+                SELECT
+                    r.""ReferenceDate""
+                FROM
+                    ""cteReferenceDates"" r LEFT JOIN
+                    ""cteDeviceMetric"" m ON m.""ServiceDate"" = r.""ReferenceDate""
+                WHERE
+                    m.""ServiceDate"" IS NULL
+                ORDER BY
+                    r.""ReferenceDate"";", cn);
+        cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = device.Id;
+        cmd.Parameters.Add("@StartDate", NpgsqlDbType.TimestampTz).Value = GetDeviceMonitoringStartDate(cn, device.Id);
+        cmd.Parameters.Add("@EndDate", NpgsqlDbType.TimestampTz).Value = AdjustDateDown(DateTime.UtcNow);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            AddDeviceOutage(outages, device, (DateTime)r["ReferenceDate"]);
+    }
+
+    /// <summary>
+    /// Add device outage
+    /// </summary>
+    /// <param name="outages"></param>
+    /// <param name="device"></param>
+    /// <param name="outageDateTime"></param>
+    private static void AddDeviceOutage(List<DeviceOutage> outages, Device device, DateTime outageDateTime)
+    {
+        if (outages.Count > 0)
+        {
+            var outage = outages[^1];
+            if (outage.Outage.To == outageDateTime)
+            {
+                outage.Outage.To = outage.Outage.To.AddMinutes(5);
+                outage.Outage.Duration = outage.Outage.Duration.Add(TimeSpan.FromMinutes(5));
+            }
+            else
+                outages.Add(GetDeviceOutage(device, outageDateTime));
+        }
+        else
+            outages.Add(GetDeviceOutage(device, outageDateTime));
+    }
+
+    /// <summary>
+    /// Return device outage
+    /// </summary>
+    /// <param name="device"></param>
+    /// <param name="outageDateTime"></param>
+    /// <returns></returns>
+    private static DeviceOutage GetDeviceOutage(Device device, DateTime outageDateTime) => new()
+    {
+        Device = device,
+        Outage = new() { From = outageDateTime, To = outageDateTime.AddMinutes(5), Duration = TimeSpan.FromMinutes(5) }
+    };
+
+    /// <summary>
+    /// Filter device outages
+    /// </summary>
+    /// <param name="outages"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    private static List<DeviceOutage> FilterDeviceOutages(List<DeviceOutage> outages, OutageFilter filter) => filter switch
+    {
+        OutageFilter.LastHour => FilterDeviceOutages(outages, DateTime.UtcNow.AddHours(-1)),
+        OutageFilter.LastDay => FilterDeviceOutages(outages, DateTime.UtcNow.AddDays(-1)),
+        OutageFilter.LastWeek => FilterDeviceOutages(outages, DateTime.UtcNow.AddDays(-7)),
+        OutageFilter.LastMonth => FilterDeviceOutages(outages, DateTime.UtcNow.AddMonths(-1)),
+        OutageFilter.All => outages,
+        _ => throw new($"Outage filter '{filter}' is not supported.")
+    };
+
+    /// <summary>
+    /// Filter device outages
+    /// </summary>
+    /// <param name="outages"></param>
+    /// <param name="startDate"></param>
+    /// <returns></returns>
+    private static List<DeviceOutage> FilterDeviceOutages(List<DeviceOutage> outages, DateTime startDate) => outages.Where(i => startDate <= i.Outage.To).ToList();
     #endregion
 
 }

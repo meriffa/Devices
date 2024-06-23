@@ -1,5 +1,6 @@
 using Devices.Common.Models.Monitoring;
 using Devices.Service.Extensions;
+using Devices.Service.Interfaces.Identification;
 using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Models.Monitoring;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +48,27 @@ public class MonitoringController : ControllerBase
         {
             service.SaveDeviceMetrics(HttpContext.User.GetDeviceId(), DateTime.UtcNow, metrics);
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return device outages
+    /// </summary>
+    /// <param name="identityService"></param>
+    /// <param name="monitoringService"></param>
+    /// <param name="deviceId"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<List<DeviceOutage>> GetDeviceOutages([FromServices] IIdentityService identityService, [FromServices] IMonitoringService monitoringService, int? deviceId, OutageFilter filter)
+    {
+        try
+        {
+            return Ok(monitoringService.GetDeviceOutages(identityService, deviceId, filter));
         }
         catch (Exception ex)
         {

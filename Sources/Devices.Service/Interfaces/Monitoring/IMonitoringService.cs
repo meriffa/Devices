@@ -1,4 +1,5 @@
 using Devices.Common.Models.Monitoring;
+using Devices.Service.Interfaces.Identification;
 using Devices.Service.Models.Monitoring;
 using Microsoft.AspNetCore.Http;
 
@@ -24,6 +25,15 @@ public interface IMonitoringService
     /// <param name="serviceDate"></param>
     /// <param name="metrics"></param>
     void SaveDeviceMetrics(int deviceId, DateTime serviceDate, DeviceMetrics metrics);
+
+    /// <summary>
+    /// Return device outages
+    /// </summary>
+    /// <param name="identityService"></param>
+    /// <param name="deviceId"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter);
 
     /// <summary>
     /// Upload device logs

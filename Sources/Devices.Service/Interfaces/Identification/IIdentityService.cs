@@ -43,6 +43,19 @@ public interface IIdentityService
     /// </summary>
     /// <returns></returns>
     List<DeviceStatus> GetDeviceStatuses();
+
+    /// <summary>
+    /// Return devices
+    /// </summary>
+    /// <returns></returns>
+    List<Device> GetDevices();
+
+    /// <summary>
+    /// Return device instance
+    /// </summary>
+    /// <param name="deviceId"></param>
+    /// <returns></returns>
+    Device GetDevice(int deviceId);
     #endregion
 
 }
