@@ -236,28 +236,29 @@ server {
         ssl_certificate_key /etc/nginx/ssl/Devices.Host/Devices.Host.key;
         server_name Devices.Host.HTTPS;
         location / {
-                proxy_pass         http://localhost:5000;
-                proxy_http_version 1.1;
-                proxy_set_header   Upgrade \\\$http_upgrade;
-                proxy_set_header   Connection keep-alive;
-                proxy_set_header   Host \\\$host;
-                proxy_cache_bypass \\\$http_upgrade;
-                proxy_set_header   X-Forwarded-For \\\$proxy_add_x_forwarded_for;
-                proxy_set_header   X-Forwarded-Proto \\\$scheme;
-                proxy_read_timeout 3600;
+                proxy_pass           http://localhost:5000;
+                proxy_http_version   1.1;
+                proxy_set_header     Upgrade \\\$http_upgrade;
+                proxy_set_header     Connection keep-alive;
+                proxy_set_header     Host \\\$host;
+                proxy_cache_bypass   \\\$http_upgrade;
+                proxy_set_header     X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+                proxy_set_header     X-Forwarded-Proto \\\$scheme;
+                proxy_read_timeout   15m;
+                client_max_body_size 16M;
         }
         location /Hub {
-                proxy_pass         http://localhost:5000;
-                proxy_http_version 1.1;
-                proxy_set_header   Upgrade \\\$http_upgrade;
-                proxy_set_header   Connection "upgrade";
-                proxy_set_header   Host \\\$host;
-                proxy_cache_bypass \\\$http_upgrade;
-                proxy_set_header   X-Forwarded-For \\\$proxy_add_x_forwarded_for;
-                proxy_set_header   X-Forwarded-Proto \\\$scheme;
-                proxy_read_timeout 3600;
-                proxy_buffering    off;
-                proxy_cache        off;
+                proxy_pass           http://localhost:5000;
+                proxy_http_version   1.1;
+                proxy_set_header     Upgrade \\\$http_upgrade;
+                proxy_set_header     Connection "upgrade";
+                proxy_set_header     Host \\\$host;
+                proxy_cache_bypass   \\\$http_upgrade;
+                proxy_set_header     X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+                proxy_set_header     X-Forwarded-Proto \\\$scheme;
+                proxy_read_timeout   15m;
+                proxy_buffering      off;
+                proxy_cache          off;
         }
 }
 END"

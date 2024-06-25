@@ -1,6 +1,7 @@
 using Devices.Service.Extensions;
 using Devices.Service.Options;
 using Devices.Service.Solutions.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 using Serilog;
 
 namespace Devices.Host;
@@ -46,8 +47,10 @@ public class Program
         var section = configuration.GetRequiredSection(nameof(ServiceOptions));
         var serviceOptions = section.Get<ServiceOptions>()!;
         services.Configure<ServiceOptions>(section);
+        services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 16 * 1024 * 1024; });
         services.AddServices();
         services.AddServicesSolutions();
+        services.AddRequestTimeouts(options => { options.DefaultPolicy = new() { Timeout = TimeSpan.FromMinutes(15) }; });
         services.AddSecurity(serviceOptions)
             .AddPolicies(serviceOptions)
             .AddPoliciesSolutions();
@@ -85,6 +88,7 @@ public class Program
         application.UseHttpsRedirection();
         application.UseStaticFiles();
         application.UseRouting();
+        application.UseRequestTimeouts();
         application.UseSecurity();
         application.MapControllers();
         application.MapRazorPages();
