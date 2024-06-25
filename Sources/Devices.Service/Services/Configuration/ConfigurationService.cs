@@ -1,8 +1,11 @@
+using Action = Devices.Common.Models.Configuration.Action;
 using Devices.Common.Models.Configuration;
+using Devices.Common.Services;
 using Devices.Service.Interfaces.Configuration;
 using Devices.Service.Models.Configuration;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -56,6 +59,38 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
+    /// Return actions
+    /// </summary>
+    /// <returns></returns>
+    public List<Action> GetActions()
+    {
+        try
+        {
+            var result = new List<Action>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    ""ActionID"",
+                    ""ActionType"",
+                    ""ActionParameters"",
+                    ""ActionArguments""
+                FROM
+                    ""Action""
+                ORDER BY
+                    ""ActionID"";", cn);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                result.Add(GetAction(r));
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Return releases
     /// </summary>
     /// <returns></returns>
@@ -91,6 +126,52 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             while (r.Read())
                 result.Add(GetRelease(r));
             return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return release
+    /// </summary>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    public Release GetRelease(int releaseId)
+    {
+        try
+        {
+            var result = new List<Release>();
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    r.""ReleaseID"",
+                    r.""ServiceDate"",
+                    r.""Package"",
+                    r.""PackageHash"",
+                    r.""Version"",
+                    r.""ReleaseEnabled"",
+                    r.""AllowConcurrency"",
+                    app.""ApplicationID"",
+                    app.""ApplicationName"",
+                    app.""ApplicationEnabled"",
+                    act.""ActionID"",
+                    act.""ActionType"",
+                    act.""ActionParameters"",
+                    act.""ActionArguments""
+                FROM
+                    ""Release"" r JOIN
+                    ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
+                    ""Action"" act ON act.""ActionID"" = r.""ActionID""
+                WHERE
+                    r.""ReleaseID"" = @ReleaseID;", cn);
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return GetRelease(r);
+            throw new($"Invalid release specified (ReleaseID = {releaseId}).");
         }
         catch (Exception ex)
         {
@@ -215,6 +296,39 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     }
 
     /// <summary>
+    /// Save release
+    /// </summary>
+    /// <param name="release"></param>
+    /// <returns></returns>
+    public Release SaveRelease(Release release) => release.Id == 0 ? CreateRelease(release) : UpdateRelease(release);
+
+    /// <summary>
+    /// Enable / disable release
+    /// </summary>
+    /// <param name="releaseId"></param>
+    /// <param name="enabled"></param>
+    public void EnableDisableRelease(int releaseId, bool enabled)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"UPDATE ""Release"" SET
+                    ""ReleaseEnabled"" = @ReleaseEnabled
+                WHERE
+                    ""ReleaseID"" = @ReleaseID;", cn);
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
+            cmd.Parameters.Add("@ReleaseEnabled", NpgsqlDbType.Boolean).Value = enabled;
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Return release package
     /// </summary>
     /// <param name="deviceId"></param>
@@ -240,6 +354,34 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
             cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = releaseId;
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
             return File.OpenRead(Path.Combine(options.PackageFolder, (string)cmd.ExecuteScalar()!));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Save release package
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public string SaveReleasePackage(IFormFile file)
+    {
+        try
+        {
+            string fileName = Path.GetFileName(file.FileName);
+            if (file.Length > 0 && fileName.EndsWith(".zip"))
+            {
+                var path = Path.Combine(options.PackageFolder, fileName);
+                using (var stream = File.Create(path))
+                    file.CopyTo(stream);
+                var hash = CryptographyService.GetHash(path);
+                logger.LogInformation("Release package uploaded (File = '{FileName}', Hash = '{Hash}').", fileName, hash);
+                return hash;
+            }
+            throw new($"Invalid release package specified (File = '{fileName}', Size = {file.Length}).");
         }
         catch (Exception ex)
         {
@@ -450,7 +592,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Common.Models.Configuration.Action GetAction(NpgsqlDataReader reader) => new()
+    private static Action GetAction(NpgsqlDataReader reader) => new()
     {
         Id = (int)reader["ActionID"],
         Type = (ActionType)(int)reader["ActionType"],
@@ -501,6 +643,109 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
         Success = (bool)reader["Success"],
         Details = reader["Details"] is DBNull ? null : (string?)reader["Details"]
     };
+
+    /// <summary>
+    /// Create new release
+    /// </summary>
+    /// <param name="release"></param>
+    /// <returns></returns>
+    private Release CreateRelease(Release release)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"INSERT INTO ""Release""
+                    (""ServiceDate"",
+                    ""ApplicationID"",
+                    ""Package"",
+                    ""PackageHash"",
+                    ""Version"",
+                    ""ActionID"",
+                    ""ReleaseEnabled"",
+                    ""AllowConcurrency"")
+                VALUES
+                    (@ServiceDate,
+                    @ApplicationID,
+                    @Package,
+                    @PackageHash,
+                    @Version,
+                    @ActionID,
+                    @ReleaseEnabled,
+                    @AllowConcurrency)
+                RETURNING
+                    ""ReleaseID"";", cn);
+            cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = release.ServiceDate;
+            cmd.Parameters.Add("@ApplicationID", NpgsqlDbType.Integer).Value = release.Application.Id;
+            cmd.Parameters.Add("@Package", NpgsqlDbType.Varchar, 1024).Value = release.Package;
+            cmd.Parameters.Add("@PackageHash", NpgsqlDbType.Varchar, 64).Value = (object?)release.PackageHash ?? DBNull.Value;
+            cmd.Parameters.Add("@Version", NpgsqlDbType.Varchar, 64).Value = release.Version;
+            cmd.Parameters.Add("@ActionID", NpgsqlDbType.Integer).Value = release.Action.Id;
+            cmd.Parameters.Add("@ReleaseEnabled", NpgsqlDbType.Boolean).Value = release.Enabled;
+            cmd.Parameters.Add("@AllowConcurrency", NpgsqlDbType.Boolean).Value = release.AllowConcurrency;
+            release.Id = (int)cmd.ExecuteScalar()!;
+            return release;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Update existing release
+    /// </summary>
+    /// <param name="release"></param>
+    /// <returns></returns>
+    private Release UpdateRelease(Release release)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"UPDATE ""Release"" SET
+                    ""ServiceDate"" = @ServiceDate,
+                    ""ApplicationID"" = @ApplicationID,
+                    ""Package"" = @Package,
+                    ""PackageHash"" = @PackageHash,
+                    ""Version"" = @Version,
+                    ""ActionID"" = @ActionID,
+                    ""ReleaseEnabled"" = @ReleaseEnabled,
+                    ""AllowConcurrency"" = @AllowConcurrency
+                WHERE
+                    ""ReleaseID"" = @ReleaseID;", cn);
+            cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = release.Id;
+            cmd.Parameters.Add("@ServiceDate", NpgsqlDbType.TimestampTz).Value = release.ServiceDate;
+            cmd.Parameters.Add("@ApplicationID", NpgsqlDbType.Integer).Value = release.Application.Id;
+            cmd.Parameters.Add("@Package", NpgsqlDbType.Varchar, 1024).Value = release.Package;
+            cmd.Parameters.Add("@PackageHash", NpgsqlDbType.Varchar, 64).Value = (object?)release.PackageHash ?? DBNull.Value;
+            cmd.Parameters.Add("@Version", NpgsqlDbType.Varchar, 64).Value = release.Version;
+            cmd.Parameters.Add("@ActionID", NpgsqlDbType.Integer).Value = release.Action.Id;
+            cmd.Parameters.Add("@ReleaseEnabled", NpgsqlDbType.Boolean).Value = release.Enabled;
+            cmd.Parameters.Add("@AllowConcurrency", NpgsqlDbType.Boolean).Value = release.AllowConcurrency;
+            cmd.ExecuteNonQuery();
+            DeleteDeployments(cn, release);
+            return release;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Delete deployments
+    /// </summary>
+    /// <param name="cn"></param>
+    /// <param name="release"></param>
+    private void DeleteDeployments(NpgsqlConnection cn, Release release)
+    {
+        using var cmd = GetCommand(@"DELETE FROM ""DeviceDeployment"" WHERE ""ReleaseID"" = @ReleaseID;", cn);
+        cmd.Parameters.Add("@ReleaseID", NpgsqlDbType.Integer).Value = release.Id;
+        cmd.ExecuteNonQuery();
+    }
     #endregion
 
 }

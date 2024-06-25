@@ -25,14 +25,17 @@
                     <div class="invalid-feedback">Password field is required.</div>
                 </div>
             </div>
+            @if (!Model.ModelState.IsValid)
+            {
+                <div class="row p-2">
+                    <div class="col-md-8 offset-md-4">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </div>
+                </div>
+            }
             <div class="row p-2">
                 <div class="col-md-8 offset-md-4">
                     <button id="btnSignIn" type="submit" class="btn btn-primary">Sign In</button>
-                </div>
-            </div>
-            <div class="row p-2">
-                <div class="col-md-8 offset-md-4">
-                    <div asp-validation-summary="All" class="text-danger"></div>
                 </div>
             </div>
         </form>

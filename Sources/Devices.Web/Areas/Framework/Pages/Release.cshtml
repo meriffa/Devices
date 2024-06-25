@@ -1,0 +1,77 @@
+@page
+@model Devices.Web.Areas.Framework.Pages.ReleaseModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+@section Scripts
+{
+    <script type="text/javascript" src="~/_content/Devices.Web/Resources/Scripts/Release.js" asp-append-version="true"></script>
+}
+<div class="col-md-6 offset-md-3 shadow-sm rounded">
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="row p-2">
+            <label for="cmbApplication" class="col-md-4 col-form-label">Application</label>
+            <div class="col-md-8 has-validation">
+                <select asp-for="ApplicationId" asp-items="@Model.Applications" class="form-select" required>
+                    <option value="">(Select Application)</option>
+                </select>
+                <div class="invalid-feedback">Application field is required.</div>
+            </div>
+        </div>
+        <div class="row p-2">
+            <label asp-for="Package" class="col-md-4 col-form-label">Package</label>
+            <div class="col-md-8 has-validation">
+                <input asp-for="Package" class="form-control" type="file" required placeholder="Select package" />
+                <div class="invalid-feedback">Package field is required.</div>
+            </div>
+        </div>
+        <div class="row p-2">
+            <label asp-for="Version" class="col-md-4 col-form-label">Release Version</label>
+            <div class="col-md-8 has-validation">
+                <input asp-for="Version" class="form-control" type="text" required placeholder="Enter release version" />
+                <div class="invalid-feedback">Release version field is required.</div>
+            </div>
+        </div>
+        <div class="row p-2">
+            <label asp-for="ActionId" class="col-md-4 col-form-label">Action</label>
+            <div class="col-md-8 has-validation">
+                <select asp-for="ActionId" asp-items="@Model.Actions" class="form-select" required>
+                    <option value="">(Select Action)</option>
+                </select>
+                <div class="invalid-feedback">Action field is required.</div>
+            </div>
+        </div>
+        <div class="row p-2">
+            <label asp-for="Enabled" class="col-md-4 col-form-label">Release Enabled</label>
+            <div class="col-md-8 d-flex align-items-center">
+                <input asp-for="Enabled" class="form-check-input" type="checkbox" />
+            </div>
+        </div>
+        <div class="row p-2">
+            <label asp-for="AllowConcurrency" class="col-md-4 col-form-label">Allow Concurrency</label>
+            <div class="col-md-8 d-flex align-items-center">
+                <input asp-for="AllowConcurrency" class="form-check-input" type="checkbox" />
+            </div>
+        </div>
+        @if (!Model.ModelState.IsValid)
+        {
+            <div class="row p-2">
+                <div class="col-md-8 offset-md-4">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="row p-2">
+            <div class="col-md-8 offset-md-4">
+                <div class="d-flex">
+                    <div class="pe-2">
+                        <button id="btnSave" type="button" class="btn btn-primary" title="Save release">Save</button>
+                    </div>
+                    <div class="pe-2">
+                        <a role="button" class="btn btn-secondary" asp-area="Framework" asp-page="/Releases" title="Cancel release save">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

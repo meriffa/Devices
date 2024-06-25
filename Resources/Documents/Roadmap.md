@@ -2,13 +2,12 @@
 
 ### Framework
 
-- Build Release Management REST API & web pages.
+- Implement specialized device policies & roles (Weather Device, Camera Device, Watering Device).
 - Implement user tenant separation (access specific devices & services, limit all devices to tenant devices).
 - Handle Running Application Redeployment (Devices.Client.Solutions Watering, Pre/Post Deployment Action).
 - Real-Time Communication: Provide Alternative Management Protocol (SignalR, WebRTC, SSH over SignalR / WebRTC), Configuration, Monitoring.
 - Provide MQTT support.
 - Video: Streaming Security.
-- Implement specialized device policies & roles (Weather Device, Camera Device, Watering Device).
 - Implement device configuration groups.
 - Implement SignalR Redis Backplane.
 - Implement web application cache (Redis, Memcached).

@@ -50,6 +50,7 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Host/Devices.Host.csproj reference ./Sources/Devices.Web.Solutions/Devices.Web.Solutions.csproj
   dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Serilog.AspNetCore
   dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Swashbuckle.AspNetCore
+  dotnet add ./Sources/Devices.Web/Devices.Web.csproj reference ./Sources/Devices.Service/Devices.Service.csproj
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package CommandLineParser
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Microsoft.Extensions.Configuration

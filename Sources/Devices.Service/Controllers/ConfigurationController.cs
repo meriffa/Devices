@@ -1,3 +1,4 @@
+using Action = Devices.Common.Models.Configuration.Action;
 using Devices.Common.Models.Configuration;
 using Devices.Service.Extensions;
 using Devices.Service.Interfaces.Configuration;
@@ -35,6 +36,24 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
+    /// Return actions
+    /// </summary>
+    /// <param name="service"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<List<Action>> GetActions([FromServices] IConfigurationService service)
+    {
+        try
+        {
+            return Ok(service.GetActions());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Return releases
     /// </summary>
     /// <param name="service"></param>
@@ -45,6 +64,25 @@ public class ConfigurationController : ControllerBase
         try
         {
             return Ok(service.GetReleases());
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Return release
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="releaseId"></param>
+    /// <returns></returns>
+    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<Release> GetRelease([FromServices] IConfigurationService service, int releaseId)
+    {
+        try
+        {
+            return Ok(service.GetRelease(releaseId));
         }
         catch (Exception ex)
         {
@@ -90,6 +128,46 @@ public class ConfigurationController : ControllerBase
     }
 
     /// <summary>
+    /// Save release
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="release"></param>
+    /// <returns></returns>
+    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<Release> SaveRelease([FromServices] IConfigurationService service, Release release)
+    {
+        try
+        {
+            return Ok(service.SaveRelease(release));
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Enable / disable release
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="releaseId"></param>
+    /// <param name="enabled"></param>
+    /// <returns></returns>
+    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult EnableDisableRelease([FromServices] IConfigurationService service, int releaseId, bool enabled)
+    {
+        try
+        {
+            service.EnableDisableRelease(releaseId, enabled);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Return release package
     /// </summary>
     /// <param name="service"></param>
@@ -101,6 +179,25 @@ public class ConfigurationController : ControllerBase
         try
         {
             return new FileStreamResult(service.GetReleasePackage(HttpContext.User.GetDeviceId(), releaseId), "application/octet-stream");
+        }
+        catch (Exception ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, title: ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Save release package
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    public ActionResult<string> SaveReleasePackage([FromServices] IConfigurationService service, IFormFile file)
+    {
+        try
+        {
+            return service.SaveReleasePackage(file);
         }
         catch (Exception ex)
         {
