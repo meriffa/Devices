@@ -10,12 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Restore Solution Dependencies
+    - name: Checkout Solution
+      uses: actions/checkout@v4
+    - name: Restore Dependencies
       run: dotnet restore ./Sources/Devices.sln
     - name: Build Solution
       run: dotnet build --no-restore ./Sources/Devices.sln
