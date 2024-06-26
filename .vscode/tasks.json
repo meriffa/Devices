@@ -53,19 +53,6 @@
             "presentation": {
                 "reveal": "silent"
             }
-        },
-        {
-            "label": "Package Devices.Client",
-            "command": "./Resources/Scripts/AWS.sh",
-            "type": "process",
-            "args": [
-                "PackageClient",
-                "Devices.Client"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            }
         }
     ]
 }
