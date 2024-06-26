@@ -3,13 +3,13 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         $("#btnSave").click(submitForm);
     }
 
     // Submit form
     function submitForm() {
-        if (Devices.Host.Site.validateForm()) {
+        if (Devices.Host.Solutions.Site.validateForm()) {
             $("#btnSave").attr("disabled", true);
             $("form").submit();
         }

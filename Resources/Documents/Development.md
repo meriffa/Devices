@@ -13,9 +13,9 @@
 ### Client-Only Update (Non-Breaking Changes)
 - Implement changes in the 'Devices.Client' project.
 - Disable device application updates ('DeviceApplication' table).
-- Create new 'Devices.Client' / 'Devices.Client.Solutions' release ('Release' table, 'Devices.Client.zip' / 'Devices.Client.Solutions.zip' package).
+- Create new 'Devices.Client' release ('Release' table, 'Devices.Client.zip' package).
 - Enable device application updates ('DeviceApplication' table).
-- Deactivate previous 'Devices.Client' / 'Devices.Client.Solutions' release ('Release' table).
+- Deactivate previous 'Devices.Client' release ('Release' table).
 
 ### Service-Only Update (Non-Breaking Changes)
 - Implement changes in the 'Devices.Service' project.
@@ -28,10 +28,10 @@
 - Increment AssemblyFileVersion in the 'AssemblyInfo.cs' file.
 - Redeploy 'Devices.Host' project (update configuration).
 - Disable device application updates ('DeviceApplication' table).
-- Create new 'Devices.Client' & 'Devices.Client.Solutions' releases ('Release' table, 'Devices.Client.zip' & 'Devices.Client.Solutions.zip' packages).
+- Create new 'Devices.Client' releases ('Release' table, 'Devices.Client.zip' packages).
 - Enable device application updates ('DeviceApplication' table).
-- Deploy new 'Devices.Client' & 'Devices.Client.Solutions' releases.
+- Deploy new 'Devices.Client' releases.
 - Remove backward compatibility changes in the 'Devices.Service' project.
 - Increment AssemblyFileVersion in the 'AssemblyInfo.cs' file.
 - Redeploy 'Devices.Host' project (update configuration).
-- Deactivate previous 'Devices.Client' & 'Devices.Client.Solutions' releases ('Release' table).
+- Deactivate previous 'Devices.Client' releases ('Release' table).

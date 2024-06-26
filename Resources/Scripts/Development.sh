@@ -14,42 +14,22 @@ CreateSolution() {
   dotnet new sln --name Devices --output ./Sources
   # Create projects
   dotnet new classlib --language "C#" --output ./Sources/Devices.Common
-  dotnet new classlib --language "C#" --output ./Sources/Devices.Common.Solutions
   dotnet new classlib --language "C#" --output ./Sources/Devices.Service
-  dotnet new classlib --language "C#" --output ./Sources/Devices.Service.Solutions
   dotnet new razorclasslib --language "C#" --output ./Sources/Devices.Web --support-pages-and-views
-  dotnet new razorclasslib --language "C#" --output ./Sources/Devices.Web.Solutions --support-pages-and-views
-  dotnet new webapp --language "C#" --output ./Sources/Devices.Host
   dotnet new console --language "C#" --output ./Sources/Devices.Client
-  dotnet new console --language "C#" --output ./Sources/Devices.Client.Solutions
   # Add solution projects
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Common/Devices.Common.csproj
-  dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Service/Devices.Service.csproj
-  dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Service.Solutions/Devices.Service.Solutions.csproj
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Web/Devices.Web.csproj
-  dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Web.Solutions/Devices.Web.Solutions.csproj
-  dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Host/Devices.Host.csproj
   dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Client/Devices.Client.csproj
-  dotnet sln ./Sources/Devices.sln add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj
   # Add project references
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Configuration
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Hosting
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Logging
   dotnet add ./Sources/Devices.Common/Devices.Common.csproj package Microsoft.Extensions.Options.ConfigurationExtensions
-  dotnet add ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj package Microsoft.AspNetCore.Authentication.JwtBearer
   dotnet add ./Sources/Devices.Service/Devices.Service.csproj package Npgsql
-  dotnet add ./Sources/Devices.Service.Solutions/Devices.Service.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
-  dotnet add ./Sources/Devices.Service.Solutions/Devices.Service.Solutions.csproj reference ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj
-  dotnet add ./Sources/Devices.Service.Solutions/Devices.Service.Solutions.csproj reference ./Sources/Devices.Service/Devices.Service.csproj
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj reference ./Sources/Devices.Service/Devices.Service.csproj
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj reference ./Sources/Devices.Service.Solutions/Devices.Service.Solutions.csproj
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj reference ./Sources/Devices.Web/Devices.Web.csproj
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj reference ./Sources/Devices.Web.Solutions/Devices.Web.Solutions.csproj
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Serilog.AspNetCore
-  dotnet add ./Sources/Devices.Host/Devices.Host.csproj package Swashbuckle.AspNetCore
   dotnet add ./Sources/Devices.Web/Devices.Web.csproj reference ./Sources/Devices.Service/Devices.Service.csproj
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package CommandLineParser
@@ -62,23 +42,6 @@ CreateSolution() {
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Formatting.Compact
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Settings.Configuration
   dotnet add ./Sources/Devices.Client/Devices.Client.csproj package Serilog.Sinks.File
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj reference ./Sources/Devices.Common/Devices.Common.csproj
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj reference ./Sources/Devices.Common.Solutions/Devices.Common.Solutions.csproj
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package CommandLineParser
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Iot.Device.Bindings
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.AspNetCore.SignalR.Client
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.CommandLine
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Configuration.Json
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Microsoft.Extensions.Hosting
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package pythonnet
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Extensions.Hosting
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Formatting.Compact
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Settings.Configuration
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package Serilog.Sinks.File
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package SixLabors.ImageSharp
-  dotnet add ./Sources/Devices.Client.Solutions/Devices.Client.Solutions.csproj package System.Device.Gpio
   # Setup development certificate
   dotnet dev-certs clean
   dotnet dev-certs https --trust
@@ -87,7 +50,7 @@ CreateSolution() {
 # Archive solution
 ArchiveSolution() {
   SOLUTION_NAME="$(basename $SOLUTION_FOLDER).zip"
-  TARGET_FOLDER="$HOME/Transfer"
+  TARGET_FOLDER="/media/sf_Downloads"
   # Cleanup solution
   folders=("bin" "obj" "build" "Publish" "TestResults" "Migrations")
   for i in "${folders[@]}"
@@ -162,19 +125,6 @@ DeployClient() {
   [ $? != 0 ] && DisplayErrorAndStop "'$1' deployment failed."
   popd 1> /dev/null
   echo "'$1' deployment completed."
-}
-
-# Setup Python
-SetupPython() {
-  sudo apt-get install python3-opencv python3-flask python3-waitress python3-picamera2 -y
-  python3 -m venv ~/Python/.venv
-  source ~/Python/.venv/bin/activate
-  source ~/Python/.venv/bin/deactivate
-  pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu    # CPU
-  pip3 install torch torchvision torchaudio                                                     # GPU (https://pytorch.org/get-started/locally/)
-  pip3 install transformers[sentencepiece] diffusers accelerate datasets
-  pip3 install matplotlib easyocr pandas timm librosa soundfile opencv-python pillow
-  pip3 install PyQt5 PyQt6
 }
 
 # Get specified operation

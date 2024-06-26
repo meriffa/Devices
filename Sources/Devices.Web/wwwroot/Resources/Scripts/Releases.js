@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Configuration/GetReleases",
@@ -18,7 +18,7 @@ Devices.Web = Devices.Web || {};
                     title: "Release Service Date & Time",
                     data: "serviceDate",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
@@ -52,14 +52,14 @@ Devices.Web = Devices.Web || {};
                     title: "Enabled",
                     data: "enabled",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatBoolean(data);
+                        return Devices.Host.Solutions.Site.formatBoolean(data);
                     }
                 },
                 {
                     title: "Concurrency",
                     data: "allowConcurrency",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatBoolean(data);
+                        return Devices.Host.Solutions.Site.formatBoolean(data);
                     }
                 },
                 {
@@ -94,7 +94,7 @@ Devices.Web = Devices.Web || {};
                 location.reload();
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                Devices.Host.Site.displayError(jqXHR, textStatus, errorThrown);
+                Devices.Host.Solutions.Site.displayError(jqXHR, textStatus, errorThrown);
             }
         });
     }

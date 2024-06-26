@@ -19,22 +19,13 @@ Device Management Framework is an open-source software framework for managing Mi
 ## Components
 
 - [Devices.Common](/Sources/Devices.Common/): Class library shared between core and device tiers.
-- [Devices.Common.Solutions](/Sources/Devices.Common.Solutions/): Reference class library shared between core and device tiers.
-- [Devices.Host](/Sources/Devices.Host/): Core tier host (web site, web services) application.
 - [Devices.Service](/Sources/Devices.Service/): Core tier web services.
-- [Devices.Service.Solutions](/Sources/Devices.Service.Solutions/): Core tier reference web services.
 - [Devices.Web](/Sources/Devices.Web/): Core tier web site pages & assets.
-- [Devices.Web.Solutions](/Sources/Devices.Web.Solutions/): Core tier reference web site pages & assets.
 - [Devices.Client](/Sources/Devices.Client/): Device agent application.
-- [Devices.Client.Solutions](/Sources/Devices.Client.Solutions/): Device reference business application (C#, Python).
 
 ## References
 
 - [FAQ](/Resources/Documents/FAQ.md)
 - [Development](/Resources/Documents/Development.md)
-- [AWS](/Resources/Documents/AWS.md)
-- [Operations](/Resources/Documents/Operations.md)
-- [Examples](/Resources/Documents/Solutions.md)
 - [Platforms](/Resources/Documents/Platforms.md)
-- [Roadmap](/Resources/Documents/Roadmap.md#capability-roadmap)
 - [Glossary](/Resources/Documents/Glossary.md)

@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         const table = new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Configuration/GetCompletedDeployments",
@@ -18,7 +18,7 @@ Devices.Web = Devices.Web || {};
                     title: "Deployment Device Date & Time",
                     data: "deviceDate",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
@@ -37,7 +37,7 @@ Devices.Web = Devices.Web || {};
                     title: "Success",
                     data: "success",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatBoolean(data);
+                        return Devices.Host.Solutions.Site.formatBoolean(data);
                     }
                 },
                 {

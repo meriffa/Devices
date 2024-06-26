@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Configuration/GetPendingDeployments",

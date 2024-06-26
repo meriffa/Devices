@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Identity/GetDeviceStatuses",
@@ -30,14 +30,14 @@ Devices.Web = Devices.Web || {};
                     title: "Enabled",
                     data: "enabled",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatBoolean(data);
+                        return Devices.Host.Solutions.Site.formatBoolean(data);
                     }
                 },
                 {
                     title: "Last Update",
                     data: "deviceDate",
                     render: function (data, type, row) {
-                        var date = Devices.Host.Site.formatDateTime(data);
+                        var date = Devices.Host.Solutions.Site.formatDateTime(data);
                         if (type === 'display') {
                             if (date == null)
                                 date = "N/A";

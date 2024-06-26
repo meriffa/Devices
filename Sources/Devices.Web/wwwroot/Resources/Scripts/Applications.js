@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Configuration/GetApplications",
@@ -22,7 +22,7 @@ Devices.Web = Devices.Web || {};
                     title: "Enabled",
                     data: "enabled",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatBoolean(data);
+                        return Devices.Host.Solutions.Site.formatBoolean(data);
                     }
                 },
                 {

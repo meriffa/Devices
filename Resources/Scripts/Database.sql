@@ -1,10 +1,4 @@
 --
--- Schemas
---
-
-CREATE SCHEMA "Garden";
-
---
 -- Tables
 --
 
@@ -121,30 +115,6 @@ CREATE TABLE "User" (
 	CONSTRAINT "IX_User_Username" UNIQUE ("Username")
 );
 
-CREATE TABLE "Garden"."WeatherCondition" (
-	"DeviceID" int NOT NULL,
-	"DeviceDate" timestamp with time zone NOT NULL,
-	"Temperature" numeric NOT NULL,
-	"Humidity" numeric NOT NULL,
-	"Pressure" numeric NOT NULL,
-	"Illuminance" numeric NOT NULL,
-	CONSTRAINT "PK_WeatherCondition" PRIMARY KEY ("DeviceID", "DeviceDate"),
-	CONSTRAINT "FK_WeatherCondition_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID") ON UPDATE CASCADE
-);
-
-CREATE TABLE "Garden"."Camera" (
-	"DeviceID" int NOT NULL,
-	"Source" varchar(64) NOT NULL,
-	"Width" int NOT NULL,
-	"Height" int NOT NULL,
-	"FramesPerSecond" int NOT NULL,
-	"Bitrate" int NOT NULL,
-	"PublishLocation" varchar(1024) NOT NULL,
-	"ViewLocation" varchar(1024) NOT NULL,
-	CONSTRAINT "PK_Camera" PRIMARY KEY ("DeviceID"),
-	CONSTRAINT "FK_Camera_Device" FOREIGN KEY ("DeviceID") REFERENCES "Device" ("DeviceID") ON UPDATE CASCADE
-);
-
 --
 -- Static Data
 --
@@ -158,6 +128,7 @@ INSERT INTO "Application" ("ApplicationID", "ApplicationName", "ApplicationEnabl
 	(6, 'Devices.Client.Solutions Scheduled Job (Watering)', TRUE),
 	(7, 'Devices.Client.Solutions Scheduled Job (Camera [B1])', TRUE),
     (8, 'System', TRUE);
+
 INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArguments") VALUES
     (1, 1, 'Install.sh', 'InstallClient "Devices.Client"'),
     (2, 1, 'Install.sh', 'InstallClient "Devices.Client.Solutions"'),
@@ -171,6 +142,7 @@ INSERT INTO "Action" ("ActionID", "ActionType", "ActionParameters", "ActionArgum
     (10, 1, 'Install.sh', 'SynchronizeClock'),
     (11, 1, 'Install.sh', 'ExecuteCommand "ls -al ~; ls -al /etc/Devices.Configuration;"'),
 	(12, 1, 'Install.sh', 'UploadDeviceLogs');
+
 INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "PackageHash", "Version", "ActionID", "ReleaseEnabled", "AllowConcurrency") VALUES
     (1, NOW(), 1, 'Devices.Client.zip', NULL, '1.0.0', 1, TRUE, FALSE),
     (2, NOW(), 2, 'Devices.Client.Solutions.zip', NULL, '1.0.0', 2, TRUE, FALSE),
@@ -185,6 +157,7 @@ INSERT INTO "Release" ("ReleaseID", "ServiceDate", "ApplicationID", "Package", "
     (11, NOW(), 8, 'Install.zip', NULL, '1.0.0', 11, FALSE, FALSE),
 	(12, NOW(), 8, 'Install.zip', NULL, '1.0.0', 12, FALSE, FALSE);
 SELECT SETVAL($$"Release_ReleaseID_seq"$$, COALESCE((SELECT MAX("ReleaseID") FROM "Release"), 0));
+
 INSERT INTO "ApplicationDependency" ("ApplicationID", "RequiredApplicationID", "MinimumVersion") VALUES
     (2, 1, '1.0.0'),
 	(3, 1, NULL),

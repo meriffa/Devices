@@ -3,7 +3,7 @@ Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         new DataTable("#grdData", {
             ajax: {
                 url: "/Service/Monitoring/GetMonitoringMetrics",
@@ -18,7 +18,7 @@ Devices.Web = Devices.Web || {};
                     title: "Service Date & Time",
                     data: "serviceDate",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
@@ -29,7 +29,7 @@ Devices.Web = Devices.Web || {};
                     title: "Last Reboot",
                     data: "deviceMetrics.lastRebootDate",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
@@ -51,14 +51,14 @@ Devices.Web = Devices.Web || {};
                     title: "RAM Usage [%]",
                     data: "deviceMetrics.memory",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatNumber(100 * data.used / data.total, 2);
+                        return Devices.Host.Solutions.Site.formatNumber(100 * data.used / data.total, 2);
                     }
                 },
                 {
                     title: "Disk Usage [%]",
                     data: "deviceMetrics.disk",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatNumber(100 * data.used / data.total, 2);
+                        return Devices.Host.Solutions.Site.formatNumber(100 * data.used / data.total, 2);
                     }
                 },
                 {

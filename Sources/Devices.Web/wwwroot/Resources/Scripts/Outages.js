@@ -6,7 +6,7 @@ Devices.Web = Devices.Web || {};
     namespace.table = null;
 
     // Initialization
-    Devices.Host.Site.initContentPage = function () {
+    Devices.Host.Solutions.Site.initContentPage = function () {
         $("#cmbDevice").change(displayViewData);
         $("#cmbView").change(displayViewData);
         loadDevices();
@@ -25,7 +25,7 @@ Devices.Web = Devices.Web || {};
                 displayViewData();
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                Devices.Host.Site.displayError(jqXHR, textStatus, errorThrown);
+                Devices.Host.Solutions.Site.displayError(jqXHR, textStatus, errorThrown);
             }
         });
     }
@@ -58,14 +58,14 @@ Devices.Web = Devices.Web || {};
                     title: "Outage Start",
                     data: "outage.from",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
                     title: "Outage End",
                     data: "outage.to",
                     render: function (data, type) {
-                        return Devices.Host.Site.formatDateTime(data);
+                        return Devices.Host.Solutions.Site.formatDateTime(data);
                     }
                 },
                 {
