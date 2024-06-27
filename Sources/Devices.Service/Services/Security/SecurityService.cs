@@ -92,6 +92,32 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
             throw;
         }
     }
+
+    /// <summary>
+    /// Change user password
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="password"></param>
+    public void ChangeUserPassword(int userId, string password)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"UPDATE ""User"" SET
+                    ""Password"" = @Password
+                WHERE
+                    ""UserID"" = @UserID;", cn);
+            cmd.Parameters.Add("@UserID", NpgsqlDbType.Integer).Value = userId;
+            cmd.Parameters.Add("@Password", NpgsqlDbType.Varchar, 128).Value = HashPassword(password);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
     #endregion
 
     #region Private Members

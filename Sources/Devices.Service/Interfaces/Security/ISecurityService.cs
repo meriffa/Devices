@@ -25,6 +25,13 @@ public interface ISecurityService
     /// <param name="userId"></param>
     /// <returns></returns>
     bool IsUserEnabled(int userId);
+
+    /// <summary>
+    /// Change user password
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="password"></param>
+    void ChangeUserPassword(int userId, string password);
     #endregion
 
 }
