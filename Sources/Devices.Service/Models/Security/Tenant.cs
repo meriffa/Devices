@@ -1,44 +1,29 @@
 namespace Devices.Service.Models.Security;
 
 /// <summary>
-/// User
+/// Tenant
 /// </summary>
-public class User
+public class Tenant
 {
 
     #region Properties
     /// <summary>
-    /// User id
+    /// Tenant id
     /// </summary>
     public required int Id { get; set; }
 
     /// <summary>
-    /// User tenant
-    /// </summary>
-    public required Tenant Tenant { get; set; }
-
-    /// <summary>
-    /// User name
+    /// Tenant name
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// User full name
-    /// </summary>
-    public required string FullName { get; set; }
-
-    /// <summary>
-    /// User email
+    /// Tenant email
     /// </summary>
     public required string Email { get; set; }
 
     /// <summary>
-    /// User role
-    /// </summary>
-    public required string Role { get; set; }
-
-    /// <summary>
-    /// User enabled flag
+    /// Tenant enabled flag
     /// </summary>
     public required bool Enabled { get; set; }
     #endregion

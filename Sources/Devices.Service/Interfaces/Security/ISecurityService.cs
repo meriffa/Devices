@@ -12,6 +12,18 @@ public interface ISecurityService
 
     #region Public Methods
     /// <summary>
+    /// Return tenants
+    /// </summary>
+    /// <returns></returns>
+    List<Tenant> GetTenants();
+
+    /// <summary>
+    /// Return users
+    /// </summary>
+    /// <returns></returns>
+    List<User> GetUsers();
+
+    /// <summary>
     /// Return user
     /// </summary>
     /// <param name="username"></param>
