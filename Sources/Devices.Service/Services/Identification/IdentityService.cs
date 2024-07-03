@@ -1,6 +1,7 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Interfaces.Identification;
 using Devices.Service.Models.Identification;
+using Devices.Service.Models.Security;
 using Devices.Service.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -182,8 +183,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// <summary>
     /// Return device statuses
     /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    public List<DeviceStatus> GetDeviceStatuses()
+    public List<DeviceStatus> GetDeviceStatuses(User user)
     {
         try
         {
@@ -208,10 +210,14 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                     dm.""DeviceDate"",
                     dm.""LastReboot""
                 FROM
-                    ""Device"" d LEFT JOIN
+                    ""Device"" d JOIN
+                    ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID"" LEFT JOIN
                     ""cteDeviceMetric"" dm ON dm.""DeviceID"" = d.""DeviceID""
+                WHERE
+                    dt.""TenantID"" = @TenantID
                 ORDER BY
                     d.""DeviceName"";", cn);
+            cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetDeviceStatus(r));
@@ -228,7 +234,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// Return devices
     /// </summary>
     /// <returns></returns>
-    public List<Device> GetDevices()
+    public List<Device> GetDevices(User user)
     {
         try
         {
@@ -236,13 +242,17 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT DISTINCT
-                    ""DeviceID"",
-                    ""DeviceName"",
-                    ""DeviceLocation""
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
                 FROM
-                    ""Device""
+                    ""Device"" d JOIN
+                    ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
+                WHERE
+                    dt.""TenantID"" = @TenantID
                 ORDER BY
-                    ""DeviceName"";", cn);
+                    d.""DeviceName"";", cn);
+            cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetDevice(r));
@@ -260,21 +270,24 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    public Device GetDevice(int deviceId)
+    public Device GetDevice(int deviceId, User user)
     {
         try
         {
             using var cn = GetConnection();
             using var cmd = GetCommand(
                 @"SELECT
-                    ""DeviceID"",
-                    ""DeviceName"",
-                    ""DeviceLocation""
+                    d.""DeviceID"",
+                    d.""DeviceName"",
+                    d.""DeviceLocation""
                 FROM
-                    ""Device""
+                    ""Device"" d JOIN
+                    ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
                 WHERE
-                    ""DeviceID"" = @DeviceID;", cn);
+                    d.""DeviceID"" = @DeviceID AND
+                    dt.""TenantID"" = @TenantID;", cn);
             cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = deviceId;
+            cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             if (r.Read())
                 return GetDevice(r);
@@ -298,13 +311,15 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
         Name = (string)reader["DeviceName"],
         Location = (string)reader["DeviceLocation"]
     };
+    #endregion
 
+    #region Private Methods
     /// <summary>
     /// Return device status instance
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public DeviceStatus GetDeviceStatus(NpgsqlDataReader reader) => new()
+    private DeviceStatus GetDeviceStatus(NpgsqlDataReader reader) => new()
     {
         Device = GetDevice(reader),
         Token = (string)reader["DeviceToken"],
@@ -314,9 +329,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
         Uptime = reader["LastReboot"] is DBNull ? null : DateTime.UtcNow.Subtract((DateTime)reader["LastReboot"]),
         Deployments = GetDeviceDeployments((int)reader["DeviceID"])
     };
-    #endregion
 
-    #region Private Methods
     /// <summary>
     /// Return device level
     /// </summary>

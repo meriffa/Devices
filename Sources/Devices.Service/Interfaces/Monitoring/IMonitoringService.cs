@@ -1,6 +1,7 @@
 using Devices.Common.Models.Monitoring;
 using Devices.Service.Interfaces.Identification;
 using Devices.Service.Models.Monitoring;
+using Devices.Service.Models.Security;
 using Microsoft.AspNetCore.Http;
 
 namespace Devices.Service.Interfaces.Monitoring;
@@ -15,8 +16,9 @@ public interface IMonitoringService
     /// <summary>
     /// Return monitoring metrics
     /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    List<MonitoringMetrics> GetMonitoringMetrics();
+    List<MonitoringMetrics> GetMonitoringMetrics(User user);
 
     /// <summary>
     /// Save device metrics
@@ -33,7 +35,7 @@ public interface IMonitoringService
     /// <param name="deviceId"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
-    List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter);
+    List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter, User user);
 
     /// <summary>
     /// Upload device logs

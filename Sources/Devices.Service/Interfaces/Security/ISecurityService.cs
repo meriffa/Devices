@@ -26,6 +26,13 @@ public interface ISecurityService
     /// <summary>
     /// Return user
     /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    User GetUser(int userId);
+
+    /// <summary>
+    /// Return user
+    /// </summary>
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>

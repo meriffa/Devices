@@ -3,6 +3,7 @@ using Devices.Service.Interfaces.Identification;
 using Devices.Service.Interfaces.Monitoring;
 using Devices.Service.Models.Identification;
 using Devices.Service.Models.Monitoring;
+using Devices.Service.Models.Security;
 using Devices.Service.Options;
 using Devices.Service.Services.Identification;
 using Microsoft.AspNetCore.Http;
@@ -30,8 +31,9 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// <summary>
     /// Return monitoring metrics
     /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    public List<MonitoringMetrics> GetMonitoringMetrics()
+    public List<MonitoringMetrics> GetMonitoringMetrics(User user)
     {
         try
         {
@@ -58,7 +60,11 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     d.""DeviceLocation""
                 FROM
                     ""DeviceMetric"" m JOIN
-                    ""Device"" d ON d.""DeviceID"" = m.""DeviceID"";", cn);
+                    ""Device"" d ON d.""DeviceID"" = m.""DeviceID"" JOIN
+                    ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
+                WHERE
+                    dt.""TenantID"" = @TenantID;", cn);
+            cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetMonitoringMetrics(r));
@@ -146,17 +152,18 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// <param name="identityService"></param>
     /// <param name="deviceId"></param>
     /// <param name="filter"></param>
+    /// <param name="user"></param>
     /// <returns></returns>
-    public List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter)
+    public List<DeviceOutage> GetDeviceOutages(IIdentityService identityService, int? deviceId, OutageFilter filter, User user)
     {
         try
         {
             var result = new List<DeviceOutage>();
             using var cn = GetConnection();
             if (deviceId != null)
-                AddDeviceOutages(cn, identityService.GetDevice(deviceId.Value), result);
+                AddDeviceOutages(cn, identityService.GetDevice(deviceId.Value, user), result);
             else
-                foreach (var device in identityService.GetDevices())
+                foreach (var device in identityService.GetDevices(user))
                     AddDeviceOutages(cn, device, result);
             return FilterDeviceOutages(result, filter);
         }

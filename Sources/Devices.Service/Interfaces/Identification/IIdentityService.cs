@@ -1,5 +1,6 @@
 using Devices.Common.Models.Identification;
 using Devices.Service.Models.Identification;
+using Devices.Service.Models.Security;
 
 namespace Devices.Service.Interfaces.Identification;
 
@@ -41,21 +42,24 @@ public interface IIdentityService
     /// <summary>
     /// Return device statuses
     /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    List<DeviceStatus> GetDeviceStatuses();
+    List<DeviceStatus> GetDeviceStatuses(User user);
 
     /// <summary>
     /// Return devices
     /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    List<Device> GetDevices();
+    List<Device> GetDevices(User user);
 
     /// <summary>
     /// Return device instance
     /// </summary>
     /// <param name="deviceId"></param>
+    /// <param name="user"></param>
     /// <returns></returns>
-    Device GetDevice(int deviceId);
+    Device GetDevice(int deviceId, User user);
     #endregion
 
 }

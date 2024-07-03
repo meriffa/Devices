@@ -1,5 +1,7 @@
 using Devices.Common.Models.Identification;
+using Devices.Service.Extensions;
 using Devices.Service.Interfaces.Identification;
+using Devices.Service.Interfaces.Security;
 using Devices.Service.Models.Identification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -73,14 +75,15 @@ public class IdentityController : ControllerBase
     /// <summary>
     /// Return device statuses
     /// </summary>
-    /// <param name="service"></param>
+    /// <param name="identityService"></param>
+    /// <param name="securityService"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService service)
+    public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService)
     {
         try
         {
-            return Ok(service.GetDeviceStatuses());
+            return Ok(identityService.GetDeviceStatuses(securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {
@@ -91,14 +94,15 @@ public class IdentityController : ControllerBase
     /// <summary>
     /// Return devices
     /// </summary>
-    /// <param name="service"></param>
+    /// <param name="identityService"></param>
+    /// <param name="securityService"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService service)
+    public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService)
     {
         try
         {
-            return Ok(service.GetDevices());
+            return Ok(identityService.GetDevices(securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {

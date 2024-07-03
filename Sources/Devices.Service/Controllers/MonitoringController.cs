@@ -2,6 +2,7 @@ using Devices.Common.Models.Monitoring;
 using Devices.Service.Extensions;
 using Devices.Service.Interfaces.Identification;
 using Devices.Service.Interfaces.Monitoring;
+using Devices.Service.Interfaces.Security;
 using Devices.Service.Models.Monitoring;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,14 +21,15 @@ public class MonitoringController : ControllerBase
     /// <summary>
     /// Return monitoring metrics
     /// </summary>
-    /// <param name="service"></param>
+    /// <param name="monitoringService"></param>
+    /// <param name="securityService"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService service)
+    public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService)
     {
         try
         {
-            return Ok(service.GetMonitoringMetrics());
+            return Ok(monitoringService.GetMonitoringMetrics(securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {
@@ -60,15 +62,16 @@ public class MonitoringController : ControllerBase
     /// </summary>
     /// <param name="identityService"></param>
     /// <param name="monitoringService"></param>
+    /// <param name="securityService"></param>
     /// <param name="deviceId"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<DeviceOutage>> GetDeviceOutages([FromServices] IIdentityService identityService, [FromServices] IMonitoringService monitoringService, int? deviceId, OutageFilter filter)
+    public ActionResult<List<DeviceOutage>> GetDeviceOutages([FromServices] IIdentityService identityService, [FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService, int? deviceId, OutageFilter filter)
     {
         try
         {
-            return Ok(monitoringService.GetDeviceOutages(identityService, deviceId, filter));
+            return Ok(monitoringService.GetDeviceOutages(identityService, deviceId, filter, securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {

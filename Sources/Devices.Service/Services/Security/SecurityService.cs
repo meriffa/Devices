@@ -97,6 +97,46 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
     /// <summary>
     /// Return user
     /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public User GetUser(int userId)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    u.""UserID"",
+                    u.""Username"",
+                    u.""FullName"",
+                    u.""Email"",
+                    u.""Role"",
+                    u.""UserEnabled"",
+                    t.""TenantID"",
+                    t.""TenantName"",
+                    t.""Email"",
+                    t.""TenantEnabled""
+                FROM
+                    ""User"" u JOIN
+                    ""Tenant"" t ON t.""TenantID"" = u.""TenantID""
+                WHERE
+                    u.""UserID"" = @UserID;", cn);
+            cmd.Parameters.Add("@UserID", NpgsqlDbType.Integer).Value = userId;
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return GetUser(r);
+            throw new($"Invalid user specified (UserID = {userId}).");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return user
+    /// </summary>
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>
