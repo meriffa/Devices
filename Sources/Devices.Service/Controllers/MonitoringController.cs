@@ -23,13 +23,14 @@ public class MonitoringController : ControllerBase
     /// </summary>
     /// <param name="monitoringService"></param>
     /// <param name="securityService"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService)
+    public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService, int? deviceId)
     {
         try
         {
-            return Ok(monitoringService.GetMonitoringMetrics(securityService.GetUser(User.GetUserId())));
+            return Ok(monitoringService.GetMonitoringMetrics(deviceId, securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {

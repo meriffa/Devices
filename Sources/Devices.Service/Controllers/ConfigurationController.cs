@@ -209,13 +209,14 @@ public class ConfigurationController : ControllerBase
     /// Return completed deployments
     /// </summary>
     /// <param name="service"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<Deployment>> GetCompletedDeployments([FromServices] IConfigurationService service)
+    public ActionResult<List<Deployment>> GetCompletedDeployments([FromServices] IConfigurationService service, int? deviceId)
     {
         try
         {
-            return Ok(service.GetCompletedDeployments());
+            return Ok(service.GetCompletedDeployments(deviceId));
         }
         catch (Exception ex)
         {
@@ -227,13 +228,14 @@ public class ConfigurationController : ControllerBase
     /// Return pending deployments
     /// </summary>
     /// <param name="service"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<PendingDeployment>> GetPendingDeployments([FromServices] IConfigurationService service)
+    public ActionResult<List<PendingDeployment>> GetPendingDeployments([FromServices] IConfigurationService service, int? deviceId)
     {
         try
         {
-            return Ok(service.GetPendingDeployments());
+            return Ok(service.GetPendingDeployments(deviceId));
         }
         catch (Exception ex)
         {

@@ -77,13 +77,14 @@ public class IdentityController : ControllerBase
     /// </summary>
     /// <param name="identityService"></param>
     /// <param name="securityService"></param>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
     [HttpGet, Authorize(Policy = "FrameworkPolicy")]
-    public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService)
+    public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService, int? deviceId)
     {
         try
         {
-            return Ok(identityService.GetDeviceStatuses(securityService.GetUser(User.GetUserId())));
+            return Ok(identityService.GetDeviceStatuses(deviceId, securityService.GetUser(User.GetUserId())));
         }
         catch (Exception ex)
         {

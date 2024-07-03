@@ -183,9 +183,10 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// <summary>
     /// Return device statuses
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="user"></param>
     /// <returns></returns>
-    public List<DeviceStatus> GetDeviceStatuses(User user)
+    public List<DeviceStatus> GetDeviceStatuses(int? deviceId, User user)
     {
         try
         {
@@ -214,9 +215,11 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                     ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID"" LEFT JOIN
                     ""cteDeviceMetric"" dm ON dm.""DeviceID"" = d.""DeviceID""
                 WHERE
+                    (d.""DeviceID"" = @DeviceID OR @DeviceID IS NULL) AND
                     dt.""TenantID"" = @TenantID
                 ORDER BY
                     d.""DeviceName"";", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
             cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             while (r.Read())

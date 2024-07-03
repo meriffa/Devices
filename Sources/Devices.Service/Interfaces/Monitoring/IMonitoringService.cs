@@ -16,9 +16,10 @@ public interface IMonitoringService
     /// <summary>
     /// Return monitoring metrics
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="user"></param>
     /// <returns></returns>
-    List<MonitoringMetrics> GetMonitoringMetrics(User user);
+    List<MonitoringMetrics> GetMonitoringMetrics(int? deviceId, User user);
 
     /// <summary>
     /// Save device metrics

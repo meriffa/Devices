@@ -2,11 +2,42 @@ var Devices = Devices || {};
 Devices.Web = Devices.Web || {};
 (function (namespace, $, undefined) {
 
+    // Current table
+    namespace.table = null;
+
     // Initialization
     Devices.Host.Solutions.Site.initContentPage = function () {
-        new DataTable("#grdData", {
+        $("#cmbDevice").change(displayViewData);
+        loadDevices();
+    }
+
+    // Load devices
+    function loadDevices() {
+        $.ajax({
+            method: "GET",
+            contentType: "application/json",
+            url: "/Service/Identity/GetDevices",
+            success: function (devices) {
+                $.each(devices, function (key, device) {
+                    $("#cmbDevice").append(`<option value="${device.id}">${device.name} (${device.location})</option>`);
+                });
+                displayViewData();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                Devices.Host.Solutions.Site.displayError(jqXHR, textStatus, errorThrown);
+            }
+        });
+    }
+
+    // Display view data
+    function displayViewData() {
+        if (namespace.table != null) {
+            namespace.table.destroy();
+            $("#grdData").empty();
+        }
+        namespace.table = new DataTable("#grdData", {
             ajax: {
-                url: "/Service/Identity/GetDeviceStatuses",
+                url: `/Service/Identity/GetDeviceStatuses?deviceId=${$("#cmbDevice").val()}`,
                 dataSrc: ""
             },
             columns: [

@@ -84,14 +84,16 @@ public interface IConfigurationService
     /// <summary>
     /// Return completed deployments
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    List<CompletedDeployment> GetCompletedDeployments();
+    List<CompletedDeployment> GetCompletedDeployments(int? deviceId);
 
     /// <summary>
     /// Return pending deployments
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    List<PendingDeployment> GetPendingDeployments();
+    List<PendingDeployment> GetPendingDeployments(int? deviceId);
 
     /// <summary>
     /// Save deployment

@@ -393,8 +393,9 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <summary>
     /// Return completed deployments
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    public List<CompletedDeployment> GetCompletedDeployments()
+    public List<CompletedDeployment> GetCompletedDeployments(int? deviceId)
     {
         try
         {
@@ -431,8 +432,11 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     ""Application"" app ON app.""ApplicationID"" = r.""ApplicationID"" JOIN
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" JOIN
                     ""Device"" d ON d.""DeviceID"" = dd.""DeviceID""
+                WHERE
+                    (d.""DeviceID"" = @DeviceID OR @DeviceID IS NULL)
                 ORDER BY
                     dd.""DeploymentID"";", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetCompletedDeployment(r));
@@ -448,8 +452,9 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
     /// <summary>
     /// Return pending deployments
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <returns></returns>
-    public List<PendingDeployment> GetPendingDeployments()
+    public List<PendingDeployment> GetPendingDeployments(int? deviceId)
     {
         try
         {
@@ -482,6 +487,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     ""Action"" act ON act.""ActionID"" = r.""ActionID"" LEFT JOIN
                     ""DeviceDeployment"" dd ON dd.""DeviceID"" = d.""DeviceID"" AND dd.""ReleaseID"" = r.""ReleaseID""
                 WHERE
+                    (d.""DeviceID"" = @DeviceID OR @DeviceID IS NULL) AND
                     d.""DeviceEnabled"" = TRUE AND
                     app.""ApplicationEnabled"" = TRUE AND
                     r.""ReleaseEnabled"" = TRUE AND
@@ -490,6 +496,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                 ORDER BY
                     d.""DeviceID"",
                     r.""ReleaseID"";", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
             using var r = cmd.ExecuteReader();
             while (r.Read())
                 result.Add(GetPendingDeployment(r));

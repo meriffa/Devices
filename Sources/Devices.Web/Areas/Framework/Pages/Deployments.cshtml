@@ -11,7 +11,19 @@
     <script src="~/Resources/DataTables/2.0.1/dataTables.min.js"></script>
     <script type="text/javascript" src="~/_content/Devices.Web/Resources/Scripts/Deployments.js" asp-append-version="true"></script>
 }
-<div style="text-align: right;">
-    <button id="btnToggleDetails" type="button" class="btn btn-outline-dark" title="Show / hide details column">Show Details</button>
+<div class="row pt-1">
+    <div class="col d-flex align-items-center">
+        <div class="pe-2">
+            Device
+        </div>
+        <div class="pe-2">
+            <select id="cmbDevice" class="form-select">
+                <option value="">All</option>
+            </select>
+        </div>
+    </div>
+    <div class="col" style="text-align: right;">
+        <button id="btnToggleDetails" type="button" class="btn btn-outline-dark" title="Show / hide details column">Show Details</button>
+    </div>
 </div>
 <table id="grdData" class="display" width="100%"></table>

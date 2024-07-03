@@ -42,9 +42,10 @@ public interface IIdentityService
     /// <summary>
     /// Return device statuses
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="user"></param>
     /// <returns></returns>
-    List<DeviceStatus> GetDeviceStatuses(User user);
+    List<DeviceStatus> GetDeviceStatuses(int? deviceId, User user);
 
     /// <summary>
     /// Return devices

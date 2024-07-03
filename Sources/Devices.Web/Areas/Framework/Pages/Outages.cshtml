@@ -11,26 +11,28 @@
     <script src="~/Resources/DataTables/2.0.1/dataTables.min.js"></script>
     <script type="text/javascript" src="~/_content/Devices.Web/Resources/Scripts/Outages.js" asp-append-version="true"></script>
 }
-<div class="row justify-content-start row-cols-auto align-items-center">
-    <div class="col">
-        Device
-    </div>
-    <div class="col-2">
-        <select id="cmbDevice" class="form-select">
-            <option value="">All</option>
-        </select>
-    </div>
-    <div class="col">
-        Period
-    </div>
-    <div class="col-2">
-        <select id="cmbView" class="form-select">
-            <option value="1" selected>Last 60 Minutes</option>
-            <option value="2">Last 24 Hours</option>
-            <option value="3">Last 7 Days</option>
-            <option value="4">Last 30 Days</option>
-            <option value="0">All</option>
-        </select>
+<div class="row pt-1">
+    <div class="col d-flex align-items-center">
+        <div class="pe-2">
+            Device
+        </div>
+        <div class="pe-2">
+            <select id="cmbDevice" class="form-select">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="pe-2">
+            Period
+        </div>
+        <div class="pe-2">
+            <select id="cmbView" class="form-select">
+                <option value="1" selected>Last 60 Minutes</option>
+                <option value="2">Last 24 Hours</option>
+                <option value="3">Last 7 Days</option>
+                <option value="4">Last 30 Days</option>
+                <option value="0">All</option>
+            </select>
+        </div>
     </div>
 </div>
 <table id="grdData" class="display" width="100%"></table>

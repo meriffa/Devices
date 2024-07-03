@@ -31,9 +31,10 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
     /// <summary>
     /// Return monitoring metrics
     /// </summary>
+    /// <param name="deviceId"></param>
     /// <param name="user"></param>
     /// <returns></returns>
-    public List<MonitoringMetrics> GetMonitoringMetrics(User user)
+    public List<MonitoringMetrics> GetMonitoringMetrics(int? deviceId, User user)
     {
         try
         {
@@ -63,7 +64,9 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     ""Device"" d ON d.""DeviceID"" = m.""DeviceID"" JOIN
                     ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
                 WHERE
+                    (d.""DeviceID"" = @DeviceID OR @DeviceID IS NULL) AND
                     dt.""TenantID"" = @TenantID;", cn);
+            cmd.Parameters.Add("@DeviceID", NpgsqlDbType.Integer).Value = (object?)deviceId ?? DBNull.Value;
             cmd.Parameters.Add("@TenantID", NpgsqlDbType.Integer).Value = user.Tenant.Id;
             using var r = cmd.ExecuteReader();
             while (r.Read())
