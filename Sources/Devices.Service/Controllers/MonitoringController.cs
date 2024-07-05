@@ -25,7 +25,7 @@ public class MonitoringController : ControllerBase
     /// <param name="securityService"></param>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<MonitoringMetrics>> GetMonitoringMetrics([FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService, int? deviceId)
     {
         try
@@ -67,7 +67,7 @@ public class MonitoringController : ControllerBase
     /// <param name="deviceId"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<DeviceOutage>> GetDeviceOutages([FromServices] IIdentityService identityService, [FromServices] IMonitoringService monitoringService, [FromServices] ISecurityService securityService, int? deviceId, OutageFilter filter)
     {
         try

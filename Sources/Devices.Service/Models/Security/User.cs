@@ -33,9 +33,9 @@ public class User
     public required string Email { get; set; }
 
     /// <summary>
-    /// User role
+    /// User roles
     /// </summary>
-    public required string Role { get; set; }
+    public required string[] Roles { get; set; }
 
     /// <summary>
     /// User enabled flag

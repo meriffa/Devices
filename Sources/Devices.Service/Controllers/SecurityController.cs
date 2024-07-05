@@ -23,7 +23,7 @@ public class SecurityController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Tenant>> GetTenants([FromServices] ISecurityService service)
     {
         try
@@ -41,7 +41,7 @@ public class SecurityController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<User>> GetUsers([FromServices] ISecurityService service)
     {
         try

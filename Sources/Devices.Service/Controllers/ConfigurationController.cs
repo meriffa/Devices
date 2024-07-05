@@ -22,7 +22,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Application>> GetApplications([FromServices] IConfigurationService service)
     {
         try
@@ -40,7 +40,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Action>> GetActions([FromServices] IConfigurationService service)
     {
         try
@@ -58,7 +58,7 @@ public class ConfigurationController : ControllerBase
     /// </summary>
     /// <param name="service"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Release>> GetReleases([FromServices] IConfigurationService service)
     {
         try
@@ -77,7 +77,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="service"></param>
     /// <param name="releaseId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<Release> GetRelease([FromServices] IConfigurationService service, int releaseId)
     {
         try
@@ -133,7 +133,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="service"></param>
     /// <param name="release"></param>
     /// <returns></returns>
-    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    [HttpPost, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<Release> SaveRelease([FromServices] IConfigurationService service, Release release)
     {
         try
@@ -153,7 +153,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="releaseId"></param>
     /// <param name="enabled"></param>
     /// <returns></returns>
-    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    [HttpPost, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult EnableDisableRelease([FromServices] IConfigurationService service, int releaseId, bool enabled)
     {
         try
@@ -192,7 +192,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="service"></param>
     /// <param name="file"></param>
     /// <returns></returns>
-    [HttpPost, Authorize(Policy = "FrameworkPolicy")]
+    [HttpPost, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<string> SaveReleasePackage([FromServices] IConfigurationService service, IFormFile file)
     {
         try
@@ -211,7 +211,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="service"></param>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Deployment>> GetCompletedDeployments([FromServices] IConfigurationService service, int? deviceId)
     {
         try
@@ -230,7 +230,7 @@ public class ConfigurationController : ControllerBase
     /// <param name="service"></param>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<PendingDeployment>> GetPendingDeployments([FromServices] IConfigurationService service, int? deviceId)
     {
         try

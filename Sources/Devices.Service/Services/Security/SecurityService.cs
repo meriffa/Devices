@@ -71,7 +71,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
                     u.""Username"",
                     u.""FullName"",
                     u.""Email"",
-                    u.""Role"",
+                    u.""Roles"",
                     u.""UserEnabled"",
                     t.""TenantID"",
                     t.""TenantName"",
@@ -110,7 +110,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
                     u.""Username"",
                     u.""FullName"",
                     u.""Email"",
-                    u.""Role"",
+                    u.""Roles"",
                     u.""UserEnabled"",
                     t.""TenantID"",
                     t.""TenantName"",
@@ -151,7 +151,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
                     u.""Username"",
                     u.""FullName"",
                     u.""Email"",
-                    u.""Role"",
+                    u.""Roles"",
                     u.""UserEnabled"",
                     t.""TenantID"",
                     t.""TenantName"",
@@ -262,7 +262,7 @@ public class SecurityService(ILogger<SecurityService> logger, IOptions<ServiceOp
         Name = (string)reader["Username"],
         FullName = (string)reader["FullName"],
         Email = (string)reader["Email"],
-        Role = (string)reader["Role"],
+        Roles = ((string)reader["Roles"]).Split(',', StringSplitOptions.RemoveEmptyEntries),
         Enabled = (bool)reader["UserEnabled"]
     };
 

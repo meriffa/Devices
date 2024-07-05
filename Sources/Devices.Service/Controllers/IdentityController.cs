@@ -79,7 +79,7 @@ public class IdentityController : ControllerBase
     /// <param name="securityService"></param>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<DeviceStatus>> GetDeviceStatuses([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService, int? deviceId)
     {
         try
@@ -98,7 +98,7 @@ public class IdentityController : ControllerBase
     /// <param name="identityService"></param>
     /// <param name="securityService"></param>
     /// <returns></returns>
-    [HttpGet, Authorize(Policy = "FrameworkPolicy")]
+    [HttpGet, Authorize(Policy = "WebFrameworkPolicy")]
     public ActionResult<List<Device>> GetDevices([FromServices] IIdentityService identityService, [FromServices] ISecurityService securityService)
     {
         try

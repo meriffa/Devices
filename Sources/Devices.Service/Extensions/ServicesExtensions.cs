@@ -88,20 +88,20 @@ public static class ServicesExtensions
     public static AuthorizationBuilder AddPolicies(this AuthorizationBuilder builder, ServiceOptions serviceOptions)
     {
         return builder
-            .AddPolicy("FrameworkPolicy", policy =>
+            .AddPolicy("WebPolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-                policy.RequireClaim(ClaimTypes.Role, ["Administrator"]);
+                policy.RequireAuthenticatedUser();
+            })
+            .AddPolicy("WebFrameworkPolicy", policy =>
+            {
+                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, ["WebFramework"]);
             })
             .AddPolicy("DevicePolicy", policy =>
             {
                 policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                 policy.RequireClaim(ClaimTypes.Role, ["Device"]);
-            })
-            .AddPolicy("WebPolicy", policy =>
-            {
-                policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-                policy.RequireAuthenticatedUser();
             });
     }
 
@@ -111,7 +111,7 @@ public static class ServicesExtensions
     /// <param name="options"></param>
     public static void AuthorizeAreas(this RazorPagesOptions options)
     {
-        options.Conventions.AuthorizeAreaFolder("Framework", "/", "FrameworkPolicy");
+        options.Conventions.AuthorizeAreaFolder("Framework", "/", "WebFrameworkPolicy");
     }
     #endregion
 

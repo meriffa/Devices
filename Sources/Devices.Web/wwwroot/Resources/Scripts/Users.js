@@ -31,8 +31,8 @@ Devices.Web = Devices.Web || {};
                     data: "email"
                 },
                 {
-                    title: "User Role",
-                    data: "role"
+                    title: "User Roles",
+                    data: "roles"
                 },
                 {
                     title: "Enabled",

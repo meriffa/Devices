@@ -127,7 +127,7 @@ CREATE TABLE "User" (
 	"Password" varchar(128) NOT NULL,
 	"FullName" varchar(128) NOT NULL,
 	"Email" varchar(128) NOT NULL,
-	"Role" varchar(128) NOT NULL,
+	"Roles" varchar(1024) NOT NULL,
 	"UserEnabled" boolean NOT NULL,
 	CONSTRAINT "PK_User" PRIMARY KEY ("UserID"),
 	CONSTRAINT "IX_User_Username" UNIQUE ("Username"),
