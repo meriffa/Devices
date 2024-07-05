@@ -1,15 +1,14 @@
-using Devices.Client.Interfaces.Configuration;
+using Devices.Common.Interfaces.Configuration;
 using Devices.Common.Interfaces.Identification;
 using Devices.Common.Models.Configuration;
 using Devices.Common.Options;
-using Devices.Common.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace Devices.Client.Services.Configuration;
+namespace Devices.Common.Services.Configuration;
 
 /// <summary>
 /// Configuration service

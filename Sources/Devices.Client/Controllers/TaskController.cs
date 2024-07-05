@@ -1,5 +1,5 @@
 using CommandLine;
-using Devices.Client.Models;
+using Devices.Common.Models;
 using System.Reflection;
 
 namespace Devices.Client.Controllers;
@@ -16,7 +16,7 @@ public class TaskController : Controller
     /// Task types
     /// </summary>
     [Option('t', "tasks", Required = true, HelpText = "Task types.")]
-    public TaskTypes Tasks { get; set; }
+    public TaskType Tasks { get; set; }
     #endregion
 
     #region Public Methods
@@ -26,13 +26,13 @@ public class TaskController : Controller
     protected override void Execute()
     {
         using var mutex = new Mutex(true, @$"Global\{Assembly.GetExecutingAssembly().GetName().Name}", out var singleInstance);
-        if (Tasks.HasFlag(TaskTypes.Monitoring) || Tasks.HasFlag(TaskTypes.Configuration))
+        if (Tasks.HasFlag(TaskType.Monitoring) || Tasks.HasFlag(TaskType.Configuration))
             Common.Services.DisplayService.WriteTitle();
-        if (Tasks.HasFlag(TaskTypes.Identity))
+        if (Tasks.HasFlag(TaskType.Identity))
             ExecuteIdentityTask();
-        if (Tasks.HasFlag(TaskTypes.Monitoring))
+        if (Tasks.HasFlag(TaskType.Monitoring))
             ExecuteMonitoringTask();
-        if (Tasks.HasFlag(TaskTypes.Configuration))
+        if (Tasks.HasFlag(TaskType.Configuration))
             ExecuteConfigurationTask(singleInstance);
     }
     #endregion

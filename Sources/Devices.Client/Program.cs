@@ -50,14 +50,14 @@ class Program
     private static IHost CreateApplicationHost(string[] args)
     {
         return Host.CreateDefaultBuilder()
-            .ConfigreHost(args)
+            .ConfigreDeviceHost(args)
             .ConfigureServices((context, services) =>
             {
                 services.AddDeviceServices(context.Configuration);
-                services.AddSingleton<Services.Configuration.ReleaseGraphService>();
-                services.AddSingleton<Interfaces.Monitoring.IDeviceMetricsService, Services.Monitoring.DeviceMetricsService>();
-                services.AddSingleton<Interfaces.Monitoring.IMonitoringService, Services.Monitoring.MonitoringService>();
-                services.AddSingleton<Interfaces.Configuration.IConfigurationService, Services.Configuration.ConfigurationService>();
+                services.AddSingleton<Common.Interfaces.Monitoring.IDeviceMetricsService, Common.Services.Monitoring.DeviceMetricsService>();
+                services.AddSingleton<Common.Interfaces.Monitoring.IMonitoringService, Common.Services.Monitoring.MonitoringService>();
+                services.AddSingleton<Common.Interfaces.Configuration.IConfigurationService, Common.Services.Configuration.ConfigurationService>();
+                services.AddSingleton<Common.Services.Configuration.ReleaseGraphService>();
             })
             .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration))
             .Build();

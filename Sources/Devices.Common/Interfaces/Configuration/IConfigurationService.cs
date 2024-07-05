@@ -1,6 +1,6 @@
 using Devices.Common.Models.Configuration;
 
-namespace Devices.Client.Interfaces.Configuration;
+namespace Devices.Common.Interfaces.Configuration;
 
 /// <summary>
 /// Configuration service interface

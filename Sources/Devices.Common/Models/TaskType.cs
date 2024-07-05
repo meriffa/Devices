@@ -1,10 +1,10 @@
-namespace Devices.Client.Models;
+namespace Devices.Common.Models;
 
 /// <summary>
-///  Task types
+///  Task type
 /// </summary>
 [Flags]
-public enum TaskTypes
+public enum TaskType
 {
     None = 0,
     Identity = 1,

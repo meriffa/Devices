@@ -1,7 +1,7 @@
-using Devices.Client.Interfaces.Monitoring;
-using Devices.Client.Services.Configuration;
 using Devices.Common.Interfaces.Identification;
+using Devices.Common.Interfaces.Monitoring;
 using Devices.Common.Services;
+using Devices.Common.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Devices.Client.Controllers;

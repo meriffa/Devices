@@ -6,19 +6,19 @@ using Microsoft.Extensions.Hosting;
 namespace Devices.Common.Extensions;
 
 /// <summary>
-/// Services extension methods
+/// Device client extension methods
 /// </summary>
-public static class ServicesExtensions
+public static class DeviceClientExtensions
 {
 
     #region Public Methods
     /// <summary>
-    /// Configure host
+    /// Configure device host
     /// </summary>
     /// <param name="host"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    public static IHostBuilder ConfigreHost(this IHostBuilder host, string[] args)
+    public static IHostBuilder ConfigreDeviceHost(this IHostBuilder host, string[] args)
     {
         return host
             .ConfigureHostConfiguration((configuration) =>

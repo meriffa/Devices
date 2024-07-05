@@ -1,7 +1,6 @@
-using Devices.Client.Interfaces.Configuration;
+using Devices.Common.Interfaces.Configuration;
 using Devices.Common.Models.Configuration;
 using Devices.Common.Options;
-using Devices.Common.Services;
 using Devices.Common.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +8,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
 
-namespace Devices.Client.Services.Configuration;
+namespace Devices.Common.Services.Configuration;
 
 /// <summary>
 /// Release graph service
