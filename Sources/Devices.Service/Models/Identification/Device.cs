@@ -21,6 +21,16 @@ public class Device
     /// Device location
     /// </summary>
     public required string Location { get; set; }
+
+    /// <summary>
+    /// Device roles
+    /// </summary>
+    public required string[] Roles { get; set; }
+
+    /// <summary>
+    /// Device enabled flag
+    /// </summary>
+    public required bool Enabled { get; set; }
     #endregion
 
 }

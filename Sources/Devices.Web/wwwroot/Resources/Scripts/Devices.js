@@ -46,16 +46,16 @@ Devices.Web = Devices.Web || {};
                     data: "device.id"
                 },
                 {
-                    title: "Device Token",
-                    data: "token"
-                },
-                {
                     title: "Device Name",
                     data: "device.name"
                 },
                 {
                     title: "Device Location",
                     data: "device.location"
+                },
+                {
+                    title: "Device Roles",
+                    data: "device.roles"
                 },
                 {
                     title: "Enabled",

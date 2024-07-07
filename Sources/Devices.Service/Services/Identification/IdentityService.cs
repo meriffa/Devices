@@ -153,34 +153,6 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     }
 
     /// <summary>
-    /// Return device id
-    /// </summary>
-    /// <param name="deviceToken"></param>
-    /// <returns></returns>
-    public int? GetDeviceId(string deviceToken)
-    {
-        try
-        {
-            using var cn = GetConnection();
-            using var cmd = GetCommand(
-                @"SELECT
-                    ""DeviceID""
-                FROM
-                    ""Device""
-                WHERE
-                    ""DeviceToken"" = @DeviceToken AND
-                    ""DeviceEnabled"" = TRUE;", cn);
-            cmd.Parameters.Add("@DeviceToken", NpgsqlDbType.Varchar, 64).Value = deviceToken;
-            return (int?)cmd.ExecuteScalar();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "{Error}", ex.Message);
-            throw;
-        }
-    }
-
-    /// <summary>
     /// Return device statuses
     /// </summary>
     /// <param name="deviceId"></param>
@@ -207,6 +179,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                     d.""DeviceToken"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
+                    d.""DeviceRoles"",
                     d.""DeviceEnabled"",
                     dm.""DeviceDate"",
                     dm.""LastReboot""
@@ -247,7 +220,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 @"SELECT DISTINCT
                     d.""DeviceID"",
                     d.""DeviceName"",
-                    d.""DeviceLocation""
+                    d.""DeviceLocation"",
+                    d.""DeviceRoles"",
+                    d.""DeviceEnabled""
                 FROM
                     ""Device"" d JOIN
                     ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
@@ -271,6 +246,40 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     /// <summary>
     /// Return device instance
     /// </summary>
+    /// <param name="deviceToken"></param>
+    /// <returns></returns>
+    public Device GetDevice(string deviceToken)
+    {
+        try
+        {
+            using var cn = GetConnection();
+            using var cmd = GetCommand(
+                @"SELECT
+                    ""DeviceID"",
+                    ""DeviceName"",
+                    ""DeviceLocation"",
+                    ""DeviceRoles"",
+                    ""DeviceEnabled""
+                FROM
+                    ""Device""
+                WHERE
+                    ""DeviceToken"" = @DeviceToken;", cn);
+            cmd.Parameters.Add("@DeviceToken", NpgsqlDbType.Varchar, 64).Value = deviceToken;
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return GetDevice(r);
+            throw new($"Invalid device specified (DeviceToken = {deviceToken}).");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Error}", ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Return device instance
+    /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
     public Device GetDevice(int deviceId, User user)
@@ -282,7 +291,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
                 @"SELECT
                     d.""DeviceID"",
                     d.""DeviceName"",
-                    d.""DeviceLocation""
+                    d.""DeviceLocation"",
+                    d.""DeviceRoles"",
+                    d.""DeviceEnabled""
                 FROM
                     ""Device"" d JOIN
                     ""DeviceTenant"" dt ON dt.""DeviceID"" = d.""DeviceID""
@@ -312,7 +323,9 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
     {
         Id = (int)reader["DeviceID"],
         Name = (string)reader["DeviceName"],
-        Location = (string)reader["DeviceLocation"]
+        Location = (string)reader["DeviceLocation"],
+        Roles = ((string)reader["DeviceRoles"]).Split(',', StringSplitOptions.RemoveEmptyEntries),
+        Enabled = (bool)reader["DeviceEnabled"]
     };
     #endregion
 

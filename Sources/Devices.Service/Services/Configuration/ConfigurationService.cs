@@ -425,7 +425,9 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     act.""ActionArguments"",
                     d.""DeviceID"",
                     d.""DeviceName"",
-                    d.""DeviceLocation""
+                    d.""DeviceLocation"",
+                    d.""DeviceRoles"",
+                    d.""DeviceEnabled""
                 FROM
                     ""DeviceDeployment"" dd JOIN
                     ""Release"" r ON r.""ReleaseID"" = dd.""ReleaseID"" JOIN
@@ -465,6 +467,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, IOptions
                     d.""DeviceID"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
+                    d.""DeviceRoles"",
+                    d.""DeviceEnabled"",
                     r.""ReleaseID"",
                     r.""ServiceDate"",
                     r.""Package"",

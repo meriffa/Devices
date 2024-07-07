@@ -33,13 +33,6 @@ public interface IIdentityService
     string GetDeviceBearerToken(List<Fingerprint> fingerprints);
 
     /// <summary>
-    /// Return device id
-    /// </summary>
-    /// <param name="deviceToken"></param>
-    /// <returns></returns>
-    int? GetDeviceId(string deviceToken);
-
-    /// <summary>
     /// Return device statuses
     /// </summary>
     /// <param name="deviceId"></param>
@@ -53,6 +46,13 @@ public interface IIdentityService
     /// <param name="user"></param>
     /// <returns></returns>
     List<Device> GetDevices(User user);
+
+    /// <summary>
+    /// Return device instance
+    /// </summary>
+    /// <param name="deviceToken"></param>
+    /// <returns></returns>
+    Device GetDevice(string deviceToken);
 
     /// <summary>
     /// Return device instance

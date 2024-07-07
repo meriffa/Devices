@@ -58,7 +58,9 @@ public class MonitoringService(ILogger<MonitoringService> logger, IOptions<Servi
                     m.""DiskFree"",
                     d.""DeviceID"",
                     d.""DeviceName"",
-                    d.""DeviceLocation""
+                    d.""DeviceLocation"",
+                    d.""DeviceRoles"",
+                    d.""DeviceEnabled""
                 FROM
                     ""DeviceMetric"" m JOIN
                     ""Device"" d ON d.""DeviceID"" = m.""DeviceID"" JOIN
