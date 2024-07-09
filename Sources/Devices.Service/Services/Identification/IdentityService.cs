@@ -217,7 +217,7 @@ public class IdentityService(ILogger<IdentityService> logger, IOptions<ServiceOp
             var result = new List<Device>();
             using var cn = GetConnection();
             using var cmd = GetCommand(
-                @"SELECT DISTINCT
+                @"SELECT
                     d.""DeviceID"",
                     d.""DeviceName"",
                     d.""DeviceLocation"",
