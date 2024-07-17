@@ -17,7 +17,7 @@
 The purpose of this software is to allow companies to manage their Mini Computers. Management includes identity & security, monitoring, application deployment & configuration services.
 
 ### What is a Mini Computer?
-Mini Computer is a Single Board Computer (e.g. Raspberry Pi, NVIDIA Jetson), Mini PC (AMD Ryzen Embedded, Intel NUC) or System on Chip (SoC) Internet connected device, running full operating system (Linux, Windows). The device has attached inputs (sensors, cameras) and/or outputs (relays, motors, servos). See the [Managed Devices](/Resources/Images/Devices.png) diagram as an example.
+Mini Computer is a Single Board Computer (e.g. Raspberry Pi, Nvidia Jetson), Mini PC (AMD Ryzen Embedded, Intel NUC) or System on Chip (SoC) Internet connected device, running full operating system (Linux, Windows). The device has attached inputs (sensors, cameras) and/or outputs (relays, motors, servos). See the [Managed Devices](/Resources/Images/Devices.png) diagram as an example.
 
 ### What problems does the software solve?
 Any number of connected Mini Computers require some level of management. Such management includes - device identity (unique device identity), inventory (how many devices do I have, what devices do I have, where are my devices), security (what is the device allowed to do, is the device lost/stolen), monitoring (are my devices up and running, are there any device outages), configuration (reconfigure settings, upgrade OS, deploy applications).
